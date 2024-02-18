@@ -3,11 +3,12 @@ use clap::{Parser, Subcommand};
 /// A finance tracking and budgeting tool
 #[derive(Debug, Parser)]
 #[command()]
-struct BudgeterCLI {
+struct BudgeyCLI {
     #[command(subcommand)]
     commands: Commands,
 }
 
+/// Commands for the Budgey CLI
 #[derive(Debug, Subcommand)]
 enum Commands {
     /// Budgey init -> inits a new budget repository to work with and creates a default pile
@@ -96,7 +97,7 @@ enum PileSubcommand {
     List,
 
     /// View -> view transactions of a pile
-    #[command(name = "list", arg_required_else_help = true)]
+    #[command(name = "view", arg_required_else_help = true)]
     View {
         /// The name of the pile to view transactions of.
         #[arg(short, long, required = true)]
