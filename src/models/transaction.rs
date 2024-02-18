@@ -1,15 +1,32 @@
-pub enum Transaction {
-    PilePull {
-        amount: f64,
-        pile_name: String,
+pub struct Transaction {
+    amount: f64,
+    source_pile: String,
+    transaction_type: TransactionType,
+}
+
+pub enum TransactionType {
+    Pull,
+    Push,
+    Merge {
+        destination_pile: String,
+        delete_after_merge: bool,
     },
-    PilePush {
-        amount: f64,
-        pile_name: String,
-    },
-    PileMerge {
-        amount: f64,
-        from_pile: String,
-        to_pile: String,
-    },
+}
+
+impl Transaction {
+    fn new(amount: f64, source_pile: String, transaction_type: TransactionType) -> Self {
+        Self {
+            amount,
+            source_pile,
+            transaction_type,
+        }
+    }
+
+    fn new_push(amount: f64, source_pile: String) -> Self {
+        Self::new(amount, source_pile, TransactionType::Push)
+    }
+
+    fn new_pull(amount: f64, source_pile: String) -> Self {
+        Self::new(amount, source_pile, TransactionType::Pull)
+    }
 }
