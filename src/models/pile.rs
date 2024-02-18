@@ -1,7 +1,10 @@
+use super::transaction::{self, Transaction};
+
 pub struct Pile {
     name: String,
     balance: f64,
     pile_type: PileType,
+    transaction_history: Vec<Transaction>,
 }
 
 pub enum PileType {
@@ -10,11 +13,17 @@ pub enum PileType {
 }
 
 impl Pile {
-    pub fn new(name: String, balance: f64, pile_type: PileType) -> Self {
+    pub fn new(
+        name: String,
+        balance: f64,
+        pile_type: PileType,
+        transaction_history: Vec<Transaction>,
+    ) -> Self {
         Self {
             name,
             balance,
             pile_type,
+            transaction_history,
         }
     }
 }
