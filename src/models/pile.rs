@@ -1,4 +1,4 @@
-use super::transaction::{self, Transaction};
+use super::transaction::Transaction;
 
 pub struct Pile {
     name: String,
