@@ -3,14 +3,14 @@ use clap::{Parser, Subcommand};
 /// A finance tracking and budgeting tool
 #[derive(Debug, Parser)]
 #[command()]
-struct BudgeyCLI {
+pub struct BudgeyCLI {
     #[command(subcommand)]
-    commands: Commands,
+    pub commands: Commands,
 }
 
 /// Commands for the Budgey CLI
 #[derive(Debug, Subcommand)]
-enum Commands {
+pub enum Commands {
     /// Budgey init -> inits a new budget repository to work with and creates a default pile
     /// called "main".
     #[command(name = "init", arg_required_else_help = true)]
@@ -27,7 +27,7 @@ enum Commands {
     },
 }
 #[derive(Debug, Subcommand)]
-enum PileSubcommand {
+pub enum PileSubcommand {
     /// new -> creates a new pile.
     #[command(name = "new", arg_required_else_help = true)]
     New {

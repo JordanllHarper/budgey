@@ -1,10 +1,10 @@
 use super::transaction::Transaction;
 
 pub struct Pile {
-    name: String,
-    balance: f64,
-    pile_type: PileType,
-    pile_transaction_history: Vec<Transaction>,
+    pub name: String,
+    pub balance: f64,
+    pub pile_type: PileType,
+    pub pile_transaction_history: Vec<Transaction>,
 }
 
 pub enum PileType {

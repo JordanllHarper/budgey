@@ -1,7 +1,7 @@
 pub struct Transaction {
-    amount: f64,
-    source_pile: String,
-    transaction_type: TransactionType,
+    pub amount: f64,
+    pub source_pile: String,
+    pub transaction_type: TransactionType,
 }
 
 pub enum TransactionType {
