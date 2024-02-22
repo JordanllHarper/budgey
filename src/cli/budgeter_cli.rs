@@ -22,23 +22,13 @@ pub enum Commands {
     /// Budgey Pile -> create and manage piles.
     #[command(name = "pile")]
     Pile {
+        ///
         #[command(subcommand)]
         subcommand: PileSubcommand,
     },
 }
 #[derive(Debug, Subcommand)]
-pub enum PileSubcommand {
-    /// new -> creates a new pile.
-    #[command(name = "new", arg_required_else_help = true)]
-    New {
-        /// The name of the new pile. Must be unique.
-        name: String,
-
-        /// The initial balance of the pile. Will be taken from the main pile.
-        #[arg(short, long)]
-        initial_balance: Option<f64>,
-    },
-
+pub enum PileOperationSubcommand {
     /// Push -> pushes a new transaction to a pile.
     #[command(name = "push", arg_required_else_help = true)]
     Push {
@@ -113,4 +103,20 @@ pub enum PileSubcommand {
         #[arg(short, long, required = true)]
         name: String,
     },
+}
+#[derive(Debug, Subcommand)]
+pub enum PileSubcommand {
+    /// new -> creates a new pile.
+    #[command(name = "new", arg_required_else_help = true)]
+    New {
+        /// The name of the new pile. Must be unique.
+        name: String,
+
+        /// The initial balance of the pile. Will be taken from the main pile.
+        #[arg(short, long)]
+        initial_balance: Option<f64>,
+    },
+
+    #[command(subcommand)]
+    PileOperation(PileOperationSubcommand),
 }

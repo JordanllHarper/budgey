@@ -11,7 +11,7 @@ impl InitHandlerImpl {
 
 impl InitHandler for InitHandlerImpl {
     fn handle(&self, repo_name: &str) -> anyhow::Result<()> {
-        // TODO: Create the repo
+        // TODO: Create the repo and the main pile
         todo!()
     }
 }
