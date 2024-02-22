@@ -4,7 +4,7 @@ pub struct Pile {
     name: String,
     balance: f64,
     pile_type: PileType,
-    transaction_history: Vec<Transaction>,
+    pile_transaction_history: Vec<Transaction>,
 }
 
 pub enum PileType {
@@ -23,7 +23,7 @@ impl Pile {
             name,
             balance,
             pile_type,
-            transaction_history,
+            pile_transaction_history: transaction_history,
         }
     }
 }
