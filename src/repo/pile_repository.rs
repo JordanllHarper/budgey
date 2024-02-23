@@ -7,4 +7,3 @@ trait PileRepository {
     // TODO: Remember to implement logic to not allow deleting of the main pile.
     fn delete_pile(&self, pile_name: &str);
 }
-
