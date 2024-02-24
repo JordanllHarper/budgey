@@ -37,14 +37,17 @@ impl InitHandlerImpl {
     }
 }
 
+// TODO: We could do with some better error handling here as this just returns what step failed
+// (not what specifically the issue was), this would be good for helping new users if something
+// goes wrong
 impl InitHandler for InitHandlerImpl {
     fn handle(&self, budget_name: &str) -> anyhow::Result<(), InitHandlerError> {
-        if let Err(e) = create_budgey_dir_if_not_exists(&self.local_config.budgey_dir) {
+        if let Err(_) = create_budgey_dir_if_not_exists(&self.local_config.budgey_dir) {
             return Err(InitHandlerError::CreateBudgeyDirFailed);
         }
 
         match create_named_budget_dir_if_not_exists(&self.local_config.budgey_dir, budget_name) {
-            Err(e) => Err(InitHandlerError::CreateNamedBudgetDirFailed),
+            Err(_) => Err(InitHandlerError::CreateNamedBudgetDirFailed),
             Ok(_) => Ok(()),
         }
     }
