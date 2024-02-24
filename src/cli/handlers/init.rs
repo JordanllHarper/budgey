@@ -50,5 +50,6 @@ impl InitHandler for InitHandlerImpl {
             Err(_) => Err(InitHandlerError::CreateNamedBudgetDirFailed),
             Ok(_) => Ok(()),
         }
+        // TODO: Create a main pile
     }
 }
