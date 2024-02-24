@@ -12,3 +12,9 @@ impl Default for LocalConfig {
         LocalConfig { budgey_dir }
     }
 }
+impl LocalConfig {
+    pub fn test() -> Self {
+        let budgey_dir = std::env::var("BUDGEY_TEST").unwrap();
+        LocalConfig { budgey_dir }
+    }
+}
