@@ -84,6 +84,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "clap",
+ "log",
  "serde",
  "serde_json",
 ]
