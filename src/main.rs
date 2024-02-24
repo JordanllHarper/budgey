@@ -14,7 +14,7 @@ pub mod repo;
 pub mod utils;
 
 fn main() -> Result<(), ()> {
-    let init_handler: InitHandlerImpl = InitHandlerImpl::new(LocalConfig::default());
+    let init_handler: InitHandlerImpl = InitHandlerImpl::new(LocalConfig::test());
     let commands = budgeter_cli::BudgeyCLI::parse().commands;
     let result = match commands {
         budgeter_cli::Commands::Init { name } => handle_init(&init_handler, &name),
