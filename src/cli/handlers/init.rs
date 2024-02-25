@@ -2,6 +2,8 @@ use std::io;
 
 use crate::{
     config::local_config::LocalConfig,
+    models::{budget::Budget, pile::Pile},
+    repo::budget_repository::{BudgetRepository, BudgetRepositoryImpl},
     utils::{
         error::HandlerError,
         io::{create_budgey_dir_if_not_exists, create_named_budget_dir},
@@ -33,34 +35,44 @@ impl HandlerError for InitHandlerError {
 pub trait InitHandler {
     fn handle(&self, repo_name: &str) -> anyhow::Result<(), InitHandlerError>;
 }
-pub struct InitHandlerImpl {
-    local_config: LocalConfig,
+pub struct InitHandlerImpl<T>
+where
+    T: BudgetRepository,
+{
+    budgey_directory: String,
+    budget_repo: T,
 }
 
-impl InitHandlerImpl {
-    pub fn new(local_config: LocalConfig) -> Self {
-        Self { local_config }
+impl<T> InitHandlerImpl<T>
+where
+    T: BudgetRepository,
+{
+    pub fn new(budgey_directory: &str, budget_repo: T) -> Self {
+        Self {
+            budgey_directory: budgey_directory.to_string(),
+            budget_repo,
+        }
     }
 }
 
-// TODO: We could do with some better error handling here as this just returns what step failed
+// TODO: We could do with some better irror handling here as this just returns what step failed
 // (not what specifically the issue was), this would be good for helping new users if something
 // goes wrong
-impl InitHandler for InitHandlerImpl {
+impl InitHandler for InitHandlerImpl<BudgetRepositoryImpl> {
     fn handle(&self, budget_name: &str) -> anyhow::Result<(), InitHandlerError> {
-        create_budgey_dir_if_not_exists(&self.local_config.budgey_dir)
+        create_budgey_dir_if_not_exists(&self.budgey_directory)
             .map_err(|_| InitHandlerError::CreateBudgeyDirFailed)?;
 
-        create_named_budget_dir(&self.local_config.budgey_dir, budget_name).map_err(|e| {
+        create_named_budget_dir(&self.budgey_directory, budget_name).map_err(|e| {
             if e.kind() == io::ErrorKind::AlreadyExists {
-                InitHandlerError::BudgetDirectoryAlreadyExists
-            } else {
-                InitHandlerError::CreateNamedBudgetDirFailed
+                return InitHandlerError::BudgetDirectoryAlreadyExists;
             }
+            InitHandlerError::CreateNamedBudgetDirFailed
         })?;
+        // TODO: Create budget
+        self.budget_repo
+            .create_new_budget(Budget::new(budget_name, Pile::new_with_main()));
 
-        // TODO: Create a main pile
-        //
         Ok(())
     }
 }
