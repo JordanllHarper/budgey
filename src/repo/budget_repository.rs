@@ -1,18 +1,20 @@
 use crate::{config::local_config::LocalConfig, models::budget::Budget};
 
-trait BudgetRepository {
+pub trait BudgetRepository {
     fn create_new_budget(&self, budget: Budget);
     fn get_all_budgets(&self);
     fn delete_budget(&self, budget_name: &str);
 }
 
-struct BudgetRepositoryImpl {
-    local_config: LocalConfig,
+pub struct BudgetRepositoryImpl {
+    budgey_directory: String,
 }
 
 impl BudgetRepositoryImpl {
-    fn new(local_config: LocalConfig) -> Self {
-        Self { local_config }
+    pub fn new(budgey_directory: &str) -> Self {
+        Self {
+            budgey_directory: budgey_directory.to_string(),
+        }
     }
 }
 
