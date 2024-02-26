@@ -16,7 +16,7 @@ pub enum TransactionType {
 }
 
 impl Transaction {
-    fn new(amount: f64, source_pile: String, transaction_type: TransactionType) -> Self {
+    pub fn new(amount: f64, source_pile: String, transaction_type: TransactionType) -> Self {
         Self {
             amount,
             source_pile,
@@ -24,11 +24,11 @@ impl Transaction {
         }
     }
 
-    fn new_push(amount: f64, source_pile: String) -> Self {
+    pub fn new_push(amount: f64, source_pile: String) -> Self {
         Self::new(amount, source_pile, TransactionType::Push)
     }
 
-    fn new_pull(amount: f64, source_pile: String) -> Self {
+    pub fn new_pull(amount: f64, source_pile: String) -> Self {
         Self::new(amount, source_pile, TransactionType::Pull)
     }
 }
