@@ -1,8 +1,5 @@
-use serde::{Deserialize, Serialize};
-
 use super::transaction::Transaction;
 
-#[derive(Serialize, Deserialize)]
 pub struct Pile {
     pub name: String,
     pub balance: f64,
@@ -10,7 +7,6 @@ pub struct Pile {
     pub pile_transaction_history: Vec<Transaction>,
 }
 
-#[derive(Serialize, Deserialize)]
 pub enum PileType {
     Main,
     UserCreated,
