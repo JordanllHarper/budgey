@@ -1,7 +1,7 @@
 use clap::Parser;
 use cli::{
     budgeter_cli,
-    handlers::init::{InitUseCase, InitUseCaseError, InitUseCaseImpl},
+    use_cases::init::{InitUseCase, InitUseCaseError, InitUseCaseImpl},
 };
 use repo::budget_repository::BudgetRepositoryImpl;
 use utils::error::UseCaseError;

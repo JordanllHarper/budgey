@@ -1,10 +1,10 @@
 use crate::cli::budgeter_cli::{PileOperationSubcommand, PileSubcommand};
 
-pub trait PileHandler {
+pub trait PileUseCase {
     fn handle(&self, subcommand: PileSubcommand) -> anyhow::Result<()>;
 }
 // TODO: create handlers and delegate
-impl dyn PileHandler {
+impl dyn PileUseCase {
     fn handle(&self, subcommand: PileSubcommand) -> anyhow::Result<()> {
         match subcommand {
             PileSubcommand::New {
