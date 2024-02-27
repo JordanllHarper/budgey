@@ -1,2 +1,2 @@
 pub mod budgeter_cli;
-pub mod handlers;
+pub mod use_cases;

@@ -4,7 +4,7 @@ use crate::{
     models::budget::Budget,
     repo::budget_repository::{BudgetRepository, BudgetRepositoryImpl},
     utils::{
-        error::HandlerError,
+        error::UseCaseError,
         io::{create_budgey_dir_if_not_exists, create_named_budget_dir},
     },
 };
@@ -14,7 +14,7 @@ pub enum InitUseCaseError {
     CreateNamedBudgetDirFailed,
     BudgetDirectoryAlreadyExists,
 }
-impl HandlerError for InitUseCaseError {
+impl UseCaseError for InitUseCaseError {
     fn get_user_message(&self) -> String {
         match self {
             InitUseCaseError::CreateBudgeyDirFailed => {
