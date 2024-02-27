@@ -20,8 +20,3 @@ chrono = "0.4.34"
 # Logging
 log = "0.4.20"
 
-# Protobuf
-
-protobuf = "3.3.0"
-protobuf-codegen = "3.3.0"
-
