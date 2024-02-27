@@ -1,44 +1,39 @@
-use std::io;
-
 use crate::{
     models::budget::Budget,
-    repo::budget_repository::{BudgetRepository, BudgetRepositoryImpl},
-    utils::{
-        error::UseCaseError,
-        io::{create_budgey_dir_if_not_exists, create_named_budget_dir},
-    },
+    repo::budget_repository::{BudgetRepository, CreateNewBudgetError},
+    utils::error::UseCaseError,
 };
 
-pub enum InitUseCaseError {
-    CreateBudgeyDirFailed,
-    CreateNamedBudgetDirFailed,
-    BudgetDirectoryAlreadyExists,
-}
-impl UseCaseError for InitUseCaseError {
+impl UseCaseError for CreateNewBudgetError {
     fn get_user_message(&self) -> String {
         match self {
-            InitUseCaseError::CreateBudgeyDirFailed => {
+            CreateNewBudgetError::CreateBudgeyDirFailed => {
                 String::from("Something went wrong when trying to initialise the budgey directory.")
             }
 
-            InitUseCaseError::CreateNamedBudgetDirFailed => String::from(
+            CreateNewBudgetError::CreateNamedBudgetDirFailed => String::from(
                 "Something went wrong when trying to initialise the new budget directory.",
             ),
-            InitUseCaseError::BudgetDirectoryAlreadyExists => {
+            CreateNewBudgetError::BudgetDirectoryAlreadyExists => {
                 String::from("That budget name was already found in your budgey directory.")
+            }
+            CreateNewBudgetError::CouldntConvertToJson => {
+                String::from("Something went wrong with saving the budget.")
+            }
+            CreateNewBudgetError::CouldntWriteJson => {
+                String::from("Something went wrong with writing the json.")
             }
         }
     }
 }
 
 pub trait InitUseCase {
-    fn handle(&self, repo_name: &str) -> anyhow::Result<(), InitUseCaseError>;
+    fn handle(&self, repo_name: &str) -> anyhow::Result<(), CreateNewBudgetError>;
 }
 pub struct InitUseCaseImpl<T>
 where
     T: BudgetRepository,
 {
-    budgey_directory: String,
     budget_repo: T,
 }
 
@@ -46,11 +41,8 @@ impl<T> InitUseCaseImpl<T>
 where
     T: BudgetRepository,
 {
-    pub fn new(budgey_directory: &str, budget_repo: T) -> Self {
-        Self {
-            budgey_directory: budgey_directory.to_string(),
-            budget_repo,
-        }
+    pub fn new(budget_repo: T) -> Self {
+        Self { budget_repo }
     }
 }
 
@@ -61,18 +53,9 @@ impl<T> InitUseCase for InitUseCaseImpl<T>
 where
     T: BudgetRepository,
 {
-    fn handle(&self, budget_name: &str) -> anyhow::Result<(), InitUseCaseError> {
-        create_budgey_dir_if_not_exists(&self.budgey_directory)
-            .map_err(|_| InitUseCaseError::CreateBudgeyDirFailed)?;
-
-        create_named_budget_dir(&self.budgey_directory, budget_name).map_err(|e| {
-            if e.kind() == io::ErrorKind::AlreadyExists {
-                return InitUseCaseError::BudgetDirectoryAlreadyExists;
-            }
-            InitUseCaseError::CreateNamedBudgetDirFailed
-        })?;
-        // TODO: Create budget
-        self.budget_repo.create_new_budget(Budget::new(budget_name));
+    fn handle(&self, budget_name: &str) -> Result<(), CreateNewBudgetError> {
+        self.budget_repo
+            .create_new_budget(Budget::new(budget_name))?;
 
         Ok(())
     }
