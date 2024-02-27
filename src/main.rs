@@ -4,7 +4,7 @@ use cli::{
     handlers::init::{InitUseCase, InitUseCaseError, InitUseCaseImpl},
 };
 use repo::budget_repository::BudgetRepositoryImpl;
-use utils::error::HandlerError;
+use utils::error::UseCaseError;
 
 use crate::config::local_config::LocalConfig;
 
@@ -29,6 +29,6 @@ fn main() {
         print_error(&e);
     };
 }
-fn print_error(error: &impl HandlerError) {
+fn print_error(error: &impl UseCaseError) {
     println!("{}", error.get_user_message());
 }
