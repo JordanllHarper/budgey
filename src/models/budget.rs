@@ -1,7 +1,10 @@
+use serde::{Deserialize, Serialize};
+
 use super::pile::Pile;
 
 /// Represents a collection of piles that a user might have
 /// Stored in /budgey/[budget_name]/
+#[derive(Serialize, Deserialize)]
 pub struct Budget {
     repo_name: String,
     pile_list: Vec<Pile>,

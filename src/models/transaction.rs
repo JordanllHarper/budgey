@@ -1,11 +1,15 @@
+use serde::{Deserialize, Serialize};
+
 // TODO: Add budget and pile data into a transaction so we don't nest data inside the budget and
 // transaction models -> greater efficiency (and maybe paging?)
+#[derive(Serialize, Deserialize)]
 pub struct Transaction {
     pub amount: f64,
     pub source_pile: String,
     pub transaction_type: TransactionType,
 }
 
+#[derive(Serialize, Deserialize)]
 pub enum TransactionType {
     Pull,
     Push,
