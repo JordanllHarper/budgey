@@ -1,9 +1,9 @@
-use crate::{config::local_config::LocalConfig, models::budget::Budget};
+use crate::models::budget::Budget;
 
 pub trait BudgetRepository {
-    fn create_new_budget(&self, budget: Budget);
-    fn get_all_budgets(&self);
-    fn delete_budget(&self, budget_name: &str);
+    fn create_new_budget(&self, budget: Budget) -> anyhow::Result<String>;
+    fn get_all_budgets(&self) -> anyhow::Result<String>;
+    fn delete_budget(&self, budget_name: &str) -> anyhow::Result<String>;
 }
 
 pub struct BudgetRepositoryImpl {
@@ -19,13 +19,17 @@ impl BudgetRepositoryImpl {
 }
 
 impl BudgetRepository for BudgetRepositoryImpl {
-    fn create_new_budget(&self, budget: Budget) {}
-
-    fn get_all_budgets(&self) {
+    fn create_new_budget(&self, budget: Budget) -> anyhow::Result<String> {
+        let budget_name = &budget.budget_detail.budget_name;
+        let detail_json = serde_json::to_string(&budget.budget_detail)?;
         todo!()
     }
 
-    fn delete_budget(&self, budget_name: &str) {
+    fn get_all_budgets(&self) -> anyhow::Result<String> {
+        todo!()
+    }
+
+    fn delete_budget(&self, budget_name: &str) -> anyhow::Result<String> {
         todo!()
     }
 }
