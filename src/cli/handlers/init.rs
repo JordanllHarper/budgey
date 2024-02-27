@@ -1,8 +1,7 @@
 use std::io;
 
 use crate::{
-    config::local_config::LocalConfig,
-    models::{budget::Budget, pile::Pile},
+    models::budget::Budget,
     repo::budget_repository::{BudgetRepository, BudgetRepositoryImpl},
     utils::{
         error::HandlerError,
@@ -10,32 +9,32 @@ use crate::{
     },
 };
 
-pub enum InitHandlerError {
+pub enum InitUseCaseError {
     CreateBudgeyDirFailed,
     CreateNamedBudgetDirFailed,
     BudgetDirectoryAlreadyExists,
 }
-impl HandlerError for InitHandlerError {
+impl HandlerError for InitUseCaseError {
     fn get_user_message(&self) -> String {
         match self {
-            InitHandlerError::CreateBudgeyDirFailed => {
+            InitUseCaseError::CreateBudgeyDirFailed => {
                 String::from("Something went wrong when trying to initialise the budgey directory.")
             }
 
-            InitHandlerError::CreateNamedBudgetDirFailed => String::from(
+            InitUseCaseError::CreateNamedBudgetDirFailed => String::from(
                 "Something went wrong when trying to initialise the new budget directory.",
             ),
-            InitHandlerError::BudgetDirectoryAlreadyExists => {
+            InitUseCaseError::BudgetDirectoryAlreadyExists => {
                 String::from("That budget name was already found in your budgey directory.")
             }
         }
     }
 }
 
-pub trait InitHandler {
-    fn handle(&self, repo_name: &str) -> anyhow::Result<(), InitHandlerError>;
+pub trait InitUseCase {
+    fn handle(&self, repo_name: &str) -> anyhow::Result<(), InitUseCaseError>;
 }
-pub struct InitHandlerImpl<T>
+pub struct InitUseCaseImpl<T>
 where
     T: BudgetRepository,
 {
@@ -43,7 +42,7 @@ where
     budget_repo: T,
 }
 
-impl<T> InitHandlerImpl<T>
+impl<T> InitUseCaseImpl<T>
 where
     T: BudgetRepository,
 {
@@ -58,20 +57,22 @@ where
 // TODO: We could do with some better irror handling here as this just returns what step failed
 // (not what specifically the issue was), this would be good for helping new users if something
 // goes wrong
-impl InitHandler for InitHandlerImpl<BudgetRepositoryImpl> {
-    fn handle(&self, budget_name: &str) -> anyhow::Result<(), InitHandlerError> {
+impl<T> InitUseCase for InitUseCaseImpl<T>
+where
+    T: BudgetRepository,
+{
+    fn handle(&self, budget_name: &str) -> anyhow::Result<(), InitUseCaseError> {
         create_budgey_dir_if_not_exists(&self.budgey_directory)
-            .map_err(|_| InitHandlerError::CreateBudgeyDirFailed)?;
+            .map_err(|_| InitUseCaseError::CreateBudgeyDirFailed)?;
 
         create_named_budget_dir(&self.budgey_directory, budget_name).map_err(|e| {
             if e.kind() == io::ErrorKind::AlreadyExists {
-                return InitHandlerError::BudgetDirectoryAlreadyExists;
+                return InitUseCaseError::BudgetDirectoryAlreadyExists;
             }
-            InitHandlerError::CreateNamedBudgetDirFailed
+            InitUseCaseError::CreateNamedBudgetDirFailed
         })?;
         // TODO: Create budget
-        self.budget_repo
-            .create_new_budget(Budget::new(budget_name, Pile::new_with_main()));
+        self.budget_repo.create_new_budget(Budget::new(budget_name));
 
         Ok(())
     }
