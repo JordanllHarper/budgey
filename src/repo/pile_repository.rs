@@ -39,7 +39,7 @@ impl PileRepository for PileRepositoryImpl {
     ) -> anyhow::Result<(), CreateNewPileError> {
         //Check if budgey dir exists
         let read_dir =
-            fs::read_dir(self.budgey_path).map_err(|_| CreateNewPileError::BudgetCouldntBeRead)?;
+            fs::read_dir(&self.budgey_path).map_err(|_| CreateNewPileError::BudgetCouldntBeRead)?;
         // Check if the budget exists
         let one_budget_exists = read_dir
             .filter(|each| match each {
