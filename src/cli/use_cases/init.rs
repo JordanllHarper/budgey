@@ -1,6 +1,9 @@
 use crate::{
     models::budget::Budget,
-    repo::budget_repository::{BudgetRepository, CreateNewBudgetError},
+    repo::{
+        budget_repository::{BudgetRepository, CreateNewBudgetError},
+        pile_repository::PileRepository,
+    },
     utils::error::UseCaseError,
 };
 
@@ -30,28 +33,35 @@ impl UseCaseError for CreateNewBudgetError {
 pub trait InitUseCase {
     fn handle(&self, repo_name: &str) -> anyhow::Result<(), CreateNewBudgetError>;
 }
-pub struct InitUseCaseImpl<T>
+pub struct InitUseCaseImpl<T, R>
 where
     T: BudgetRepository,
+    R: PileRepository,
 {
     budget_repo: T,
+    pile_repo: R,
 }
 
-impl<T> InitUseCaseImpl<T>
+impl<T, R> InitUseCaseImpl<T, R>
 where
     T: BudgetRepository,
+    R: PileRepository,
 {
-    pub fn new(budget_repo: T) -> Self {
-        Self { budget_repo }
+    pub fn new(budget_repo: T, pile_repo: R) -> Self {
+        Self {
+            budget_repo,
+            pile_repo,
+        }
     }
 }
 
 // TODO: We could do with some better irror handling here as this just returns what step failed
 // (not what specifically the issue was), this would be good for helping new users if something
 // goes wrong
-impl<T> InitUseCase for InitUseCaseImpl<T>
+impl<T, R> InitUseCase for InitUseCaseImpl<T, R>
 where
     T: BudgetRepository,
+    R: PileRepository,
 {
     fn handle(&self, budget_name: &str) -> Result<(), CreateNewBudgetError> {
         self.budget_repo
