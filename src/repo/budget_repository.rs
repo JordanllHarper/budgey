@@ -1,7 +1,9 @@
 use std::{fs, io, path::Path};
 
 use crate::{
-    budget_io::budget_io::budget_io::{create_budgey_dir_if_not_exists, create_named_budget_dir},
+    budget_io::budget_io::io_operations::{
+        create_budgey_dir_if_not_exists, create_named_budget_dir,
+    },
     models::budget::Budget,
 };
 pub enum CreateNewBudgetError {
@@ -51,7 +53,6 @@ impl BudgetRepository for BudgetRepositoryImpl {
             })? + budget_name
                 + ".json";
 
-        // TODO: Create budget
         let detail_json = serde_json::to_string(&budget.budget_detail)
             .map_err(|_| CreateNewBudgetError::CouldntConvertToJson)?;
         fs::write(Path::new(&budget_path), detail_json)
