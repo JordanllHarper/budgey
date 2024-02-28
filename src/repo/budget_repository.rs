@@ -1,7 +1,7 @@
 use std::{fs, io, path::Path};
 
 use crate::{
-    budget_io::budget_io::io_operations::{
+    io_operations::io_operations::io_operations::{
         create_budgey_dir_if_not_exists, create_named_budget_dir,
     },
     models::budget::Budget,
