@@ -1,11 +1,14 @@
-use std::fs::{self, read_dir};
+use std::fs::{self};
 
 use crate::models::pile::Pile;
 pub enum CreateNewPileError {
-    BudgeyDirectoryDoesnstExist,
+    BudgeyDirectoryDoesntExist,
     // Clarification - This means that either none exist or more than one exists
     OneNamedBudgetDirDoesntExist,
     BudgetCouldntBeRead,
+    CouldntCreatePileDir,
+    ConvertingPileToJsonFailed,
+    WritingJsonFailed,
 }
 
 pub trait PileRepository {
@@ -38,8 +41,9 @@ impl PileRepository for PileRepositoryImpl {
         budget_name: &str,
     ) -> anyhow::Result<(), CreateNewPileError> {
         //Check if budgey dir exists
+        let budgey_path = &self.budgey_path;
         let read_dir =
-            fs::read_dir(&self.budgey_path).map_err(|_| CreateNewPileError::BudgetCouldntBeRead)?;
+            fs::read_dir(budgey_path).map_err(|_| CreateNewPileError::BudgetCouldntBeRead)?;
         // Check if the budget exists
         let one_budget_exists = read_dir
             .filter(|each| match each {
@@ -52,6 +56,15 @@ impl PileRepository for PileRepositoryImpl {
         if !one_budget_exists {
             return Err(CreateNewPileError::OneNamedBudgetDirDoesntExist);
         }
+        let pile_name = &pile.name;
+        let named_budget_path = budgey_path.to_string() + "/" + budget_name + "/" + pile_name;
+
+        fs::create_dir(&named_budget_path).map_err(|_| CreateNewPileError::CouldntCreatePileDir)?;
+        let file_name = pile.name.to_string() + ".json";
+        let json_contents = serde_json::to_string(&pile.name)
+            .map_err(|_| CreateNewPileError::ConvertingPileToJsonFailed)?;
+        fs::write(named_budget_path + "/" + &file_name, json_contents)
+            .map_err(|_| CreateNewPileError::WritingJsonFailed)?;
 
         Ok(())
     }

@@ -4,7 +4,7 @@ use cli::{
     use_cases::init::{InitUseCase, InitUseCaseImpl},
 };
 use repo::{budget_repository::BudgetRepositoryImpl, pile_repository::PileRepositoryImpl};
-use utils::error::UseCaseError;
+use utils::error::GenericError;
 
 use crate::config::local_config::LocalConfig;
 
@@ -32,6 +32,6 @@ fn main() {
         print_error(&e);
     };
 }
-fn print_error(error: &impl UseCaseError) {
+fn print_error(error: &impl GenericError) {
     println!("{}", error.get_user_message());
 }

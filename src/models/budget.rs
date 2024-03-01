@@ -27,7 +27,7 @@ impl Budget {
     pub fn new(budget_name: &str) -> Self {
         Self {
             budget_detail: BudgetDetail::new(nanoid!(), budget_name.to_string()),
-            pile_list: Pile::new_with_main(),
+            pile_list: vec![Pile::default_main_pile()],
         }
     }
 }

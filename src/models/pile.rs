@@ -10,6 +10,12 @@ pub struct Pile {
     pub pile_transaction_history: Vec<Transaction>,
 }
 
+impl Default for Pile {
+    fn default() -> Self {
+        Pile::new("main".to_string(), 0.0, PileType::Main, vec![])
+    }
+}
+
 #[derive(Serialize, Deserialize)]
 pub enum PileType {
     Main,
@@ -30,7 +36,7 @@ impl Pile {
             pile_transaction_history: transaction_history,
         }
     }
-    pub fn new_with_main() -> Vec<Pile> {
-        vec![Pile::new("Main".to_string(), 0.0, PileType::Main, vec![])]
+    pub fn default_main_pile() -> Pile {
+        Pile::new("main".to_string(), 0.0, PileType::Main, vec![])
     }
 }

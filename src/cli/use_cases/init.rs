@@ -1,37 +1,73 @@
 use crate::{
-    models::budget::Budget,
+    models::{budget::Budget, pile::Pile},
     repo::{
         budget_repository::{BudgetRepository, CreateNewBudgetError},
-        pile_repository::PileRepository,
+        pile_repository::{CreateNewPileError, PileRepository},
     },
-    utils::error::UseCaseError,
+    utils::error::GenericError,
 };
 
-impl UseCaseError for CreateNewBudgetError {
+pub enum InitError {
+    CreateBudgetError(CreateNewBudgetError),
+    CreatePileError(CreateNewPileError),
+}
+impl InitError {
+    pub fn new_from_budget_error(e: CreateNewBudgetError) -> InitError {
+        InitError::CreateBudgetError(e)
+    }
+
+    pub fn new_from_pile_error(e: CreateNewPileError) -> InitError {
+        InitError::CreatePileError(e)
+    }
+}
+
+impl GenericError for InitError {
     fn get_user_message(&self) -> String {
         match self {
-            CreateNewBudgetError::CreateBudgeyDirFailed => {
-                String::from("Something went wrong when trying to initialise the budgey directory.")
-            }
+            InitError::CreateBudgetError(e) => match e {
+                CreateNewBudgetError::CreateBudgeyDirFailed => String::from(
+                    "Something went wrong when trying to initialise the budgey directory.",
+                ),
 
-            CreateNewBudgetError::CreateNamedBudgetDirFailed => String::from(
-                "Something went wrong when trying to initialise the new budget directory.",
-            ),
-            CreateNewBudgetError::BudgetDirectoryAlreadyExists => {
-                String::from("That budget name was already found in your budgey directory.")
-            }
-            CreateNewBudgetError::CouldntConvertToJson => {
-                String::from("Something went wrong with saving the budget.")
-            }
-            CreateNewBudgetError::CouldntWriteJson => {
-                String::from("Something went wrong with writing the json.")
-            }
+                CreateNewBudgetError::CreateNamedBudgetDirFailed => String::from(
+                    "Something went wrong when trying to initialise the new budget directory.",
+                ),
+                CreateNewBudgetError::BudgetDirectoryAlreadyExists => {
+                    String::from("That budget name was already found in your budgey directory.")
+                }
+                CreateNewBudgetError::CouldntConvertToJson => {
+                    String::from("Something went wrong with saving the budget.")
+                }
+                CreateNewBudgetError::CouldntWriteJson => {
+                    String::from("Something went wrong with writing the json.")
+                }
+            },
+            InitError::CreatePileError(e) => match e {
+                CreateNewPileError::BudgeyDirectoryDoesntExist => {
+                    String::from("The budgey directory doesn't exist.")
+                }
+                CreateNewPileError::OneNamedBudgetDirDoesntExist => {
+                    String::from("The named budget directory doesn't exist.")
+                }
+                CreateNewPileError::BudgetCouldntBeRead => {
+                    String::from("The budget couldn't be read.")
+                }
+                CreateNewPileError::CouldntCreatePileDir => {
+                    String::from("The pile directory couldn't be created.")
+                }
+                CreateNewPileError::ConvertingPileToJsonFailed => {
+                    String::from("Creating the json pile failed.")
+                }
+                CreateNewPileError::WritingJsonFailed => {
+                    String::from("Writing the json pile failed.")
+                }
+            },
         }
     }
 }
 
 pub trait InitUseCase {
-    fn handle(&self, repo_name: &str) -> anyhow::Result<(), CreateNewBudgetError>;
+    fn handle(&self, repo_name: &str) -> anyhow::Result<(), InitError>;
 }
 pub struct InitUseCaseImpl<T, R>
 where
@@ -63,9 +99,14 @@ where
     T: BudgetRepository,
     R: PileRepository,
 {
-    fn handle(&self, budget_name: &str) -> Result<(), CreateNewBudgetError> {
+    fn handle(&self, budget_name: &str) -> Result<(), InitError> {
         self.budget_repo
-            .create_new_budget(Budget::new(budget_name))?;
+            .create_new_budget(Budget::new(budget_name))
+            .map_err(|e| InitError::new_from_budget_error(e))?;
+
+        self.pile_repo
+            .create_new_pile(Pile::default(), budget_name)
+            .map_err(|e| InitError::new_from_pile_error(e))?;
 
         Ok(())
     }
