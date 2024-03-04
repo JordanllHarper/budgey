@@ -101,13 +101,21 @@ impl<'a> InitUseCaseImpl<'a> {
 // goes wrong
 impl<'a> InitUseCase for InitUseCaseImpl<'a> {
     fn handle(&self, budget_name: &str) -> Result<(), InitError> {
-        self.budgey_repo
-            .init_budgey()
-            .map_err(|e| InitError::new_from_budgey_error(e))?;
+        let result = self.budgey_repo.init_budgey();
+        if let Err(e) = result {
+            match e {
+                InitBudgeyError::BudgeyAlreadyExists => {
+                    println!("Found budgey directory already. Creating new budget under name...")
+                }
+                InitBudgeyError::BudgeyCreationFailed => {
+                    return Err(InitError::new_from_budgey_error(e));
+                }
+            }
+        }
+
         self.budget_repo
             .create_new_budget(Budget::new(budget_name))
             .map_err(|e| InitError::new_from_budget_error(e))?;
-
         self.pile_repo
             .create_new_pile(Pile::default(), budget_name)
             .map_err(|e| InitError::new_from_pile_error(e))?;
