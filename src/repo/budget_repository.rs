@@ -1,3 +1,5 @@
+use std::{fs, io::ErrorKind};
+
 use crate::models::budget::Budget;
 
 pub enum CreateNewBudgetError {
@@ -31,6 +33,19 @@ impl BudgetRepositoryImpl {
 
 impl BudgetRepository for BudgetRepositoryImpl {
     fn create_new_budget(&self, budget: Budget) -> Result<(), CreateNewBudgetError> {
+        let budget_name = &budget.budget_detail.budget_name;
+        let budget_path = format!("{}/{}", self.budgey_directory, budget_name);
+        fs::create_dir(&budget_path).map_err(|e| {
+            if let ErrorKind::AlreadyExists = e.kind() {
+                CreateNewBudgetError::BudgetDirectoryAlreadyExists
+            } else {
+                CreateNewBudgetError::CreateNamedBudgetDirFailed
+            }
+        })?;
+        let json_file = format!("{}/{}.json", &budget_path, budget_name);
+        fs::write(json_file, serde_json::to_string(&budget).unwrap())
+            .map_err(|_| CreateNewBudgetError::CouldntWriteJson)?;
+
         todo!()
     }
 
