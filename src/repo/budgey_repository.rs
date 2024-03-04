@@ -23,13 +23,9 @@ impl BudgeyRepositoryImpl {
     }
 }
 
-fn create_budgey_path(root: &str) -> String {
-    format!("/{root}/budgey/")
-}
-
 impl BudgeyRepository for BudgeyRepositoryImpl {
     fn init_budgey(&self) -> anyhow::Result<(), InitBudgeyError> {
-        let budgey_path = create_budgey_path(&self.budgey_dir);
+        let budgey_path = &self.budgey_dir;
         fs::create_dir(&budgey_path).map_err(|e| {
             if let ErrorKind::AlreadyExists = e.kind() {
                 InitBudgeyError::BudgeyAlreadyExists
@@ -41,7 +37,7 @@ impl BudgeyRepository for BudgeyRepositoryImpl {
     }
 
     fn check_budgey_exists(&self) -> anyhow::Result<bool, CheckBudgeyExistsError> {
-        let budgey_path = create_budgey_path(&self.budgey_dir);
+        let budgey_path = &self.budgey_dir;
         let result = fs::metadata(budgey_path);
         match result {
             Ok(_) => Ok(true),
