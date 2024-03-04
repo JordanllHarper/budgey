@@ -2,16 +2,21 @@ use crate::{
     models::{budget::Budget, pile::Pile},
     repo::{
         budget_repository::{BudgetRepository, CreateNewBudgetError},
+        budgey_repository::{BudgeyRepository, InitBudgeyError},
         pile_repository::{CreateNewPileError, PileRepository},
     },
     utils::error::GenericError,
 };
 
 pub enum InitError {
+    CreateBudgeyError(InitBudgeyError),
     CreateBudgetError(CreateNewBudgetError),
     CreatePileError(CreateNewPileError),
 }
 impl InitError {
+    pub fn new_from_budgey_error(e: InitBudgeyError) -> InitError {
+        InitError::CreateBudgeyError(e)
+    }
     pub fn new_from_budget_error(e: CreateNewBudgetError) -> InitError {
         InitError::CreateBudgetError(e)
     }
@@ -24,11 +29,7 @@ impl InitError {
 impl GenericError for InitError {
     fn get_user_message(&self) -> String {
         match self {
-            InitError::CreateBudgetError(e) => match e {
-                CreateNewBudgetError::CreateBudgeyDirFailed => String::from(
-                    "Something went wrong when trying to initialise the budgey directory.",
-                ),
-
+            InitError::CreateBudgetError(init_error) => match init_error {
                 CreateNewBudgetError::CreateNamedBudgetDirFailed => String::from(
                     "Something went wrong when trying to initialise the new budget directory.",
                 ),
@@ -43,9 +44,6 @@ impl GenericError for InitError {
                 }
             },
             InitError::CreatePileError(e) => match e {
-                CreateNewPileError::BudgeyDirectoryDoesntExist => {
-                    String::from("The budgey directory doesn't exist.")
-                }
                 CreateNewPileError::OneNamedBudgetDirDoesntExist => {
                     String::from("The named budget directory doesn't exist.")
                 }
@@ -61,6 +59,15 @@ impl GenericError for InitError {
                 CreateNewPileError::WritingJsonFailed => {
                     String::from("Writing the json pile failed.")
                 }
+                CreateNewPileError::BudgeyDirectoryDoesntExist => todo!(),
+            },
+            InitError::CreateBudgeyError(e) => match e {
+                InitBudgeyError::BudgeyAlreadyExists => {
+                    String::from("The budgey directory already exists.")
+                }
+                InitBudgeyError::BudgeyCreationFailed => {
+                    String::from("The budgey directory couldn't be created.")
+                }
             },
         }
     }
@@ -69,24 +76,22 @@ impl GenericError for InitError {
 pub trait InitUseCase {
     fn handle(&self, repo_name: &str) -> anyhow::Result<(), InitError>;
 }
-pub struct InitUseCaseImpl<T, R>
-where
-    T: BudgetRepository,
-    R: PileRepository,
-{
-    budget_repo: T,
-    pile_repo: R,
+pub struct InitUseCaseImpl<'a> {
+    budget_repo: &'a dyn BudgetRepository,
+    pile_repo: &'a dyn PileRepository,
+    budgey_repo: &'a dyn BudgeyRepository,
 }
 
-impl<T, R> InitUseCaseImpl<T, R>
-where
-    T: BudgetRepository,
-    R: PileRepository,
-{
-    pub fn new(budget_repo: T, pile_repo: R) -> Self {
+impl<'a> InitUseCaseImpl<'a> {
+    pub fn new(
+        budget_repo: &'a dyn BudgetRepository,
+        pile_repo: &'a dyn PileRepository,
+        budgey_repo: &'a dyn BudgeyRepository,
+    ) -> Self {
         Self {
             budget_repo,
             pile_repo,
+            budgey_repo,
         }
     }
 }
@@ -94,12 +99,11 @@ where
 // TODO: We could do with some better irror handling here as this just returns what step failed
 // (not what specifically the issue was), this would be good for helping new users if something
 // goes wrong
-impl<T, R> InitUseCase for InitUseCaseImpl<T, R>
-where
-    T: BudgetRepository,
-    R: PileRepository,
-{
+impl<'a> InitUseCase for InitUseCaseImpl<'a> {
     fn handle(&self, budget_name: &str) -> Result<(), InitError> {
+        self.budgey_repo
+            .init_budgey()
+            .map_err(|e| InitError::new_from_budgey_error(e))?;
         self.budget_repo
             .create_new_budget(Budget::new(budget_name))
             .map_err(|e| InitError::new_from_budget_error(e))?;

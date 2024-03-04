@@ -3,7 +3,11 @@ use cli::{
     budgeter_cli,
     use_cases::init::{InitUseCase, InitUseCaseImpl},
 };
-use repo::{budget_repository::BudgetRepositoryImpl, pile_repository::PileRepositoryImpl};
+use repo::{
+    budget_repository::BudgetRepositoryImpl,
+    budgey_repository::{BudgeyRepository, BudgeyRepositoryImpl},
+    pile_repository::PileRepositoryImpl,
+};
 use utils::error::GenericError;
 
 use crate::config::local_config::LocalConfig;
@@ -16,13 +20,16 @@ pub mod repo;
 pub mod utils;
 
 fn main() {
-    let local_config = LocalConfig::test();
+    let local_config = LocalConfig::default();
     let budgey_path = &local_config.budgey_dir;
-    let init_use_case: InitUseCaseImpl<BudgetRepositoryImpl, PileRepositoryImpl> =
-        InitUseCaseImpl::new(
-            BudgetRepositoryImpl::new(budgey_path),
-            PileRepositoryImpl::new(budgey_path),
-        );
+    // dependencies
+    let budgey_repository: BudgeyRepositoryImpl = BudgeyRepositoryImpl::new(budgey_path);
+    let budget_repository: BudgetRepositoryImpl = BudgetRepositoryImpl::new(budgey_path);
+    let pile_repository: PileRepositoryImpl = PileRepositoryImpl::new(budgey_path);
+    // use cases
+    let init_use_case: InitUseCaseImpl =
+        InitUseCaseImpl::new(&budget_repository, &pile_repository, &budgey_repository);
+    // commands
     let commands = budgeter_cli::BudgeyCLI::parse().commands;
     let result = match commands {
         budgeter_cli::Commands::Init { name } => init_use_case.handle(&name),
