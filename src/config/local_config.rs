@@ -8,7 +8,7 @@ pub struct LocalConfig {
 
 impl Default for LocalConfig {
     fn default() -> Self {
-        let budgey_dir = env!("HOME").to_string();
+        let budgey_dir = env!("HOME").to_string() + "/budgey";
         LocalConfig { budgey_dir }
     }
 }
