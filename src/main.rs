@@ -7,7 +7,6 @@ use repo::{
     budget_repository::BudgetRepositoryImpl, budgey_repository::BudgeyRepositoryImpl,
     pile_repository::PileRepositoryImpl,
 };
-use utils::error::GenericError;
 
 use crate::config::local_config::LocalConfig;
 
@@ -16,7 +15,6 @@ pub mod config;
 pub mod io_operations;
 pub mod models;
 pub mod repo;
-pub mod utils;
 
 fn main() {
     let local_config = LocalConfig::default();
@@ -35,9 +33,7 @@ fn main() {
         budgeter_cli::Commands::Pile { subcommand } => todo!(),
     };
     if let Err(e) = result {
-        print_error(&e);
+        //TODO: Print error
+        println!("{:?}", e)
     };
-}
-fn print_error(error: &impl GenericError) {
-    println!("{}", error.get_user_message());
 }
