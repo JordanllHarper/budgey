@@ -1,6 +1,8 @@
 use std::fs::{self, ReadDir};
 
 use crate::{io_operations::io_operations::io_operations::create_json_path, models::pile::Pile};
+
+#[derive(Debug)]
 pub enum CreateNewPileError {
     PileDirectoryAlreadyExists,
     CouldntCreatePileDirectory,

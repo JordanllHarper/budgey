@@ -1,5 +1,6 @@
 use std::{fs, io::ErrorKind};
 
+#[derive(Debug)]
 pub enum InitBudgeyError {
     BudgeyAlreadyExists,
     BudgeyCreationFailed,

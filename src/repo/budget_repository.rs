@@ -5,6 +5,7 @@ use crate::{
     models::budget::{self, Budget},
 };
 
+#[derive(Debug)]
 pub enum CreateNewBudgetError {
     CreateNamedBudgetDirFailed,
     BudgetDirectoryAlreadyExists,
