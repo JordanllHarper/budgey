@@ -10,8 +10,9 @@ impl dyn PileUseCase {
             PileSubcommand::New {
                 name,
                 initial_balance,
+                budget,
             } => todo!(),
-            PileSubcommand::PileOperation(subcommand) => {
+            PileSubcommand::PileOperation { budget, subcommand } => {
                 Self::handle_pile_op_subcommand(subcommand)
             }
         }
