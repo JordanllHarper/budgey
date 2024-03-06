@@ -1,7 +1,10 @@
 use clap::Parser;
 use cli::{
     budgeter_cli,
-    use_cases::init::{InitUseCase, InitUseCaseImpl},
+    use_cases::{
+        init::{InitUseCase, InitUseCaseImpl},
+        pile::PileUseCaseImpl,
+    },
 };
 use repo::{
     budget_repository::BudgetRepositoryImpl, budgey_repository::BudgeyRepositoryImpl,
@@ -26,6 +29,8 @@ fn main() {
     // use cases
     let init_use_case: InitUseCaseImpl =
         InitUseCaseImpl::new(&budget_repository, &pile_repository, &budgey_repository);
+
+    let pile_use_case: PileUseCaseImpl = PileUseCaseImpl::new(&pile_repository, &budget_repository);
     // commands
     let commands = budgeter_cli::BudgeyCLI::parse().commands;
     let result = match commands {
