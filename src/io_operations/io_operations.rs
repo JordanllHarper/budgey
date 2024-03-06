@@ -5,8 +5,8 @@ pub mod io_operations {
     /// that case).
 
     /// Create a path for the new pile including json file
-    pub fn create_json_path(path_to_pile: &str, pile_name: &str) -> String {
-        format!("{path_to_pile}/{pile_name}.json")
+    pub fn create_json_path(path_to_file: &str, name: &str) -> String {
+        format!("{path_to_file}/{name}.json")
     }
 }
 #[cfg(test)]

@@ -44,22 +44,15 @@ impl GenericError for InitError {
                 }
             },
             InitError::CreatePileError(e) => match e {
-                CreateNewPileError::OneNamedBudgetDirDoesntExist => {
-                    String::from("The named budget directory doesn't exist.")
+                CreateNewPileError::PileDirectoryAlreadyExists => {
+                    String::from("The pile has already been made.")
                 }
-                CreateNewPileError::BudgetCouldntBeRead => {
-                    String::from("The budget couldn't be read.")
-                }
-                CreateNewPileError::CouldntCreatePileDir => {
+                CreateNewPileError::CouldntCreatePileDirectory => {
                     String::from("The pile directory couldn't be created.")
                 }
-                CreateNewPileError::ConvertingPileToJsonFailed => {
-                    String::from("Creating the json pile failed.")
+                CreateNewPileError::CouldntWriteJson => {
+                    String::from("Something went wrong with writing the json.")
                 }
-                CreateNewPileError::WritingJsonFailed => {
-                    String::from("Writing the json pile failed.")
-                }
-                CreateNewPileError::BudgeyDirectoryDoesntExist => todo!(),
             },
             InitError::CreateBudgeyError(e) => match e {
                 InitBudgeyError::BudgeyAlreadyExists => {
@@ -96,7 +89,7 @@ impl<'a> InitUseCaseImpl<'a> {
     }
 }
 
-// TODO: We could do with some better irror handling here as this just returns what step failed
+// TODO: We could do with some better error handling here as this just returns what step failed
 // (not what specifically the issue was), this would be good for helping new users if something
 // goes wrong
 impl<'a> InitUseCase for InitUseCaseImpl<'a> {

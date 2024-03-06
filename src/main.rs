@@ -4,8 +4,7 @@ use cli::{
     use_cases::init::{InitUseCase, InitUseCaseImpl},
 };
 use repo::{
-    budget_repository::BudgetRepositoryImpl,
-    budgey_repository::{BudgeyRepository, BudgeyRepositoryImpl},
+    budget_repository::BudgetRepositoryImpl, budgey_repository::BudgeyRepositoryImpl,
     pile_repository::PileRepositoryImpl,
 };
 use utils::error::GenericError;

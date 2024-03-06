@@ -1,6 +1,9 @@
 use std::{fs, io::ErrorKind};
 
-use crate::models::budget::{self, Budget};
+use crate::{
+    io_operations::io_operations::io_operations::create_json_path,
+    models::budget::{self, Budget},
+};
 
 pub enum CreateNewBudgetError {
     CreateNamedBudgetDirFailed,
@@ -43,7 +46,7 @@ impl BudgetRepository for BudgetRepositoryImpl {
                 CreateNewBudgetError::CreateNamedBudgetDirFailed
             }
         })?;
-        let json_file = format!("{}/{}.json", &budget_path, budget_name);
+        let json_file = create_json_path(&budget_path, budget_name);
         fs::write(json_file, serde_json::to_string(&budget).unwrap())
             .map_err(|_| CreateNewBudgetError::CouldntWriteJson)?;
         Ok(())
