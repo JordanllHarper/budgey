@@ -11,11 +11,11 @@ pub struct BudgeyCLI {
 /// Commands for the Budgey CLI
 #[derive(Debug, Subcommand)]
 pub enum Commands {
-    /// Budgey init -> inits a new budget repository to work with and creates a default pile
+    /// Budgey init -> inits a new budget to work with and creates a default pile
     /// called "main".
     #[command(name = "init", arg_required_else_help = true)]
     Init {
-        /// The name of the new repository. Must be unique.
+        /// The name of the new budget. Must be unique.
         #[arg()]
         name: String,
     },
@@ -25,6 +25,35 @@ pub enum Commands {
         ///
         #[command(subcommand)]
         subcommand: PileSubcommand,
+    },
+}
+
+#[derive(Debug, Subcommand)]
+pub enum PileSubcommand {
+    /// new -> creates a new pile.
+    #[command(name = "new", arg_required_else_help = true)]
+    New {
+        /// The budget to create the new pile in.
+        #[arg(short, long)]
+        budget: String,
+
+        /// The name of the new pile. Must be unique.
+        #[arg(short, long)]
+        name: String,
+
+        /// The initial balance of the pile. Will be taken from the main pile.
+        #[arg(short, long)]
+        initial_balance: Option<f64>,
+    },
+
+    #[command(name = "op", arg_required_else_help = true)]
+    PileOperation {
+        /// The budget to operate on.
+        #[arg(short, long)]
+        budget: String,
+
+        #[command(subcommand)]
+        subcommand: PileOperationSubcommand,
     },
 }
 #[derive(Debug, Subcommand)]
@@ -103,20 +132,4 @@ pub enum PileOperationSubcommand {
         #[arg(short, long, required = true)]
         name: String,
     },
-}
-#[derive(Debug, Subcommand)]
-pub enum PileSubcommand {
-    /// new -> creates a new pile.
-    #[command(name = "new", arg_required_else_help = true)]
-    New {
-        /// The name of the new pile. Must be unique.
-        name: String,
-
-        /// The initial balance of the pile. Will be taken from the main pile.
-        #[arg(short, long)]
-        initial_balance: Option<f64>,
-    },
-
-    #[command(subcommand)]
-    PileOperation(PileOperationSubcommand),
 }
