@@ -6,7 +6,6 @@ use cli::{
         pile::{handle_pile_command, PileError},
     },
 };
-use handling::pile_handling::CreateNewPileError;
 
 use crate::config::local_config::LocalConfig;
 
