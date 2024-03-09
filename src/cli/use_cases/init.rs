@@ -4,6 +4,7 @@ use crate::{
         pile_handling::CreateNewPileError,
     },
     models::{budget::Budget, pile::Pile},
+    InitBudgetData,
 };
 
 #[derive(Debug, thiserror::Error)]
@@ -13,6 +14,19 @@ pub enum InitError {
     CreatePileError(CreateNewPileError),
 }
 
+pub struct InitBudgetData {
+    budgey_path: String,
+    budget_name: String,
+}
+
+impl InitBudgetData {
+    pub fn new(budgey_path: String, budget_name: String) -> Self {
+        Self {
+            budgey_path,
+            budget_name,
+        }
+    }
+}
 impl std::fmt::Display for InitError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         let message = match self {
@@ -69,8 +83,7 @@ impl InitError {
 }
 
 pub fn handle_init(
-    budgey_path: &str,
-    budget_name: &str,
+    init_budget_data: InitBudgetData,
     init_budgey: fn(budgey_path: &str) -> Result<(), InitBudgeyError>,
     create_new_budget: fn(
         budgey_directory: &str,
@@ -82,6 +95,8 @@ pub fn handle_init(
         budgey_path: &str,
     ) -> Result<(), CreateNewPileError>,
 ) -> anyhow::Result<(), InitError> {
+    println!("Budgey path: {}", budgey_path);
+    println!("Creating new budget under name: {}", budget_name);
     let result = init_budgey(budgey_path);
     if let Err(e) = result {
         match e {
