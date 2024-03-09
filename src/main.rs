@@ -1,14 +1,13 @@
 use clap::Parser;
 use cli::{budgeter_cli, use_cases::init::handle_init};
-use repo::budgey_repository::init_budgey;
 
 use crate::config::local_config::LocalConfig;
 
 pub mod cli;
 pub mod config;
+pub mod handling;
 pub mod io_operations;
 pub mod models;
-pub mod repo;
 
 fn main() {
     let local_config = LocalConfig::default();

@@ -1,9 +1,10 @@
-use crate::repo::budget_repository::create_new_budget;
-use crate::repo::budgey_repository::init_budgey;
-use crate::repo::pile_repository::{create_new_pile, CreateNewPileError};
 use crate::{
+    handling::{
+        budget_handling::{create_new_budget, CreateNewBudgetError},
+        budgey_handling::{init_budgey, InitBudgeyError},
+        pile_handling::{create_new_pile, CreateNewPileError},
+    },
     models::{budget::Budget, pile::Pile},
-    repo::{budget_repository::CreateNewBudgetError, budgey_repository::InitBudgeyError},
 };
 
 #[derive(Debug, thiserror::Error)]
