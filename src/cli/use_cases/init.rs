@@ -1,10 +1,9 @@
-use crate::repo::pile_repository::{CreateNewPileError, PileRepository};
+use crate::repo::budget_repository::create_new_budget;
+use crate::repo::budgey_repository::init_budgey;
+use crate::repo::pile_repository::{create_new_pile, CreateNewPileError};
 use crate::{
     models::{budget::Budget, pile::Pile},
-    repo::{
-        budget_repository::{BudgetRepository, CreateNewBudgetError},
-        budgey_repository::{BudgeyRepository, InitBudgeyError},
-    },
+    repo::{budget_repository::CreateNewBudgetError, budgey_repository::InitBudgeyError},
 };
 
 #[derive(Debug, thiserror::Error)]
@@ -69,53 +68,23 @@ impl InitError {
     }
 }
 
-pub trait InitUseCase {
-    fn handle(&self, repo_name: &str) -> anyhow::Result<()>;
-}
-pub struct InitUseCaseImpl<'a> {
-    budget_repo: &'a dyn BudgetRepository,
-    pile_repo: &'a dyn PileRepository,
-    budgey_repo: &'a dyn BudgeyRepository,
-}
-
-impl<'a> InitUseCaseImpl<'a> {
-    pub fn new(
-        budget_repo: &'a dyn BudgetRepository,
-        pile_repo: &'a dyn PileRepository,
-        budgey_repo: &'a dyn BudgeyRepository,
-    ) -> Self {
-        Self {
-            budget_repo,
-            pile_repo,
-            budgey_repo,
-        }
-    }
-}
-
-// TODO: We could do with some better error handling here as this just returns what step failed
-// (not what specifically the issue was), this would be good for helping new users if something
-// goes wrong
-impl<'a> InitUseCase for InitUseCaseImpl<'a> {
-    fn handle(&self, budget_name: &str) -> anyhow::Result<()> {
-        let result = self.budgey_repo.init_budgey();
-        if let Err(e) = result {
-            match e {
-                InitBudgeyError::BudgeyAlreadyExists => {
-                    println!("Found budgey directory already. Creating new budget under name...")
-                }
-                InitBudgeyError::BudgeyCreationFailed => {
-                    return Err(InitError::new_from_budgey_error(e).into());
-                }
+pub fn handle_init(budgey_path: &str, budget_name: &str) -> anyhow::Result<()> {
+    let result = init_budgey(budgey_path);
+    if let Err(e) = result {
+        match e {
+            InitBudgeyError::BudgeyAlreadyExists => {
+                println!("Found budgey directory already. Creating new budget under name...")
+            }
+            InitBudgeyError::BudgeyCreationFailed => {
+                return Err(InitError::new_from_budgey_error(e).into());
             }
         }
-
-        self.budget_repo
-            .create_new_budget(Budget::new(budget_name))
-            .map_err(|e| InitError::new_from_budget_error(e))?;
-        self.pile_repo
-            .create_new_pile(Pile::default(), budget_name)
-            .map_err(|e| InitError::new_from_pile_error(e))?;
-
-        Ok(())
     }
+
+    create_new_budget(budgey_path, Budget::new(budget_name))
+        .map_err(|e| InitError::new_from_budget_error(e))?;
+    create_new_pile(Pile::default(), budget_name, budgey_path)
+        .map_err(|e| InitError::new_from_pile_error(e))?;
+
+    Ok(())
 }
