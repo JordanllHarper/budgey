@@ -48,10 +48,11 @@ pub fn handle_pile_command(
         )
         .map_err(|e| PileError::new_from_create_new_pile_error(e)),
 
-        PileSubcommand::PileOperation { budget, subcommand } => {
-            handle_pile_op_subcommand(subcommand);
-            todo!()
-        }
+        PileSubcommand::PileOperation {
+            budget_name,
+            subcommand,
+        } => handle_pile_op_subcommand(subcommand, &budget_name)
+            .map_err(|e| PileError::new_from_pile_operation_error(e)),
     }
 }
 
