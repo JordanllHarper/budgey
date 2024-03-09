@@ -15,9 +15,9 @@ fn main() {
     // commands
     let commands = budgeter_cli::BudgeyCLI::parse().commands;
     let result = match commands {
-        budgeter_cli::Commands::Init { name } => handle_init(
-            &name,
+        budgeter_cli::Commands::Init { name: budget_name } => handle_init(
             budgey_path,
+            &budget_name,
             handling::budgey_handling::init_budgey,
             handling::budget_handling::create_new_budget,
             handling::pile_handling::create_new_pile,
