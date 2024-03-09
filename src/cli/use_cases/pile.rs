@@ -35,9 +35,9 @@ pub fn handle_pile_command(
         PileSubcommand::New {
             name,
             initial_balance,
-            budget,
-        } => {
-            let pile = Pile::new(
+            budget_name: budget,
+        } => create_new_pile(
+            Pile::new(
                 name,
                 initial_balance.unwrap_or(0.0),
                 PileType::UserCreated,
