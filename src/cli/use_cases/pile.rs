@@ -66,7 +66,10 @@ pub enum PileOperationError {
     ViewError,
     RemoveError,
 }
-fn handle_pile_op_subcommand(subcommand: PileOperationSubcommand) -> anyhow::Result<()> {
+fn handle_pile_op_subcommand(
+    subcommand: PileOperationSubcommand,
+    budget: &str,
+) -> anyhow::Result<(), PileOperationError> {
     match subcommand {
         PileOperationSubcommand::Push { amount, source } => todo!(),
         PileOperationSubcommand::Pull { amount, usage } => todo!(),
