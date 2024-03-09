@@ -18,17 +18,3 @@ pub fn init_budgey(budgey_path: &str) -> anyhow::Result<(), InitBudgeyError> {
     })?;
     Ok(())
 }
-
-fn check_budgey_exists(budgey_path: &str) -> anyhow::Result<bool, CheckBudgeyExistsError> {
-    let result = fs::metadata(budgey_path);
-    match result {
-        Ok(_) => Ok(true),
-        Err(e) => {
-            if let ErrorKind::NotFound = e.kind() {
-                Ok(false)
-            } else {
-                Err(CheckBudgeyExistsError::SomethingWentWrong)
-            }
-        }
-    }
-}

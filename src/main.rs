@@ -25,6 +25,6 @@ fn main() {
         budgeter_cli::Commands::Pile { subcommand } => todo!(),
     };
     if let Err(e) = result {
-        println!("{:?}", e)
+        println!("{}", e)
     };
 }
