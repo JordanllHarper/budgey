@@ -42,11 +42,12 @@ pub fn handle_pile_command(
                 initial_balance.unwrap_or(0.0),
                 PileType::UserCreated,
                 vec![],
-            );
+            ),
+            &budget,
+            budgey_path,
+        )
+        .map_err(|e| PileError::new_from_create_new_pile_error(e)),
 
-            let result = create_new_pile(pile, &budget, budgey_path);
-            todo!()
-        }
         PileSubcommand::PileOperation { budget, subcommand } => {
             handle_pile_op_subcommand(subcommand);
             todo!()
