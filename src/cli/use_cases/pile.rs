@@ -15,6 +15,10 @@ impl PileError {
     pub fn new_from_create_new_pile_error(e: CreateNewPileError) -> Self {
         PileError::CreateNewPileError(e)
     }
+
+    pub fn new_from_pile_operation_error(e: PileOperationError) -> Self {
+        PileError::PileOperationError(e)
+    }
 }
 
 impl Display for PileError {
