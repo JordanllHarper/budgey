@@ -35,7 +35,7 @@ pub enum PileSubcommand {
     New {
         /// The budget to create the new pile in.
         #[arg(short, long)]
-        budget: String,
+        budget_name: String,
 
         /// The name of the new pile. Must be unique.
         #[arg(short, long)]
@@ -50,7 +50,7 @@ pub enum PileSubcommand {
     PileOperation {
         /// The budget to operate on.
         #[arg(short, long)]
-        budget: String,
+        budget_name: String,
 
         #[command(subcommand)]
         subcommand: PileOperationSubcommand,
