@@ -83,5 +83,7 @@ fn handle_pile_op_subcommand(
         PileOperationSubcommand::Remove { name } => todo!(),
         PileOperationSubcommand::Commit { message } => todo!(),
         PileOperationSubcommand::Revert { message } => todo!(),
+        PileOperationSubcommand::Revert { message } => todo!(),
+        PileOperationSubcommand::Restore => todo!(),
     }
 }
