@@ -58,9 +58,9 @@ pub enum PileSubcommand {
 }
 #[derive(Debug, Subcommand)]
 pub enum PileOperationSubcommand {
-    /// Push -> pushes a new transaction to a pile.
+    /// Add -> Adds a new transaction to the pile.
     #[command(name = "push", arg_required_else_help = true)]
-    Push {
+    Add {
         #[arg(short, long, required = true)]
         /// The amount of the transaction.
         amount: f64,
