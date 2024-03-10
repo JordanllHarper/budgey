@@ -69,6 +69,13 @@ pub enum PileOperationSubcommand {
         source: Option<String>,
     },
 
+    // Commit -> commits this transaction, making it a part of the transaction history.
+    // This can only be undone with a revert.
+    #[command(name = "commit", arg_required_else_help = true)]
+    Commit {
+        /// An optional message for the transaction commit.
+        message: Option<String>,
+    },
     /// Pull -> pulls money from the pile.
     #[command(name = "pull", arg_required_else_help = true)]
     Pull {
