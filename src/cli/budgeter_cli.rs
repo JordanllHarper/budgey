@@ -95,17 +95,18 @@ pub enum PileOperationSubcommand {
         usage: Option<String>,
     },
 
-    /// Merge -> transfer money from one pile to another.
+    /// Merge -> merge a source pile into a destination pile.
     #[command(name = "merge", arg_required_else_help = true)]
     Merge {
         /// The amount of the transaction.
         #[arg(short, long, required = true)]
         amount: f64,
 
-        /// The source pile of the transaction.
+        /// The source pile name.
         #[arg(short, long, required = true)]
         source: String,
 
+        /// The destination pile name.
         #[arg(short, long, required = true)]
         destination: String,
 
@@ -113,7 +114,7 @@ pub enum PileOperationSubcommand {
         #[arg(short, long)]
         delete_after_merge: bool,
 
-        /// The optional reason for the merge.
+        /// An optional comment for the merge.
         #[arg(short, long)]
         usage: Option<String>,
     },
