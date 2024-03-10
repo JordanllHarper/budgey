@@ -1,8 +1,6 @@
 use std::{fs, io::ErrorKind};
 
-use crate::{
-    io_operations::io_operations::io_operations::create_json_path, models::budget::Budget,
-};
+use crate::{models::budget::Budget, utils::json_utils::create_json_path};
 
 #[derive(Debug)]
 pub enum CreateNewBudgetError {
