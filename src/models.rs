@@ -1,3 +1,3 @@
 pub mod budget;
 pub mod pile;
-pub mod transaction;
+pub mod record_transaction;
