@@ -33,6 +33,9 @@ pub fn create_new_pile(
 
 fn get_all_piles(budget_name: &str) -> anyhow::Result<(), CreateNewPileError> {
     todo!()
+pub enum GetPilesError {
+    NoBudgetDirectory,
+    NoPilesError,
 }
 
 fn update_pile(pile: Pile) -> anyhow::Result<(), CreateNewPileError> {
