@@ -31,14 +31,18 @@ pub fn create_new_pile(
     Ok(())
 }
 
-fn get_all_piles(budget_name: &str) -> anyhow::Result<(), CreateNewPileError> {
-    todo!()
 pub enum GetPilesError {
     NoBudgetDirectory,
     NoPilesError,
 }
 
-fn update_pile(pile: Pile) -> anyhow::Result<(), CreateNewPileError> {
+/// Looks through all the pile directories in a budget directory to find all the piles.
+fn get_all_piles(
+    budgey_directory: &str,
+    budget_name: &str,
+) -> anyhow::Result<Vec<Pile>, GetPilesError> {
+    let budget_directory = format!("{}/{}", budgey_directory, budget_name);
+    let read_dir = fs::read_dir(budget_directory).map_err(|_| GetPilesError::NoBudgetDirectory)?;
     todo!()
 }
 
