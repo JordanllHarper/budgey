@@ -58,8 +58,6 @@ pub fn handle_pile_command(
 
 #[derive(Debug)]
 pub enum PileOperationError {
-    PushError,
-    PullError,
     MergeError,
     BalanceError,
     ListError,
