@@ -71,7 +71,7 @@ fn handle_pile_op_subcommand(
     budget: &str,
 ) -> anyhow::Result<(), PileOperationError> {
     match subcommand {
-        PileOperationSubcommand::Push { amount, source } => todo!(),
+        PileOperationSubcommand::Add { amount, source } => todo!(),
         PileOperationSubcommand::Pull { amount, usage } => todo!(),
         PileOperationSubcommand::Merge {
             amount,
@@ -84,5 +84,7 @@ fn handle_pile_op_subcommand(
         PileOperationSubcommand::List => todo!(),
         PileOperationSubcommand::View { name } => todo!(),
         PileOperationSubcommand::Remove { name } => todo!(),
+        PileOperationSubcommand::Commit { message } => todo!(),
+        PileOperationSubcommand::Revert { message } => todo!(),
     }
 }
