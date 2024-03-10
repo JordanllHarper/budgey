@@ -46,8 +46,10 @@ fn get_all_piles(
     todo!()
 }
 
-fn delete_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
+fn update_pile(budgey_directory: &str, pile: Pile) -> anyhow::Result<(), CreateNewPileError> {
     todo!()
 }
 
+fn delete_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
+    todo!()
 }
