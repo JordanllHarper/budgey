@@ -1,7 +1,7 @@
 use std::fmt::{Display, Formatter};
 
 use crate::{
-    cli::budgeter_cli::{PileOperationSubcommand, PileSubcommand},
+    cli::budgeter_cli::PileSubcommand,
     handling::pile_handling::{create_new_pile, CreateNewPileError},
     models::pile::{Pile, PileType},
 };
@@ -29,13 +29,13 @@ impl Display for PileError {
 
 pub fn handle_pile_command(
     budgey_path: &str,
+    budget_name: &str,
     subcommand: PileSubcommand,
 ) -> anyhow::Result<(), PileError> {
     match subcommand {
         PileSubcommand::New {
             name,
             initial_balance,
-            budget_name: budget,
         } => create_new_pile(
             Pile::new(
                 name,
@@ -43,16 +43,26 @@ pub fn handle_pile_command(
                 PileType::UserCreated,
                 vec![],
             ),
-            &budget,
+            &budget_name,
             budgey_path,
         )
         .map_err(|e| PileError::new_from_create_new_pile_error(e)),
-
-        PileSubcommand::PileOperation {
-            budget_name,
-            subcommand,
-        } => handle_pile_op_subcommand(subcommand, &budget_name)
-            .map_err(|e| PileError::new_from_pile_operation_error(e)),
+        PileSubcommand::Add { amount, source } => todo!(),
+        PileSubcommand::Merge {
+            amount,
+            source,
+            destination,
+            delete_after_merge,
+            usage,
+        } => todo!(),
+        PileSubcommand::Balance { name } => todo!(),
+        PileSubcommand::List => todo!(),
+        PileSubcommand::View { name } => todo!(),
+        PileSubcommand::Remove { name } => todo!(),
+        PileSubcommand::Commit { message } => todo!(),
+        PileSubcommand::Revert { message } => todo!(),
+        PileSubcommand::Revert { message } => todo!(),
+        PileSubcommand::Restore => todo!(),
     }
 }
 
@@ -63,27 +73,4 @@ pub enum PileOperationError {
     ListError,
     ViewError,
     RemoveError,
-}
-fn handle_pile_op_subcommand(
-    subcommand: PileOperationSubcommand,
-    budget: &str,
-) -> anyhow::Result<(), PileOperationError> {
-    match subcommand {
-        PileOperationSubcommand::Add { amount, source } => todo!(),
-        PileOperationSubcommand::Merge {
-            amount,
-            source,
-            destination,
-            delete_after_merge,
-            usage,
-        } => todo!(),
-        PileOperationSubcommand::Balance { name } => todo!(),
-        PileOperationSubcommand::List => todo!(),
-        PileOperationSubcommand::View { name } => todo!(),
-        PileOperationSubcommand::Remove { name } => todo!(),
-        PileOperationSubcommand::Commit { message } => todo!(),
-        PileOperationSubcommand::Revert { message } => todo!(),
-        PileOperationSubcommand::Revert { message } => todo!(),
-        PileOperationSubcommand::Restore => todo!(),
-    }
 }

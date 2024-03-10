@@ -55,8 +55,11 @@ fn main() {
             );
             result.map_err(|e| CommonError::wrap_init(e))
         }
-        budgeter_cli::Commands::Pile { subcommand } => {
-            let result = handle_pile_command(budgey_path, subcommand);
+        budgeter_cli::Commands::Pile {
+            subcommand,
+            budget_name,
+        } => {
+            let result = handle_pile_command(budgey_path, &budget_name, subcommand);
             result.map_err(|e| CommonError::wrap_pile(e))
         }
     };
