@@ -84,17 +84,6 @@ pub enum PileOperationSubcommand {
         message: Option<String>,
     },
 
-    /// Pull -> pulls money from the pile.
-    #[command(name = "pull", arg_required_else_help = true)]
-    Pull {
-        #[arg(short, long, required = true)]
-        /// The amount of the transaction.
-        amount: f64,
-
-        /// The optional usage of the transaction.
-        usage: Option<String>,
-    },
-
     /// Merge -> merge a source pile into a destination pile.
     #[command(name = "merge", arg_required_else_help = true)]
     Merge {

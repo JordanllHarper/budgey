@@ -72,7 +72,6 @@ fn handle_pile_op_subcommand(
 ) -> anyhow::Result<(), PileOperationError> {
     match subcommand {
         PileOperationSubcommand::Add { amount, source } => todo!(),
-        PileOperationSubcommand::Pull { amount, usage } => todo!(),
         PileOperationSubcommand::Merge {
             amount,
             source,
