@@ -3,7 +3,7 @@ use serde::{Deserialize, Serialize};
 #[derive(Serialize, Deserialize)]
 pub struct Pile {
     pub name: String,
-    pub balance: f32,
+    pub current_balance: f32,
     pub pile_type: PileType,
 }
 
@@ -23,7 +23,7 @@ impl Pile {
     pub fn new(name: String, balance: f32, pile_type: PileType) -> Self {
         Self {
             name,
-            balance,
+            current_balance: balance,
             pile_type,
         }
     }
