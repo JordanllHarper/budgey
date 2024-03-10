@@ -5,7 +5,7 @@ use super::transaction::Transaction;
 #[derive(Serialize, Deserialize)]
 pub struct Pile {
     pub name: String,
-    pub balance: f64,
+    pub balance: f32,
     pub pile_type: PileType,
     pub pile_transaction_history: Vec<Transaction>,
 }
@@ -25,7 +25,7 @@ pub enum PileType {
 impl Pile {
     pub fn new(
         name: String,
-        balance: f64,
+        balance: f32,
         pile_type: PileType,
         transaction_history: Vec<Transaction>,
     ) -> Self {

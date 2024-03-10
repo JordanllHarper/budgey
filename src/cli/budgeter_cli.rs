@@ -2,7 +2,6 @@ use clap::{Parser, Subcommand};
 
 /// A finance tracking and budgeting tool
 #[derive(Debug, Parser)]
-#[command()]
 pub struct BudgeyCLI {
     #[command(subcommand)]
     pub commands: Commands,
@@ -42,14 +41,14 @@ pub enum PileSubcommand {
 
         /// The initial balance of the pile. Will be taken from the main pile.
         #[arg(short, long)]
-        initial_balance: Option<f64>,
+        initial_balance: Option<f32>,
     },
     /// Add -> Adds a new transaction to the pile.
     #[command(name = "push", arg_required_else_help = true)]
     Add {
         #[arg(short, long, required = true)]
         /// The amount of the transaction.
-        amount: f64,
+        amount: f32,
 
         /// The optional source of the transaction.
         source: Option<String>,
@@ -79,7 +78,7 @@ pub enum PileSubcommand {
     Merge {
         /// The amount of the transaction.
         #[arg(short, long, required = true)]
-        amount: f64,
+        amount: f32,
 
         /// The source pile name.
         #[arg(short, long, required = true)]
