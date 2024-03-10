@@ -22,7 +22,10 @@ pub enum Commands {
     /// Budgey Pile -> create and manage piles.
     #[command(name = "pile")]
     Pile {
-        ///
+        /// The budget to create the new pile in.
+        #[arg(short, long)]
+        budget_name: String,
+
         #[command(subcommand)]
         subcommand: PileSubcommand,
     },
@@ -33,10 +36,6 @@ pub enum PileSubcommand {
     /// new -> creates a new pile.
     #[command(name = "new", arg_required_else_help = true)]
     New {
-        /// The budget to create the new pile in.
-        #[arg(short, long)]
-        budget_name: String,
-
         /// The name of the new pile. Must be unique.
         #[arg(short, long)]
         name: String,
@@ -45,19 +44,6 @@ pub enum PileSubcommand {
         #[arg(short, long)]
         initial_balance: Option<f64>,
     },
-
-    #[command(name = "op", arg_required_else_help = true)]
-    PileOperation {
-        /// The budget to operate on.
-        #[arg(short, long)]
-        budget_name: String,
-
-        #[command(subcommand)]
-        subcommand: PileOperationSubcommand,
-    },
-}
-#[derive(Debug, Subcommand)]
-pub enum PileOperationSubcommand {
     /// Add -> Adds a new transaction to the pile.
     #[command(name = "push", arg_required_else_help = true)]
     Add {
