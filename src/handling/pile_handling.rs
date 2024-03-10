@@ -9,6 +9,7 @@ pub enum CreateNewPileError {
     CouldntWriteJson,
 }
 
+/// Creates a new pile in the Budgey -> Budget file directory.
 pub fn create_new_pile(
     pile: Pile,
     budget_name: &str,
