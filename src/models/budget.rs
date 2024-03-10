@@ -10,8 +10,11 @@ pub struct BudgetDetail {
 }
 
 impl BudgetDetail {
-    fn new(id: String, budget_name: String) -> Self {
-        Self { id, budget_name }
+    fn new(id: &str, budget_name: &str) -> Self {
+        Self {
+            id: id.to_string(),
+            budget_name: budget_name.to_string(),
+        }
     }
 }
 
@@ -26,7 +29,7 @@ pub struct Budget {
 impl Budget {
     pub fn new(budget_name: &str) -> Self {
         Self {
-            budget_detail: BudgetDetail::new(nanoid!(), budget_name.to_string()),
+            budget_detail: BudgetDetail::new(&nanoid!(), budget_name),
             pile_list: vec![Pile::default_main_pile()],
         }
     }
