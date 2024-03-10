@@ -37,7 +37,7 @@ pub enum GetPilesError {
     NoPilesError,
 }
 
-/// Looks through all the pile directories in a budget directory to find all the piles.
+/// Gets all the piles in the given budget.
 fn get_all_piles(
     budgey_directory: &str,
     budget_name: &str,
@@ -46,11 +46,12 @@ fn get_all_piles(
     let read_dir = fs::read_dir(budget_directory).map_err(|_| GetPilesError::NoBudgetDirectory)?;
     todo!()
 }
-
-fn update_pile(budgey_directory: &str, pile: Pile) -> anyhow::Result<(), CreateNewPileError> {
+/// Switches the focused pile to the pile with the given name.
+fn switch_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
     todo!()
 }
 
+/// Deletes a pile with the given name.
 fn delete_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
     todo!()
 }
