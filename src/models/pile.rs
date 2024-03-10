@@ -6,6 +6,7 @@ pub struct Pile {
     pub name: String,
     pub current_balance: f32,
     pub pile_type: PileType,
+    pub records: Vec<Record>,
 }
 
 impl Default for Pile {
