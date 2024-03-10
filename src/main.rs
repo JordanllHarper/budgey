@@ -12,8 +12,8 @@ use crate::config::local_config::LocalConfig;
 pub mod cli;
 pub mod config;
 pub mod handling;
-pub mod io_operations;
 pub mod models;
+pub mod utils;
 
 #[derive(Debug)]
 pub enum CommonError {
