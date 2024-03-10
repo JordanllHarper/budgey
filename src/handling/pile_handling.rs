@@ -50,12 +50,4 @@ fn delete_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
     todo!()
 }
 
-fn one_budget_exists(read_dir: ReadDir, budget_name: &str) -> bool {
-    read_dir
-        .filter(|each| match each {
-            Ok(v) => v.file_name() == budget_name,
-            Err(_) => false,
-        })
-        .count()
-        == 1
 }
