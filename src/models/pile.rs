@@ -11,7 +11,7 @@ pub struct Pile {
 
 impl Default for Pile {
     fn default() -> Self {
-        Pile::new("main".to_string(), 0.0, PileType::Main)
+        Pile::new("main", 0.0, PileType::Main)
     }
 }
 
