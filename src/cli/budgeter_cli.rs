@@ -76,6 +76,14 @@ pub enum PileOperationSubcommand {
         /// An optional message for the transaction commit.
         message: Option<String>,
     },
+
+    /// Revert -> reverts a transaction commit.
+    #[command(name = "commit", arg_required_else_help = true)]
+    Revert {
+        /// An optional message for the transaction revert.
+        message: Option<String>,
+    },
+
     /// Pull -> pulls money from the pile.
     #[command(name = "pull", arg_required_else_help = true)]
     Pull {
