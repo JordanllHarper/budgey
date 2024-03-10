@@ -1,5 +1,6 @@
 use serde::{Deserialize, Serialize};
 
+use super::record_transaction::Record;
 #[derive(Serialize, Deserialize)]
 pub struct Pile {
     pub name: String,
