@@ -37,7 +37,7 @@ pub fn handle_pile_command(
             name,
             initial_balance,
         } => create_new_pile(
-            Pile::new(name, initial_balance.unwrap_or(0.0), PileType::UserCreated),
+            Pile::new(&name, initial_balance.unwrap_or(0.0), PileType::UserCreated),
             &budget_name,
             budgey_path,
         )
