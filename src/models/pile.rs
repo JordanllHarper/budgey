@@ -45,6 +45,6 @@ impl Pile {
         }
     }
     pub fn default_main_pile() -> Pile {
-        Pile::new("main".to_string(), 0.0, PileType::Main)
+        Pile::new("main", 0.0, PileType::Main)
     }
 }
