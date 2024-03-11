@@ -1,12 +1,14 @@
 use serde::{Deserialize, Serialize};
 
-use super::record_transaction::Record;
+use super::record_transaction::{Record, Transaction, TransactionType};
+
 #[derive(Serialize, Deserialize)]
 pub struct Pile {
     pub name: String,
     pub current_balance: f32,
     pub pile_type: PileType,
     pub records: Vec<Record>,
+    pub current_transactions: Vec<Transaction>,
 }
 
 impl Default for Pile {
