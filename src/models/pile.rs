@@ -29,7 +29,6 @@ pub enum PileType {
 }
 
 impl Pile {
-    pub fn new(name: String, balance: f32, pile_type: PileType) -> Self {
     pub fn new(
         name: &str,
         balance: f32,
