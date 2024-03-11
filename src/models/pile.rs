@@ -30,10 +30,18 @@ pub enum PileType {
 
 impl Pile {
     pub fn new(name: String, balance: f32, pile_type: PileType) -> Self {
+    pub fn new(
+        name: &str,
+        balance: f32,
+        pile_type: PileType,
+        current_transactions: &[Transaction],
+    ) -> Self {
         Self {
-            name,
+            name: name.to_string(),
             current_balance: balance,
             pile_type,
+            records: vec![],
+            current_transactions: current_transactions.to_vec(),
         }
     }
     pub fn default_main_pile() -> Pile {
