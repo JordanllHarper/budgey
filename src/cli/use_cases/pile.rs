@@ -34,6 +34,7 @@ pub fn handle_pile_command(
 ) -> anyhow::Result<(), PileError> {
     match subcommand {
         PileSubcommand::New {
+            source,
             name,
             initial_balance,
         } => create_new_pile(

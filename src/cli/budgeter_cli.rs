@@ -35,6 +35,10 @@ pub enum PileSubcommand {
     /// new -> creates a new pile.
     #[command(name = "new", arg_required_else_help = true)]
     New {
+        /// The name of the source pile. Must be unique.
+        #[arg(short, long)]
+        source: String,
+
         /// The name of the new pile. Must be unique.
         #[arg(short, long)]
         name: String,
