@@ -35,7 +35,7 @@ pub enum PileSubcommand {
     /// new -> creates a new pile.
     #[command(name = "new", arg_required_else_help = true)]
     New {
-        /// The name of the source pile. Must be unique.
+        /// The name of the source pile to create the new pile from.
         #[arg(short, long)]
         source: String,
 
@@ -43,7 +43,7 @@ pub enum PileSubcommand {
         #[arg(short, long)]
         name: String,
 
-        /// The initial balance of the pile. Will be taken from the main pile.
+        /// The initial balance of the pile. Will be taken from the source pile.
         #[arg(short, long)]
         initial_balance: Option<f32>,
     },
