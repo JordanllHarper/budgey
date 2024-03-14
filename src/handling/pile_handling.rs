@@ -72,16 +72,16 @@ pub fn get_pile_by_name(
     ) -> anyhow::Result<Budget, BudgetError>,
 ) -> anyhow::Result<Pile, GetPileByNameError> {
     let budget = get_budget(budgey_directory_path, budget_name)
-        .map_err(|e| GetPilesError::ReadBudgetError(e))?;
+        .map_err(|e| GetPileByNameError::BudgetError(e))?;
     let has_pile = budget.pile_names.iter().any(|pile| pile == pile_name);
     if !has_pile {
-        return Err(GetPilesError::NamedPileNotInBudget);
+        return Err(GetPileByNameError::NamedPileNotInBudget);
     }
     let pile_path = format!("{}/{}/{}", budgey_directory_path, budget_name, pile_name);
     let pile_json = fs::read_to_string(create_json_path(&pile_path, pile_name))
-        .map_err(|_| GetPilesError::NoPileJsonError)?;
-    let pile: Pile =
-        serde_json::from_str(&pile_json).map_err(|_| GetPilesError::DeserializeBudgetError)?;
+        .map_err(|_| GetPileByNameError::NoPileJsonError)?;
+    let pile: Pile = serde_json::from_str(&pile_json)
+        .map_err(|_| GetPileByNameError::PileDeserializationError)?;
     Ok(pile)
 }
 /// Switches the focused pile to the pile with the given name.
