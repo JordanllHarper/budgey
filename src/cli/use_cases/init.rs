@@ -1,7 +1,7 @@
 use crate::{
     handling::{
         budget_handling::CreateNewBudgetError, budgey_handling::InitBudgeyError,
-        pile_handling::CreateNewPileError,
+        pile_handling::{CreateNewPileError, SubPileError},
     },
     models::{budget::Budget, pile::Pile},
 };
