@@ -15,6 +15,22 @@ pub enum BudgetError {
     CreateNewBudgetError(CreateNewBudgetError),
 }
 
+#[derive(Debug)]
+pub enum GetBudgetError {
+    GetBudgetFileError,
+    DeserializeBudgetJsonError,
+}
+
+pub fn get_budget(budgey_path: &str, budget_name: &str) -> anyhow::Result<Budget, BudgetError> {
+    let budget_file_path = format!("{}/{}", budgey_path, budget_name);
+    let budget_path = create_json_path(&budget_file_path, budget_name);
+    let budget_json = fs::read_to_string(budget_path)
+        .map_err(|_| BudgetError::GetBudgetError(GetBudgetError::GetBudgetFileError))?;
+    let budget: Budget = serde_json::from_str(&budget_json)
+        .map_err(|_| BudgetError::GetBudgetError(GetBudgetError::DeserializeBudgetJsonError))?;
+    Ok(budget)
+}
+
 pub fn create_new_budget(
     budgey_directory: &str,
     budget: Budget,
