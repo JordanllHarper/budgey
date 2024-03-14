@@ -44,6 +44,7 @@ pub enum GetPilesError {
     ReadBudgetError,
     DeserializeBudgetError,
     NoPileJsonError,
+    PileDeserializationError,
     NoPilesError,
 }
 
