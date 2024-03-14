@@ -35,6 +35,16 @@ impl Pile {
         pile_type: PileType,
         source_record_history: &[Record],
     ) -> Self {
+        let up_to_date_history = vec![Record::new_init(
+            "Initialised pile",
+            "0",
+            balance,
+            Some(balance),
+        )]
+        .iter()
+        .chain(source_record_history)
+        .cloned()
+        .collect::<Vec<Record>>();
         Self {
             name: name.to_string(),
             current_balance: balance,
