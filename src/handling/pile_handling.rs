@@ -41,6 +41,7 @@ pub fn create_new_pile(
 pub enum GetPilesError {
     NoBudgetDirectory,
     NoNamedPileError,
+    ReadPileError,
     NoPilesError,
 }
 
@@ -53,6 +54,10 @@ fn get_all_piles(
     let read_dir = fs::read_dir(budget_directory).map_err(|_| GetPilesError::NoBudgetDirectory)?;
     todo!()
 }
+fn get_pile_by_name(name  :&str) -> anyhow::Result<Pile, GetPilesError> {
+
+    todo!()
+} 
 /// Switches the focused pile to the pile with the given name.
 fn switch_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
     todo!()
