@@ -42,6 +42,7 @@ pub enum GetPilesError {
     NoBudgetDirectory,
     NoNamedPileError,
     ReadBudgetError,
+    DeserializeBudgetError,
     NoPilesError,
 }
 
