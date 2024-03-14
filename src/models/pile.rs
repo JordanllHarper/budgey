@@ -33,7 +33,7 @@ impl Pile {
         name: &str,
         balance: f32,
         pile_type: PileType,
-        current_transactions: &[Transaction],
+        source_record_history: &[Record],
     ) -> Self {
         Self {
             name: name.to_string(),
