@@ -8,7 +8,7 @@ pub struct Pile {
     pub current_balance: f32,
     pub pile_type: PileType,
     pub records: Vec<Record>,
-    pub current_transactions: Vec<Transaction>,
+    pub current_staged_transactions: Vec<Transaction>,
 }
 
 impl Default for Pile {
@@ -39,11 +39,21 @@ impl Pile {
             name: name.to_string(),
             current_balance: balance,
             pile_type,
-            records: vec![],
-            current_transactions: current_transactions.to_vec(),
+            records: vec![Record::new_init(
+                "Initialised pile",
+                "0",
+                balance,
+                Some(balance),
+            )],
+            current_staged_transactions: vec![],
         }
     }
     pub fn default_main_pile() -> Pile {
-        Pile::new("main", 0.0, PileType::Main)
+        Pile::new(
+            "main",
+            0.0,
+            PileType::Main,
+            &[Record::new_init("Initialised main", "0", 0.0, Some(0.0))],
+        )
     }
 }
