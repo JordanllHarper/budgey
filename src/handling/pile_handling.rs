@@ -40,6 +40,7 @@ pub fn create_new_pile(
 #[derive(Debug)]
 pub enum GetPilesError {
     NoBudgetDirectory,
+    NoNamedPileError,
     NoPilesError,
 }
 
