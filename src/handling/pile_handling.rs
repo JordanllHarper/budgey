@@ -54,6 +54,12 @@ pub fn get_all_piles(
     let read_dir = fs::read_dir(budget_directory).map_err(|_| GetPilesError::NoBudgetDirectory)?;
     todo!()
 }
+pub enum GetPileByNameError {
+    BudgetError(BudgetError),
+    NoPileJsonError,
+    PileDeserializationError,
+    NamedPileNotInBudget,
+}
 
 /// Gets a pile by its name in the given budget.
 pub fn get_pile_by_name(
@@ -64,7 +70,7 @@ pub fn get_pile_by_name(
         budgey_directory: &str,
         budget_name: &str,
     ) -> anyhow::Result<Budget, BudgetError>,
-) -> anyhow::Result<Pile, GetPilesError> {
+) -> anyhow::Result<Pile, GetPileByNameError> {
     let budget = get_budget(budgey_directory_path, budget_name)
         .map_err(|e| GetPilesError::ReadBudgetError(e))?;
     let has_pile = budget.pile_names.iter().any(|pile| pile == pile_name);
