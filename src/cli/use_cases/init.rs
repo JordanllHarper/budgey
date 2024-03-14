@@ -40,6 +40,11 @@ impl std::fmt::Display for InitError {
                 CreateNewPileError::CouldntWriteJson => {
                     String::from("Something went wrong with writing the json.")
                 }
+                CreateNewPileError::SubPileError(e) => match e {
+                    SubPileError::NoSourcePile => {
+                        String::from("The source pile couldn't be found.")
+                    }
+                },
             },
             InitError::CreateBudgeyError(e) => match e {
                 InitBudgeyError::BudgeyAlreadyExists => {
