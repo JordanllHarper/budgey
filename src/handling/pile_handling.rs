@@ -46,7 +46,7 @@ pub enum GetPilesError {
 }
 
 /// Gets all the piles in the given budget.
-fn get_all_piles(
+pub fn get_all_piles(
     budgey_directory: &str,
     budget_name: &str,
 ) -> anyhow::Result<Vec<Pile>, GetPilesError> {
