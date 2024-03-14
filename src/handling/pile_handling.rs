@@ -43,6 +43,7 @@ pub enum GetPilesError {
     NamedPileNotInBudget,
     ReadBudgetError,
     DeserializeBudgetError,
+    NoPileJsonError,
     NoPilesError,
 }
 
