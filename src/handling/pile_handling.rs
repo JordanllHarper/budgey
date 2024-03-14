@@ -63,6 +63,10 @@ pub fn get_pile_by_name(
     budgey_directory_path: &str,
     budget_name: &str,
     pile_name: &str,
+    get_budget: fn(
+        budgey_directory: &str,
+        budget_name: &str,
+    ) -> anyhow::Result<Budget, BudgetError>,
 ) -> anyhow::Result<Pile, GetPilesError> {
     let budget_file_path = format!("{}/{}", budgey_directory_path, budget_name);
     let budget_path = create_json_path(&budget_file_path, budget_name);
