@@ -39,7 +39,7 @@ pub fn create_new_pile(
 
 #[derive(Debug)]
 pub enum GetPilesError {
-    NoBudgetDirectory,
+    BudgetError(BudgetError),
     NamedPileNotInBudget,
     ReadBudgetError,
     DeserializeBudgetError,
