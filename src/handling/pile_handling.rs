@@ -54,7 +54,7 @@ pub fn get_all_piles(
     let read_dir = fs::read_dir(budget_directory).map_err(|_| GetPilesError::NoBudgetDirectory)?;
     todo!()
 }
-pub enum GetPileByNameError {
+
     BudgetError(BudgetError),
     NoPileJsonError,
     PileDeserializationError,
@@ -93,3 +93,4 @@ fn switch_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
 fn delete_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
     todo!()
 }
+
