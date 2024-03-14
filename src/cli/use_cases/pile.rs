@@ -2,7 +2,7 @@ use std::fmt::{Display, Formatter};
 
 use crate::{
     cli::budgeter_cli::PileSubcommand,
-    handling::pile_handling::{self, create_new_pile, CreateNewPileError, GetPilesError},
+    handling::pile_handling::{self, CreateNewPileError, GetPilesError},
     models::pile::{Pile, PileType},
 };
 
@@ -40,12 +40,14 @@ pub fn handle_pile_command(
             initial_balance,
         } => {
             let source_pile: Pile =
-                get_pile_by_name(budgey_path, budget_name, &source).map_err(|e| {
-                    PileError::new_from_create_new_pile_error(CreateNewPileError::SubPileError(
-                        pile_handling::SubPileError::NoSourcePile,
-                    ))
-                })?;
-            create_new_pile(
+                pile_handling::get_pile_by_name(budgey_path, budget_name, &source).map_err(
+                    |e| {
+                        PileError::new_from_create_new_pile_error(CreateNewPileError::SubPileError(
+                            pile_handling::SubPileError::NoSourcePile,
+                        ))
+                    },
+                )?;
+            pile_handling::create_new_pile(
                 Pile::new(
                     &name,
                     initial_balance.unwrap_or(0.0),
