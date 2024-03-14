@@ -17,7 +17,7 @@ impl Default for Pile {
             "main",
             0.0,
             PileType::Main,
-            &[Transaction::new(TransactionType::Init, 0.0)],
+            &[Record::new_init("Initialised main", "0", 0.0, Some(0.0))],
         )
     }
 }
