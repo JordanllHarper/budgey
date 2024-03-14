@@ -27,6 +27,10 @@ impl Display for PileError {
     }
 }
 
+/// Gets a pile by its name in the given budget.
+pub fn get_pile_by_name(budgey_path: &str, budget_name: &str, name: &str) -> anyhow::Result<Pile> {
+    todo!()
+}
 pub fn handle_pile_command(
     budgey_path: &str,
     budget_name: &str,
