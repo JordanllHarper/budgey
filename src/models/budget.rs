@@ -23,14 +23,14 @@ impl BudgetDetail {
 #[derive(Serialize, Deserialize)]
 pub struct Budget {
     pub budget_detail: BudgetDetail,
-    pub pile_list: Vec<Pile>,
+    pub pile_names: Vec<String>,
 }
 
 impl Budget {
     pub fn new(budget_name: &str) -> Self {
         Self {
             budget_detail: BudgetDetail::new(&nanoid!(), budget_name),
-            pile_list: vec![Pile::default_main_pile()],
+            pile_names: vec!["main".to_string()],
         }
     }
 }
