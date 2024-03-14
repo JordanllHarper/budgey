@@ -10,7 +10,8 @@ pub enum CreateNewBudgetError {
     CouldntWriteJson,
 }
 
-pub enum BudgetRepositoryError {
+pub enum BudgetError {
+    GetBudgetError(GetBudgetError),
     CreateNewBudgetError(CreateNewBudgetError),
 }
 
