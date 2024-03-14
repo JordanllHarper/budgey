@@ -68,12 +68,8 @@ pub fn get_pile_by_name(
         budget_name: &str,
     ) -> anyhow::Result<Budget, BudgetError>,
 ) -> anyhow::Result<Pile, GetPilesError> {
-    let budget_file_path = format!("{}/{}", budgey_directory_path, budget_name);
-    let budget_path = create_json_path(&budget_file_path, budget_name);
-    let budget_json =
-        fs::read_to_string(budget_path).map_err(|_| GetPilesError::ReadBudgetError)?;
-    let budget: Budget =
-        serde_json::from_str(&budget_json).map_err(|_| GetPilesError::ReadBudgetError)?;
+    let budget = get_budget(budgey_directory_path, budget_name)
+        .map_err(|e| GetPilesError::ReadBudgetError(e))?;
     let has_pile = budget.pile_names.iter().any(|pile| pile == pile_name);
     if !has_pile {
         return Err(GetPilesError::NamedPileNotInBudget);
