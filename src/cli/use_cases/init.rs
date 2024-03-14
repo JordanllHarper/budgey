@@ -73,7 +73,6 @@ impl InitError {
     }
 }
 
-
 pub fn handle_init(
     budgey_path: &str,
     budget_name: &str,
