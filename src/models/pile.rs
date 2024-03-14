@@ -49,12 +49,7 @@ impl Pile {
             name: name.to_string(),
             current_balance: balance,
             pile_type,
-            records: vec![Record::new_init(
-                "Initialised pile",
-                "0",
-                balance,
-                Some(balance),
-            )],
+            records: up_to_date_history,
             current_staged_transactions: vec![],
         }
     }
