@@ -57,10 +57,30 @@ fn get_all_piles(
     let read_dir = fs::read_dir(budget_directory).map_err(|_| GetPilesError::NoBudgetDirectory)?;
     todo!()
 }
-fn get_pile_by_name(name  :&str) -> anyhow::Result<Pile, GetPilesError> {
 
-    todo!()
-} 
+/// Gets a pile by its name in the given budget.
+pub fn get_pile_by_name(
+    budgey_directory_path: &str,
+    budget_name: &str,
+    pile_name: &str,
+) -> anyhow::Result<Pile, GetPilesError> {
+    let budget_file_path = format!("{}/{}", budgey_directory_path, budget_name);
+    let budget_path = create_json_path(&budget_file_path, budget_name);
+    let budget_json =
+        fs::read_to_string(budget_path).map_err(|_| GetPilesError::ReadBudgetError)?;
+    let budget: Budget =
+        serde_json::from_str(&budget_json).map_err(|_| GetPilesError::ReadBudgetError)?;
+    let has_pile = budget.pile_names.iter().any(|pile| pile == pile_name);
+    if !has_pile {
+        return Err(GetPilesError::NamedPileNotInBudget);
+    }
+    let pile_path = format!("{}/{}/{}", budgey_directory_path, budget_name, pile_name);
+    let pile_json = fs::read_to_string(create_json_path(&pile_path, pile_name))
+        .map_err(|_| GetPilesError::NoPileJsonError)?;
+    let pile: Pile =
+        serde_json::from_str(&pile_json).map_err(|_| GetPilesError::DeserializeBudgetError)?;
+    Ok(pile)
+}
 /// Switches the focused pile to the pile with the given name.
 fn switch_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
     todo!()
