@@ -2,7 +2,7 @@ use std::fmt::{Display, Formatter};
 
 use crate::{
     cli::budgeter_cli::PileSubcommand,
-    handling::pile_handling::{create_new_pile, CreateNewPileError},
+    handling::pile_handling::{self, create_new_pile, CreateNewPileError, GetPilesError},
     models::pile::{Pile, PileType},
 };
 
