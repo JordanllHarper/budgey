@@ -4,6 +4,7 @@ use crate::{models::pile::Pile, utils::json_utils::create_json_path};
 
 #[derive(Debug)]
 pub enum CreateNewPileError {
+    SubPileError(SubPileError),
     PileDirectoryAlreadyExists,
     CouldntCreatePileDirectory,
     CouldntWriteJson,
