@@ -1,7 +1,6 @@
 use nanoid::nanoid;
 use serde::{Deserialize, Serialize};
 
-use super::pile::Pile;
 
 #[derive(Serialize, Deserialize)]
 pub struct BudgetDetail {
