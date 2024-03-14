@@ -9,6 +9,7 @@ use crate::{
 #[derive(Debug)]
 pub enum PileError {
     CreateNewPileError(CreateNewPileError),
+    GetPilesError(GetPilesError),
     PileOperationError(PileOperationError),
 }
 impl PileError {
