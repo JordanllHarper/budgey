@@ -25,7 +25,7 @@ impl Default for Pile {
 #[derive(Serialize, Deserialize)]
 pub enum PileType {
     Main,
-    UserCreated,
+    UserCreated { source_pile_name: String },
 }
 
 impl Pile {
