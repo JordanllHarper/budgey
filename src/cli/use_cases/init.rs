@@ -74,7 +74,7 @@ impl InitError {
     }
 }
 
-/// Handler for the budgey init command. 
+/// Handler for the budgey init command.
 pub fn handle_init(
     budgey_path: &str,
     budget_name: &str,
