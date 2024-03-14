@@ -41,9 +41,6 @@ pub fn create_new_pile(
 pub enum GetPilesError {
     BudgetError(BudgetError),
     NamedPileNotInBudget,
-    ReadBudgetError,
-    DeserializeBudgetError,
-    NoPileJsonError,
     PileDeserializationError,
     NoPilesError,
 }
