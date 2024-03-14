@@ -41,7 +41,7 @@ pub fn create_new_pile(
 pub enum GetPilesError {
     NoBudgetDirectory,
     NoNamedPileError,
-    ReadPileError,
+    ReadBudgetError,
     NoPilesError,
 }
 
