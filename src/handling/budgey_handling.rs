@@ -54,6 +54,7 @@ pub fn get_budgey_state(
     Ok(budgey_state)
 }
 
+#[derive(Debug)]
 pub enum WriteBudgeyStateError {
     CouldntWriteBudgeyState,
 }
