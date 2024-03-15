@@ -1,7 +1,15 @@
-use std::{fs, io::ErrorKind};
+use std::{
+    fs::{self},
+    io::ErrorKind,
+};
 
-use crate::{models::budget::Budget, utils::json_utils::create_json_path};
+use crate::{
+    handling::budgey_handling::get_budgey_state,
+    models::{self, budget::Budget},
+    utils::json_utils::create_json_path,
+};
 
+use super::budgey_handling::GetBudgeyStateError;
 
 #[derive(Debug)]
 pub enum BudgetError {
