@@ -62,7 +62,7 @@ pub fn write_new_budgey_state(
     budgey_path: &str,
     budgey_state_name: &str,
     new_state: BudgeyState,
-) -> anyhow::Result<(), anyhow::Error> {
+) -> anyhow::Result<(), WriteBudgeyStateError> {
     let budgey_state_json_path = create_json_path(&budgey_path, budgey_state_name);
     fs::write(
         budgey_state_json_path,
