@@ -3,6 +3,7 @@ use std::{fs, io::ErrorKind};
 use crate::{models::budget::Budget, utils::json_utils::create_json_path};
 
 
+#[derive(Debug)]
 pub enum BudgetError {
     GetBudgetError(GetBudgetError),
     GetAllBudgetsError(GetAllBudgetsError),
