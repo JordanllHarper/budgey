@@ -68,6 +68,7 @@ pub fn get_all_budgets(
         })
         .collect::<anyhow::Result<Vec<Budget>, GetAllBudgetsError>>()
 }
-pub fn delete_budget(budget_name: &str) -> anyhow::Result<(), BudgetRepositoryError> {
+
+pub fn delete_budget(budget_name: &str) -> anyhow::Result<(), BudgetError> {
     todo!()
 }
