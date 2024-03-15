@@ -85,7 +85,7 @@ pub enum PileSubcommand {
     },
 
     /// Restore -> restores all added transactions to the last commit.
-    #[command(name = "commit", arg_required_else_help = true)]
+    #[command(name = "restore", arg_required_else_help = true)]
     Restore,
 
     /// Merge -> merge a source pile into a destination pile.
