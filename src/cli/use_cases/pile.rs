@@ -58,10 +58,14 @@ pub fn handle_pile_command(
             initial_balance,
         } => {
             let source_pile: Pile = pile_handling::get_pile_by_name(
-                budgey_path,
                 budget_name,
                 &source,
-                budget_handling::get_budget,
+                |budget_name: &str| {
+                    budget_handling::get_budget(|| {
+                        budget_handling::get_budget_json(budgey_path, budget_name)
+                    })
+                },
+                |pile_name| get_pile_json(budgey_path, budget_name, pile_name),
             )
             .map_err(|_| {
                 PileError::new_from_create_new_pile_error(CreateNewPileError::SubPileError(
