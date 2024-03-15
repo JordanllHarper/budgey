@@ -24,9 +24,9 @@ pub fn init_budgey(
             InitBudgeyError::BudgeyCreationFailed
         }
     })?;
-    let budgey_state_json_path = create_json_path(budgey_path, budget_state_name);
-    let budgets_collection = models::budgey_state::BudgeyState::new_init();
-    Ok(())
+    let init_state = models::budgey_state::BudgeyState::new_init();
+    write_new_budgey_state(budgey_path, budgey_state_name, init_state);
+    todo!()
 }
 #[derive(Debug)]
 pub enum GetBudgeyStateError {
