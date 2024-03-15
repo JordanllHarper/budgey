@@ -78,7 +78,49 @@ pub fn get_all_budgets(
         })
         .collect::<anyhow::Result<Vec<Budget>, GetAllBudgetsError>>()
 }
+pub enum DeleteBudgetDirectoryError {
+    CouldntDeleteBudgetDirectory,
+}
+pub fn delete_budget_directory(
+    budgey_path: &str,
+    budget_name: &str,
+) -> anyhow::Result<(), DeleteBudgetDirectoryError> {
+    let budget_path = format!("{}/{}", budgey_path, budget_name);
+    fs::remove_dir_all(budget_path)
+        .map_err(|_| DeleteBudgetDirectoryError::CouldntDeleteBudgetDirectory)?;
+    Ok(())
+}
 
-pub fn delete_budget(budget_name: &str) -> anyhow::Result<(), BudgetError> {
-    todo!()
+pub enum DeleteBudgetError {
+    BudgetDoesntExist,
+    GetBudgeyStateError(GetBudgeyStateError),
+    WriteBudgeyStateError(super::budgey_handling::WriteBudgeyStateError),
+    DeleteBudgetDirectoryError(DeleteBudgetDirectoryError),
+}
+pub fn delete_budget(
+    get_budgey_state: impl Fn() -> anyhow::Result<BudgeyState, GetBudgeyStateError>,
+    budget_name: &str,
+    write_new_budgey_state: impl Fn(
+        BudgeyState,
+    )
+        -> anyhow::Result<(), super::budgey_handling::WriteBudgeyStateError>,
+    delete_budget_dir: impl Fn() -> anyhow::Result<(), DeleteBudgetDirectoryError>,
+) -> anyhow::Result<(), DeleteBudgetError> {
+    let budgey_state = get_budgey_state().map_err(|e| DeleteBudgetError::GetBudgeyStateError(e))?;
+    let budget_exists = budgey_state
+        .budget_names
+        .iter()
+        .any(|name| name == budget_name);
+
+    if !budget_exists {
+        return Err(DeleteBudgetError::BudgetDoesntExist);
+    }
+
+    let new_budget_state = budgey_state.remove_budget_name(budget_name);
+
+    write_new_budgey_state(new_budget_state)
+        .map_err(|e| DeleteBudgetError::WriteBudgeyStateError(e))?;
+    delete_budget_dir().map_err(|e| DeleteBudgetError::DeleteBudgetDirectoryError(e))?;
+
+    Ok(())
 }
