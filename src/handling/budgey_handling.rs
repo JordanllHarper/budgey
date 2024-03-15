@@ -94,6 +94,17 @@ pub fn get_budgey_state(
 pub enum WriteBudgeyStateError {
     CouldntWriteBudgeyState,
 }
+impl std::fmt::Display for WriteBudgeyStateError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let message = match self {
+            WriteBudgeyStateError::CouldntWriteBudgeyState => {
+                String::from("Something went wrong with writing the budgey state.")
+            }
+        };
+        f.write_str(&message)?;
+        Ok(())
+    }
+}
 pub fn write_new_budgey_state(
     budgey_path: &str,
     budgey_state_name: &str,
