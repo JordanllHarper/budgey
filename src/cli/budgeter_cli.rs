@@ -78,7 +78,7 @@ pub enum PileSubcommand {
     },
 
     /// Revert -> reverts a transaction commit.
-    #[command(name = "commit", arg_required_else_help = true)]
+    #[command(name = "revert", arg_required_else_help = true)]
     Revert {
         /// An optional message for the transaction revert.
         message: Option<String>,
