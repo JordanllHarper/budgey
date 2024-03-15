@@ -4,7 +4,7 @@ use crate::{
         budgey_handling::InitBudgeyError,
         pile_handling::{CreateNewPileError, SubPileError},
     },
-    models::{budget::Budget, pile::Pile},
+    models::budget::Budget,
 };
 
 #[derive(Debug, thiserror::Error)]
