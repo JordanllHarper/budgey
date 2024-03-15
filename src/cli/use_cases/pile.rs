@@ -4,7 +4,7 @@ use crate::{
     cli::budgeter_cli::PileSubcommand,
     handling::{
         budget_handling,
-        pile_handling::{self, CreateNewPileError, GetPilesError},
+        pile_handling::{self, get_pile_json, CreateNewPileError, GetPilesError},
     },
     models::pile::{Pile, PileType},
 };
