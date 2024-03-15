@@ -125,3 +125,38 @@ pub fn delete_budget(
 
     Ok(())
 }
+
+pub enum SwitchBudgetError {
+    AlreadyInBudgetError,
+    BudgetDoesntExistError,
+    GetBudgeyStateError(GetBudgeyStateError),
+    WriteBudgeyStateError(super::budgey_handling::WriteBudgeyStateError),
+}
+
+pub fn switch_budget(
+    get_budgey_state: impl Fn() -> anyhow::Result<BudgeyState, GetBudgeyStateError>,
+    new_budget_name: &str,
+    write_new_budgey_state: impl Fn(
+        BudgeyState,
+    )
+        -> anyhow::Result<(), super::budgey_handling::WriteBudgeyStateError>,
+) -> anyhow::Result<(), SwitchBudgetError> {
+    let budgey_state = get_budgey_state().map_err(|e| SwitchBudgetError::GetBudgeyStateError(e))?;
+
+    let already_in_budget = budgey_state.current_focused_budget == new_budget_name;
+
+    if already_in_budget {
+        return Err(SwitchBudgetError::AlreadyInBudgetError);
+    }
+
+    if budgey_state
+        .budget_names
+        .iter()
+        .any(|name| name != new_budget_name)
+    {
+        return Err(SwitchBudgetError::BudgetDoesntExistError);
+    }
+    let new_state = budgey_state.change_focused_budget_name(new_budget_name);
+    write_new_budgey_state(new_state).map_err(|e| SwitchBudgetError::WriteBudgeyStateError(e))?;
+    Ok(())
+}
