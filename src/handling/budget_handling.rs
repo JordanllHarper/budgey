@@ -50,7 +50,7 @@ pub fn create_new_budget(budgey_path: &str, budget: Budget) -> Result<(), Create
 pub enum GetAllBudgetsError {
     BudgeyDirNotFound,
     ReadDirError,
-    UnknownError,
+    GetBudgetsFromNamesError,
 }
 
 pub fn get_all_budgets(
