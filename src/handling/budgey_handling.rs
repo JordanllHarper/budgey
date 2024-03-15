@@ -34,9 +34,6 @@ impl std::fmt::Display for InitBudgeyError {
     }
 }
 
-pub enum CheckBudgeyExistsError {
-    SomethingWentWrong,
-}
 pub fn init_budgey(
     budgey_path: &str,
     budgey_state_name: &str,
