@@ -21,7 +21,7 @@ impl BudgeyState {
         BudgeyState::new(&budget_names, &self.current_focused_budget)
     }
 
-    pub fn remove_budget(self, budget_name: &str) -> Self {
+    pub fn remove_budget_name(self, budget_name: &str) -> Self {
         let budget_names = self
             .budget_names
             .into_iter()
