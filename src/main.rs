@@ -3,10 +3,14 @@ use cli::{
     budgeter_cli,
     use_cases::{
         init::{handle_init, InitError},
-        pile::{handle_pile_command, PileError},
+        pile::PileError,
     },
 };
-use handling::budgey_handling::LocalConfig;
+use handling::{
+    budget_handling::create_new_budget,
+    budgey_handling::{init_budgey, LocalConfig},
+    pile_handling::create_new_pile,
+};
 
 pub mod cli;
 pub mod config;
@@ -41,26 +45,25 @@ impl std::fmt::Display for CommonError {
 fn main() {
     let local_config = LocalConfig::default();
     let budgey_path = &local_config.budgey_dir;
+    let budget_state_name = "budget_state";
     // commands
     let commands = budgeter_cli::BudgeyCLI::parse().commands;
     let result = match commands {
         budgeter_cli::Commands::Init { name: budget_name } => {
             let result = handle_init(
-                budgey_path,
                 &budget_name,
-                handling::budgey_handling::init_budgey,
-                handling::budget_handling::create_new_budget,
-                handling::pile_handling::create_new_pile,
+                || init_budgey(budgey_path, budget_state_name),
+                |budget| create_new_budget(&budgey_path, budget),
+                |budget_name| {
+                    create_new_pile(models::pile::Pile::default(), &budget_name, budgey_path)
+                },
             );
             result.map_err(|e| CommonError::wrap_init(e))
         }
-        budgeter_cli::Commands::Pile {
-            subcommand,
-            budget_name,
-        } => {
-            let result = handle_pile_command(budgey_path, &budget_name, subcommand);
-            result.map_err(|e| CommonError::wrap_pile(e))
+        budgeter_cli::Commands::Pile { subcommand } => {
+            todo!()
         }
+        budgeter_cli::Commands::Budget { subcommand } => todo!(),
     };
     if let Err(e) = result {
         println!("{}", e)
