@@ -20,6 +20,9 @@ impl BudgeyState {
             .collect::<Vec<String>>();
         BudgeyState::new(&budget_names, &self.current_focused_budget)
     }
+    pub fn change_focused_budget_name(self, budget_name: &str) -> Self {
+        BudgeyState::new(&self.budget_names, budget_name)
+    }
 
     pub fn remove_budget_name(self, budget_name: &str) -> Self {
         let budget_names = self
