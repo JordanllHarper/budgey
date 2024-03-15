@@ -47,10 +47,20 @@ pub enum GetPilesError {
 pub fn get_all_piles(
     budgey_directory: &str,
     budget_name: &str,
+    pile_names: &[&str],
+    get_pile_by_name: fn(
+        budgey_directory: &str,
+        budget_name: &str,
+        pile_name: &str,
+    ) -> anyhow::Result<Pile, GetPileByNameError>,
 ) -> anyhow::Result<Vec<Pile>, GetPilesError> {
-    let budget_directory = format!("{}/{}", budgey_directory, budget_name);
-    let read_dir = fs::read_dir(budget_directory).map_err(|_| GetPilesError::NoBudgetDirectory)?;
-    todo!()
+    pile_names
+        .iter()
+        .map(|pile_name| {
+            get_pile_by_name(budgey_directory, budget_name, pile_name)
+                .map_err(|e| GetPilesError::GetPileByNameError(e))
+        })
+        .collect::<anyhow::Result<Vec<Pile>, GetPilesError>>()
 }
 
 #[derive(Debug)]
