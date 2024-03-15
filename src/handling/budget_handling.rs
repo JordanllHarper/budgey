@@ -12,13 +12,6 @@ use crate::{
 use super::budgey_handling::GetBudgeyStateError;
 
 #[derive(Debug)]
-pub enum BudgetError {
-    GetBudgetError(GetBudgetError),
-    GetAllBudgetsError(GetAllBudgetsError),
-    CreateNewBudgetError(CreateNewBudgetError),
-}
-
-#[derive(Debug)]
 pub enum GetBudgetError {
     GetBudgetFileError,
     DeserialieBudgetJsonError,
