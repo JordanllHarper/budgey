@@ -67,7 +67,8 @@ pub fn write_new_budgey_state(
     fs::write(
         budgey_state_json_path,
         serde_json::to_string(&new_state).unwrap(),
-    )?;
+    )
+    .map_err(|_| WriteBudgeyStateError::CouldntWriteBudgeyState)?;
     Ok(())
 }
 
