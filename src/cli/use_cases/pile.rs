@@ -27,7 +27,22 @@ impl PileError {
 
 impl Display for PileError {
     fn fmt(&self, f: &mut Formatter<'_>) -> std::fmt::Result {
-        todo!()
+        match self {
+            PileError::CreateNewPileError(e) => match e {
+                CreateNewPileError::SubPileError(sub_e) => write!(f, "{:?}", sub_e),
+                CreateNewPileError::PileDirectoryAlreadyExists => {
+                    write!(f, "The pile directory already exists.")
+                }
+                CreateNewPileError::CouldntCreatePileDirectory => {
+                    write!(f, "Couldn't create the pile directory.")
+                }
+                CreateNewPileError::CouldntWriteJson => {
+                    write!(f, "Couldn't write the pile json file.")
+                }
+            },
+            PileError::GetPilesError(e) => write!(f, "{:?}", e),
+            PileError::PileOperationError(e) => write!(f, "{:?}", e),
+        }
     }
 }
 
@@ -68,22 +83,7 @@ pub fn handle_pile_command(
             )
             .map_err(|e| PileError::new_from_create_new_pile_error(e))
         }
-        PileSubcommand::Add { amount, source } => todo!(),
-        PileSubcommand::Merge {
-            amount,
-            source,
-            destination,
-            delete_after_merge,
-            usage,
-        } => todo!(),
-        PileSubcommand::Balance { name } => todo!(),
-        PileSubcommand::List => todo!(),
-        PileSubcommand::View { name } => todo!(),
-        PileSubcommand::Remove { name } => todo!(),
-        PileSubcommand::Commit { message } => todo!(),
-        PileSubcommand::Revert { message } => todo!(),
-        PileSubcommand::Revert { message } => todo!(),
-        PileSubcommand::Restore => todo!(),
+        _ => todo!(),
     }
 }
 
