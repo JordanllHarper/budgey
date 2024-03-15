@@ -15,7 +15,7 @@ pub enum Commands {
     #[command(name = "init", arg_required_else_help = true)]
     Init {
         /// The name of the new budget. Must be unique.
-        #[arg()]
+        #[arg(short, long, required = true)]
         name: String,
     },
     Budget {
