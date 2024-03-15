@@ -21,6 +21,14 @@ impl BudgeyState {
         BudgeyState::new(&budget_names, &self.current_focused_budget)
     }
 
+    pub fn remove_budget(self, budget_name: &str) -> Self {
+        let budget_names = self
+            .budget_names
+            .into_iter()
+            .filter(|name| budget_name != name)
+            .collect::<Vec<String>>();
+        BudgeyState::new(&budget_names, &self.current_focused_budget)
+    }
     pub fn new_init() -> Self {
         Self {
             budget_names: vec!["main".to_string()],
