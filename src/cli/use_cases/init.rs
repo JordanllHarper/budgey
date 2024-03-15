@@ -54,6 +54,7 @@ impl std::fmt::Display for InitError {
                 InitBudgeyError::BudgeyCreationFailed => {
                     String::from("The budgey directory couldn't be created.")
                 }
+                InitBudgeyError::WriteNewBudgeyStateError(_) => todo!(),
             },
         };
         f.write_str(&message)?;
@@ -91,6 +92,7 @@ pub fn handle_init(
             InitBudgeyError::BudgeyCreationFailed => {
                 return Err(InitError::new_from_budgey_error(e).into());
             }
+            InitBudgeyError::WriteNewBudgeyStateError(_) => todo!(),
         }
     }
 
