@@ -102,13 +102,16 @@ pub fn get_pile_by_name(
         .map_err(|_| GetPileByNameError::PileDeserializationError)?;
     Ok(pile)
 }
+// TODO: Add variants when implementing
+pub enum SwitchPileError {}
 /// Switches the focused pile to the pile with the given name.
-fn switch_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
+pub fn switch_pile(_pile_name: &str) -> anyhow::Result<(), SwitchPileError> {
     todo!()
 }
 
+// TODO: Add variants when implementing
+pub enum DeletePileError {}
 /// Deletes a pile with the given name.
-fn delete_pile(pile_name: &str) -> anyhow::Result<(), CreateNewPileError> {
+pub fn delete_pile(_pile_name: &str) -> anyhow::Result<(), DeletePileError> {
     todo!()
 }
-
