@@ -25,6 +25,7 @@ pub fn init_budgey(budgey_path: &str) -> anyhow::Result<(), InitBudgeyError> {
     let budgets_collection = budget_collection::BudgeyState::new_init();
     Ok(())
 }
+#[derive(Debug)]
 pub enum GetBudgeyStateError {
     BudgeyStateFileNotFound,
     ErrorReadingBudgeyState,
