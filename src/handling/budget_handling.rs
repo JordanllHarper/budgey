@@ -4,7 +4,8 @@ use std::{
 };
 
 use crate::{
-    handling::budgey_handling::get_budgey_state, models::budget::Budget,
+    handling::budgey_handling::get_budgey_state,
+    models::{budget::Budget, budgey_state::BudgeyState},
     utils::json_utils::create_json_path,
 };
 
