@@ -18,6 +18,10 @@ pub enum Commands {
         #[arg()]
         name: String,
     },
+    Budget {
+        #[command(subcommand)]
+        subcommand: BudgetSubcommand,
+    },
     /// Budgey Pile -> create and manage piles.
     #[command(name = "pile")]
     Pile {
@@ -27,6 +31,16 @@ pub enum Commands {
 
         #[command(subcommand)]
         subcommand: PileSubcommand,
+    },
+}
+#[derive(Debug, Subcommand)]
+pub enum BudgetSubcommand {
+    /// Set the named working budget.
+    #[command(name = "new", arg_required_else_help = true)]
+    Focus {
+        /// The name of the budget to focus on.
+        #[arg(short, long, required = true)]
+        name: String,
     },
 }
 
