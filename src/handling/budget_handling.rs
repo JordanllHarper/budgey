@@ -22,7 +22,7 @@ pub fn get_budget_json(
 
 #[derive(Debug)]
 pub enum GetBudgetError {
-    GetBudgetFileError,
+    GetBudgetJsonFileError,
     DeserialieBudgetJsonError,
 }
 pub fn get_budget(budgey_path: &str, budget_name: &str) -> anyhow::Result<Budget, GetBudgetError> {
