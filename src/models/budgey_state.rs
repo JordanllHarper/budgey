@@ -12,11 +12,11 @@ impl BudgeyState {
         }
     }
 
-    pub fn add_name(self, name: String) -> Self {
+    pub fn add_budget_name(self, budget_name: &str) -> Self {
         let budget_names = self
             .budget_names
             .into_iter()
-            .chain(std::iter::once(name))
+            .chain(std::iter::once(budget_name.to_string()))
             .collect::<Vec<String>>();
         BudgeyState::new(&budget_names, &self.current_focused_budget)
     }
