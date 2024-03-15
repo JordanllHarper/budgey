@@ -25,10 +25,7 @@ pub enum Commands {
     /// Budgey Pile -> create and manage piles.
     #[command(name = "pile")]
     Pile {
-        /// The budget to create the new pile in.
-        #[arg(short, long)]
-        budget_name: String,
-
+        ///The subcommand to run.
         #[command(subcommand)]
         subcommand: PileSubcommand,
     },
