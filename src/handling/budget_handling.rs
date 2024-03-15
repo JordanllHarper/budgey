@@ -10,6 +10,16 @@ use crate::{
 
 use super::budgey_handling::GetBudgeyStateError;
 
+pub fn get_budget_json(
+    budgey_path: &str,
+    budget_name: &str,
+) -> anyhow::Result<String, GetBudgetError> {
+    let budget_path = create_json_path(budgey_path, budget_name);
+    let contents =
+        fs::read_to_string(budget_path).map_err(|_| GetBudgetError::GetBudgetJsonFileError)?;
+    Ok(contents)
+}
+
 #[derive(Debug)]
 pub enum GetBudgetError {
     GetBudgetFileError,
