@@ -16,7 +16,7 @@ pub enum GetBudgetError {
     GetBudgetFileError,
     DeserialieBudgetJsonError,
 }
-pub fn get_budget(budgey_path: &str, budget_name: &str) -> anyhow::Result<Budget, BudgetError> {
+pub fn get_budget(budgey_path: &str, budget_name: &str) -> anyhow::Result<Budget, GetBudgetError> {
     let budget_file_path = format!("{}/{}", budgey_path, budget_name);
     let budget_path = create_json_path(&budget_file_path, budget_name);
     let budget_json = fs::read_to_string(budget_path)
