@@ -58,17 +58,16 @@ pub enum GetAllBudgetsError {
 }
 
 pub fn get_all_budgets(
-    budgey_path: &str,
-    budget_state_name: &str,
+    get_budgey_state: impl Fn() -> anyhow::Result<BudgeyState, GetBudgeyStateError>,
+    get_budget: impl Fn(&str) -> anyhow::Result<Budget, GetBudgetError>,
 ) -> anyhow::Result<Vec<Budget>, GetAllBudgetsError> {
-    let budgey_state = get_budgey_state(budgey_path, budget_state_name)
-        .map_err(|e| GetAllBudgetsError::GetBudgeyStateError(e))?;
+    let budgey_state =
+        get_budgey_state().map_err(|e| GetAllBudgetsError::GetBudgeyStateError(e))?;
     budgey_state
         .budget_names
         .iter()
         .map(|budget_name| {
-            get_budget(budgey_path, budget_name)
-                .map_err(|_| GetAllBudgetsError::GetBudgetsFromNamesError)
+            get_budget(budget_name).map_err(|_| GetAllBudgetsError::GetBudgetsFromNamesError)
         })
         .collect::<anyhow::Result<Vec<Budget>, GetAllBudgetsError>>()
 }
@@ -153,3 +152,4 @@ pub fn switch_budget(
     write_new_budgey_state(new_state).map_err(|e| SwitchBudgetError::WriteBudgeyStateError(e))?;
     Ok(())
 }
+
