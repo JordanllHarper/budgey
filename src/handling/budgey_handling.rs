@@ -44,8 +44,6 @@ pub fn get_budgey_state(
     Ok(budgey_state)
 }
 
-use std::env;
-
 #[derive(Debug)]
 pub struct LocalConfig {
     /// The path to the /budgey directory  
