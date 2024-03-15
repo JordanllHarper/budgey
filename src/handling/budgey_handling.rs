@@ -19,7 +19,7 @@ pub fn init_budgey(budgey_path: &str) -> anyhow::Result<(), InitBudgeyError> {
         }
     })?;
     let budget_collection_json_path = create_json_path(budgey_path, "budget_collection");
-    let budgets_collection = BudgetCollection::new_init();
+    let budgets_collection = budget_collection::BudgeyState::new_init();
     Ok(())
 }
 pub enum GetBudgeyStateError {
