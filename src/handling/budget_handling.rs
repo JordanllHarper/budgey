@@ -32,12 +32,9 @@ pub enum CreateNewBudgetError {
     CouldntWriteJson,
 }
 
-pub fn create_new_budget(
-    budgey_directory: &str,
-    budget: Budget,
-) -> Result<(), CreateNewBudgetError> {
+pub fn create_new_budget(budgey_path: &str, budget: Budget) -> Result<(), CreateNewBudgetError> {
     let budget_name = &budget.budget_detail.budget_name;
-    let budget_path = format!("{}/{}", budgey_directory, budget_name);
+    let budget_path = format!("{}/{}", budgey_path, budget_name);
     fs::create_dir(&budget_path).map_err(|e| {
         if let ErrorKind::AlreadyExists = e.kind() {
             CreateNewBudgetError::BudgetDirectoryAlreadyExists
