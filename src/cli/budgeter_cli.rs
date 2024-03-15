@@ -121,11 +121,8 @@ pub enum PileSubcommand {
     },
 
     /// List -> list available piles.
-    #[command(name = "ls", arg_required_else_help = true)]
-    List {
-        /// The name of the budget to list piles of.
-        budget_name: String,
-    },
+    #[command(name = "list", arg_required_else_help = true)]
+    List,
 
     /// View -> view transactions of a pile
     #[command(name = "view", arg_required_else_help = true)]
