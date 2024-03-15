@@ -50,6 +50,7 @@ pub fn handle_pile_command(
                     pile_handling::SubPileError::NoSourcePile,
                 ))
             })?;
+
             pile_handling::create_new_pile(
                 Pile::new(
                     &name,
