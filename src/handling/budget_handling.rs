@@ -5,6 +5,7 @@ use crate::{models::budget::Budget, utils::json_utils::create_json_path};
 
 pub enum BudgetError {
     GetBudgetError(GetBudgetError),
+    GetAllBudgetsError(GetAllBudgetsError),
     CreateNewBudgetError(CreateNewBudgetError),
 }
 
