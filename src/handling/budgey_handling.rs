@@ -56,6 +56,23 @@ pub enum GetBudgeyStateError {
     ErrorReadingBudgeyState,
     DeserialiseBudgeyStateError,
 }
+impl std::fmt::Display for GetBudgeyStateError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let message = match self {
+            GetBudgeyStateError::BudgeyStateFileNotFound => {
+                String::from("The budgey state file couldn't be found.")
+            }
+            GetBudgeyStateError::ErrorReadingBudgeyState => {
+                String::from("Something went wrong with reading the budgey state.")
+            }
+            GetBudgeyStateError::DeserialiseBudgeyStateError => {
+                String::from("Something went wrong with deserialising the budgey state.")
+            }
+        };
+        f.write_str(&message)?;
+        Ok(())
+    }
+}
 pub fn get_budgey_state(
     budgey_directory: &str,
     budget_state_name: &str,
