@@ -39,14 +39,17 @@ pub fn handle_pile_command(
             name,
             initial_balance,
         } => {
-            let source_pile: Pile =
-                pile_handling::get_pile_by_name(budgey_path, budget_name, &source).map_err(
-                    |e| {
-                        PileError::new_from_create_new_pile_error(CreateNewPileError::SubPileError(
-                            pile_handling::SubPileError::NoSourcePile,
-                        ))
-                    },
-                )?;
+            let source_pile: Pile = pile_handling::get_pile_by_name(
+                budgey_path,
+                budget_name,
+                &source,
+                budget_handling::get_budget,
+            )
+            .map_err(|_| {
+                PileError::new_from_create_new_pile_error(CreateNewPileError::SubPileError(
+                    pile_handling::SubPileError::NoSourcePile,
+                ))
+            })?;
             pile_handling::create_new_pile(
                 Pile::new(
                     &name,
