@@ -53,14 +53,20 @@ pub enum GetAllBudgetsError {
     UnknownError,
 }
 
-pub fn get_all_budgets(budgey_directory: &str) -> anyhow::Result<Vec<Budget>, BudgetError> {
-    let budgey_dir = fs::read_dir(budgey_directory).map_err(|e| {
-        if e.kind() == ErrorKind::NotFound {
-            return BudgetError::GetAllBudgetsError(GetAllBudgetsError::BudgeyDirNotFound);
-        }
-        BudgetError::GetAllBudgetsError(GetAllBudgetsError::UnknownError)
-    })?;
-    todo!()
+pub fn get_all_budgets(
+    budgey_path: &str,
+    budget_state_name: &str,
+) -> anyhow::Result<Vec<Budget>, GetAllBudgetsError> {
+    let budgey_state = get_budgey_state(budgey_path, budget_state_name)
+        .map_err(|e| GetAllBudgetsError::GetBudgeyStateError(e))?;
+    budgey_state
+        .budget_names
+        .iter()
+        .map(|budget_name| {
+            get_budget(budgey_path, budget_name)
+                .map_err(|_| GetAllBudgetsError::GetBudgetsFromNamesError)
+        })
+        .collect::<anyhow::Result<Vec<Budget>, GetAllBudgetsError>>()
 }
 pub fn delete_budget(budget_name: &str) -> anyhow::Result<(), BudgetRepositoryError> {
     todo!()
