@@ -87,23 +87,17 @@ pub enum GetPileByNameError {
 
 /// Gets a pile by its name in the given budget.
 pub fn get_pile_by_name(
-    budgey_directory_path: &str,
     budget_name: &str,
     pile_name: &str,
-    get_budget: fn(
-        budgey_directory: &str,
-        budget_name: &str,
-    ) -> anyhow::Result<Budget, GetBudgetError>,
+    get_budget: impl Fn(&str) -> anyhow::Result<Budget, GetBudgetError>,
+    get_pile_json: impl Fn(&str) -> anyhow::Result<String, GetPileByNameError>,
 ) -> anyhow::Result<Pile, GetPileByNameError> {
-    let budget = get_budget(budgey_directory_path, budget_name)
-        .map_err(|e| GetPileByNameError::GetBudgetError(e))?;
+    let budget = get_budget(budget_name).map_err(|e| GetPileByNameError::GetBudgetError(e))?;
     let has_pile = budget.pile_names.iter().any(|pile| pile == pile_name);
     if !has_pile {
         return Err(GetPileByNameError::NamedPileNotInBudget);
     }
-    let pile_path = format!("{}/{}/{}", budgey_directory_path, budget_name, pile_name);
-    let pile_json = fs::read_to_string(create_json_path(&pile_path, pile_name))
-        .map_err(|_| GetPileByNameError::NoPileJsonError)?;
+    let pile_json = get_pile_json(pile_name)?;
     let pile: Pile = serde_json::from_str(&pile_json)
         .map_err(|_| GetPileByNameError::PileDeserializationError)?;
     Ok(pile)
