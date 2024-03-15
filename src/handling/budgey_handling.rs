@@ -1,6 +1,9 @@
 use std::{fs, io::ErrorKind};
 
-use crate::{models::budget_collection::BudgetCollection, utils::json_utils::create_json_path};
+use crate::{
+    models::{self, budgey_state},
+    utils::json_utils::create_json_path,
+};
 
 #[derive(Debug)]
 pub enum InitBudgeyError {
@@ -39,7 +42,7 @@ pub fn get_budgey_state(
             GetBudgeyStateError::ErrorReadingBudgeyState
         }
     })?;
-    let budgey_state: budget_collection::BudgeyState = serde_json::from_str(&result)
+    let budgey_state: budgey_state::BudgeyState = serde_json::from_str(&result)
         .map_err(|_| GetBudgeyStateError::DeserialiseBudgeyStateError)?;
     Ok(budgey_state)
 }
