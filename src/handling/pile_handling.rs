@@ -66,6 +66,16 @@ pub fn get_all_piles(
         })
         .collect::<anyhow::Result<Vec<Pile>, GetPilesError>>()
 }
+pub fn get_pile_json(
+    budgey_path: &str,
+    budget_name: &str,
+    pile_name: &str,
+) -> anyhow::Result<String, GetPileByNameError> {
+    let pile_path = format!("{}/{}/{}", budgey_path, budget_name, pile_name);
+    let pile_json = fs::read_to_string(create_json_path(&pile_path, pile_name))
+        .map_err(|_| GetPileByNameError::NoPileJsonError)?;
+    Ok(pile_json)
+}
 
 #[derive(Debug)]
 pub enum GetPileByNameError {
