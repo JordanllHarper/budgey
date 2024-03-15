@@ -51,6 +51,22 @@ pub fn get_budgey_state(
     Ok(budgey_state)
 }
 
+pub enum WriteBudgeyStateError {
+    CouldntWriteBudgeyState,
+}
+pub fn write_new_budgey_state(
+    budgey_path: &str,
+    budgey_state_name: &str,
+    new_state: BudgeyState,
+) -> anyhow::Result<(), anyhow::Error> {
+    let budgey_state_json_path = create_json_path(&budgey_path, budgey_state_name);
+    fs::write(
+        budgey_state_json_path,
+        serde_json::to_string(&new_state).unwrap(),
+    )?;
+    Ok(())
+}
+
 #[derive(Debug)]
 pub struct LocalConfig {
     /// The path to the /budgey directory  
