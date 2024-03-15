@@ -1,6 +1,11 @@
 use std::fs::{self};
 
-use crate::{models::pile::Pile, utils::json_utils::create_json_path};
+use crate::{
+    models::{budget::Budget, pile::Pile},
+    utils::json_utils::create_json_path,
+};
+
+use super::budget_handling::BudgetError;
 
 #[derive(Debug)]
 pub enum CreateNewPileError {
