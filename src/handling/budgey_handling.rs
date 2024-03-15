@@ -14,6 +14,26 @@ pub enum InitBudgeyError {
     BudgeyCreationFailed,
     WriteNewBudgeyStateError(WriteBudgeyStateError),
 }
+impl std::fmt::Display for InitBudgeyError {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        let message = match self {
+            InitBudgeyError::BudgeyAlreadyExists => {
+                String::from("The budgey directory already exists.")
+            }
+            InitBudgeyError::BudgeyCreationFailed => {
+                String::from("The budgey directory couldn't be created.")
+            }
+            InitBudgeyError::WriteNewBudgeyStateError(e) => match e {
+                WriteBudgeyStateError::CouldntWriteBudgeyState => {
+                    String::from("Something went wrong with writing the budgey state.")
+                }
+            },
+        };
+        f.write_str(&message)?;
+        Ok(())
+    }
+}
+
 pub enum CheckBudgeyExistsError {
     SomethingWentWrong,
 }
