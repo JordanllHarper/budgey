@@ -12,6 +12,7 @@ use crate::{
 pub enum InitBudgeyError {
     BudgeyAlreadyExists,
     BudgeyCreationFailed,
+    WriteNewBudgeyStateError(WriteBudgeyStateError),
 }
 pub enum CheckBudgeyExistsError {
     SomethingWentWrong,
