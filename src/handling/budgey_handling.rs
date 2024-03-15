@@ -22,6 +22,27 @@ pub fn init_budgey(budgey_path: &str) -> anyhow::Result<(), InitBudgeyError> {
     let budgets_collection = BudgetCollection::new_init();
     Ok(())
 }
+pub enum GetBudgeyStateError {
+    BudgeyStateFileNotFound,
+    ErrorReadingBudgeyState,
+    DeserialiseBudgeyStateError,
+}
+pub fn get_budgey_state(
+    budgey_directory: &str,
+) -> anyhow::Result<budget_collection::BudgeyState, GetBudgeyStateError> {
+    let budget_state_name: String = String::from("budgey_state");
+    let budgey_state_path = create_json_path(budgey_directory, &budget_state_name);
+    let result = fs::read_to_string(budgey_state_path).map_err(|e| {
+        if e.kind() == ErrorKind::NotFound {
+            GetBudgeyStateError::BudgeyStateFileNotFound
+        } else {
+            GetBudgeyStateError::ErrorReadingBudgeyState
+        }
+    })?;
+    let budgey_state: budget_collection::BudgeyState = serde_json::from_str(&result)
+        .map_err(|_| GetBudgeyStateError::DeserialiseBudgeyStateError)?;
+    Ok(budgey_state)
+}
 
 use std::env;
 
