@@ -6,8 +6,7 @@ use cli::{
         pile::{handle_pile_command, PileError},
     },
 };
-
-use crate::config::local_config::LocalConfig;
+use handling::budgey_handling::LocalConfig;
 
 pub mod cli;
 pub mod config;
