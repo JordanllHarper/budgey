@@ -5,7 +5,7 @@ use crate::{
     utils::json_utils::create_json_path,
 };
 
-use super::budget_handling::BudgetError;
+use super::budget_handling::GetBudgetError;
 
 #[derive(Debug)]
 pub enum CreateNewPileError {
@@ -44,7 +44,6 @@ pub fn create_new_pile(
 
 #[derive(Debug)]
 pub enum GetPilesError {
-    BudgetError(BudgetError),
     GetPileByNameError(GetPileByNameError),
 }
 
@@ -70,7 +69,7 @@ pub fn get_all_piles(
 
 #[derive(Debug)]
 pub enum GetPileByNameError {
-    BudgetError(BudgetError),
+    GetBudgetError(GetBudgetError),
     NoPileJsonError,
     PileDeserializationError,
     NamedPileNotInBudget,
@@ -84,10 +83,10 @@ pub fn get_pile_by_name(
     get_budget: fn(
         budgey_directory: &str,
         budget_name: &str,
-    ) -> anyhow::Result<Budget, BudgetError>,
+    ) -> anyhow::Result<Budget, GetBudgetError>,
 ) -> anyhow::Result<Pile, GetPileByNameError> {
     let budget = get_budget(budgey_directory_path, budget_name)
-        .map_err(|e| GetPileByNameError::BudgetError(e))?;
+        .map_err(|e| GetPileByNameError::GetBudgetError(e))?;
     let has_pile = budget.pile_names.iter().any(|pile| pile == pile_name);
     if !has_pile {
         return Err(GetPileByNameError::NamedPileNotInBudget);
