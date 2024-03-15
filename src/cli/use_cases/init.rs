@@ -76,20 +76,12 @@ impl InitError {
 
 /// Handler for the budgey init command.
 pub fn handle_init(
-    budgey_path: &str,
     budget_name: &str,
-    init_budgey: fn(budgey_path: &str) -> Result<(), InitBudgeyError>,
-    create_new_budget: fn(
-        budgey_directory: &str,
-        budget: Budget,
-    ) -> Result<(), CreateNewBudgetError>,
-    create_new_pile: fn(
-        pile: Pile,
-        budget_name: &str,
-        budgey_path: &str,
-    ) -> Result<(), CreateNewPileError>,
+    init_budgey: impl Fn() -> Result<(), InitBudgeyError>,
+    create_new_budget: impl Fn(Budget) -> Result<(), CreateNewBudgetError>,
+    create_new_pile: impl Fn(String) -> Result<(), CreateNewPileError>,
 ) -> anyhow::Result<(), InitError> {
-    let result = init_budgey(budgey_path);
+    let result = init_budgey();
     if let Err(e) = result {
         match e {
             InitBudgeyError::BudgeyAlreadyExists => {
@@ -102,10 +94,8 @@ pub fn handle_init(
         }
     }
 
-    create_new_budget(budgey_path, Budget::new(budget_name))
-        .map_err(|e| InitError::new_from_budget_error(e))?;
-    create_new_pile(Pile::default(), budget_name, budgey_path)
-        .map_err(|e| InitError::new_from_pile_error(e))?;
+    create_new_budget(Budget::new(budget_name)).map_err(|e| InitError::new_from_budget_error(e))?;
+    create_new_pile(budget_name.to_string()).map_err(|e| InitError::new_from_pile_error(e))?;
 
     Ok(())
 }
@@ -118,69 +108,54 @@ pub mod init_tests {
 
     #[test]
     pub fn handle_init_success() {
-        let budgey_path = "test_budgey";
         let budget_name = "test_budget";
-        let result = super::handle_init(
-            budgey_path,
-            budget_name,
-            |_| Ok(()),
-            |_, _| Ok(()),
-            |_, _, _| Ok(()),
-        );
+        let result: _ = super::handle_init(budget_name, || Ok(()), |_| Ok(()), |_| Ok(()));
         assert!(result.is_ok());
     }
 
     #[test]
     pub fn handle_init_success_with_budgey_already_exists() {
-        let budgey_path = "test_budgey";
         let budget_name = "test_budget";
         let result = super::handle_init(
-            budgey_path,
             budget_name,
-            |_| Err(InitBudgeyError::BudgeyAlreadyExists),
-            |_, _| Ok(()),
-            |_, _, _| Ok(()),
+            || Err(InitBudgeyError::BudgeyAlreadyExists),
+            |_| Ok(()),
+            |_| Ok(()),
         );
         assert!(result.is_ok());
     }
 
     #[test]
     pub fn handle_init_failure_budgey_creation_fails() {
-        let budgey_path = "test_budgey";
         let budget_name = "test_budget";
         let result = super::handle_init(
-            budgey_path,
             budget_name,
-            |_| Err(InitBudgeyError::BudgeyCreationFailed),
-            |_, _| Ok(()),
-            |_, _, _| Ok(()),
+            || Err(InitBudgeyError::BudgeyCreationFailed),
+            |_| Ok(()),
+            |_| Ok(()),
         );
         assert!(result.is_err());
     }
 
     #[test]
     pub fn handle_init_failure_create_budget_fails() {
-        let budgey_path = "test_budgey";
         let budget_name = "test_budget";
         let result = super::handle_init(
-            budgey_path,
             budget_name,
+            || Ok(()),
+            |_| Err(CreateNewBudgetError::CreateNamedBudgetDirFailed),
             |_| Ok(()),
-            |_, _| Err(CreateNewBudgetError::CreateNamedBudgetDirFailed),
-            |_, _, _| Ok(()),
         );
         assert!(result.is_err());
     }
     #[test]
     pub fn handle_init_failure_pile_creation_fails() {
-        let budgey_path = "test_budgey";
         let budget_name = "test_budget";
         let result = super::handle_init(
-            budgey_path,
             budget_name,
+            || Ok(()),
             |_| Ok(()),
-            |_, _| Ok(()),
-            |_, _, _| Err(CreateNewPileError::CouldntCreatePileDirectory),
+            |_| Err(CreateNewPileError::CouldntCreatePileDirectory),
         );
         assert!(result.is_err());
     }
