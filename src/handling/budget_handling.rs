@@ -48,6 +48,7 @@ pub fn create_new_budget(budgey_path: &str, budget: Budget) -> Result<(), Create
 }
 #[derive(Debug)]
 pub enum GetAllBudgetsError {
+    GetBudgeyStateError(GetBudgeyStateError),
     BudgeyDirNotFound,
     ReadDirError,
     GetBudgetsFromNamesError,
