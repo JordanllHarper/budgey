@@ -24,8 +24,8 @@ pub fn init_budgey(
             InitBudgeyError::BudgeyCreationFailed
         }
     })?;
-    let budget_collection_json_path = create_json_path(budgey_path, "budget_collection");
-    let budgets_collection = budget_collection::BudgeyState::new_init();
+    let budgey_state_json_path = create_json_path(budgey_path, budget_state_name);
+    let budgets_collection = models::budgey_state::BudgeyState::new_init();
     Ok(())
 }
 #[derive(Debug)]
