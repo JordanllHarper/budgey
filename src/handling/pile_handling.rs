@@ -55,6 +55,8 @@ pub fn get_all_piles(
     todo!()
 }
 
+#[derive(Debug)]
+pub enum GetPileByNameError {
     BudgetError(BudgetError),
     NoPileJsonError,
     PileDeserializationError,
