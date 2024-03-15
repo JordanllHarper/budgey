@@ -40,9 +40,7 @@ pub fn create_new_pile(
 #[derive(Debug)]
 pub enum GetPilesError {
     BudgetError(BudgetError),
-    NamedPileNotInBudget,
-    PileDeserializationError,
-    NoPilesError,
+    GetPileByNameError(GetPileByNameError),
 }
 
 /// Gets all the piles in the given budget.
