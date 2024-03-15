@@ -1,7 +1,10 @@
 use std::{fs, io::ErrorKind};
 
 use crate::{
-    models::{self, budgey_state},
+    models::{
+        self,
+        budgey_state::{self, BudgeyState},
+    },
     utils::json_utils::create_json_path,
 };
 
