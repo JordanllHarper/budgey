@@ -5,7 +5,7 @@ use std::{
 
 use crate::{
     models::{budget::Budget, budgey_state::BudgeyState},
-    utils::json_utils::create_json_path,
+    utils::create_json_path,
 };
 
 use super::budgey_handling::GetBudgeyStateError;

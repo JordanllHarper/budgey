@@ -5,7 +5,7 @@ use crate::{
         self,
         budgey_state::{self, BudgeyState},
     },
-    utils::json_utils::create_json_path,
+    utils::create_json_path,
 };
 
 #[derive(Debug)]

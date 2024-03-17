@@ -2,7 +2,7 @@ use std::fs::{self};
 
 use crate::{
     models::{budget::Budget, pile::Pile},
-    utils::json_utils::create_json_path,
+    utils::create_json_path,
 };
 
 use super::budget_handling::GetBudgetError;
