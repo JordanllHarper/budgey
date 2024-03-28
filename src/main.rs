@@ -69,3 +69,24 @@ fn main() {
         println!("{}", e)
     };
 }
+
+fn handle_pile(
+    budgey_path: &str,
+    budget_state_name: &str,
+    subcommand: budgeter_cli::PileSubcommand,
+) -> anyhow::Result<(), CommonError> {
+    let budgey_state = get_budgey_state(budgey_path, budget_state_name)
+        .map_err(|e| CommonError::wrap_get_budgey_state(e))?;
+    let budget_name = &budgey_state.current_focused_budget;
+    handle_pile_command(budgey_path, budget_name, subcommand).map_err(|e| CommonError::wrap_pile(e))
+}
+
+fn handle_budget(
+    budgey_path: &str,
+    budget_state_name: &str,
+    subcommand: BudgetSubcommand,
+) -> anyhow::Result<(), CommonError> {
+    let budgey_state = get_budgey_state(budgey_path, budget_state_name)
+        .map_err(|e| CommonError::wrap_get_budgey_state(e))?;
+    todo!()
+}
