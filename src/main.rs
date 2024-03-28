@@ -91,7 +91,8 @@ fn handle_pile(
     let budgey_state = get_budgey_state(budgey_path, budget_state_name)
         .map_err(|e| CommonError::wrap_get_budgey_state(e))?;
     let budget_name = &budgey_state.current_focused_budget;
-    handle_pile_command(budgey_path, budget_name, subcommand).map_err(|e| CommonError::wrap_pile(e))
+    handle_pile_command(budgey_path, budget_name, subcommand, get_pile_json)
+        .map_err(|e| CommonError::wrap_pile(e))
 }
 
 fn handle_budget(
