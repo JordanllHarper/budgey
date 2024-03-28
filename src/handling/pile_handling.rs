@@ -25,6 +25,7 @@ pub fn create_new_pile(
     pile: Pile,
     budget_name: &str,
     budgey_path: &str,
+    create_dir: fn(pile_path: &str) -> std::io::Result<()>,
 ) -> anyhow::Result<(), CreateNewPileError> {
     let pile_name = &pile.name;
     let pile_path = format!("{}/{}/{}", budgey_path, budget_name, pile_name);
