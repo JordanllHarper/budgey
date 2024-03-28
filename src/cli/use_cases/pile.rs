@@ -84,7 +84,7 @@ pub fn handle_pile_command(
                 ),
                 &budget_name,
                 budgey_path,
-                |path| std::fs::create_dir(path)),
+                |path| std::fs::create_dir(path),
             )
             .map_err(|e| PileError::new_from_create_new_pile_error(e))
         }
