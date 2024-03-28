@@ -55,7 +55,12 @@ fn main() {
                 || init_budgey(budgey_path, budget_state_name),
                 |budget| create_new_budget(&budgey_path, budget),
                 |budget_name| {
-                    create_new_pile(models::pile::Pile::default(), &budget_name, budgey_path)
+                    create_new_pile(
+                        models::pile::Pile::default(),
+                        &budget_name,
+                        budgey_path,
+                        |path| std::fs::create_dir(path),
+                    )
                 },
             );
             result.map_err(|e| CommonError::wrap_init(e))
