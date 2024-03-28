@@ -100,3 +100,11 @@ pub enum PileOperationError {
     ViewError,
     RemoveError,
 }
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_handle_pile_command() {}
+}
