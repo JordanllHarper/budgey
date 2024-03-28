@@ -35,10 +35,8 @@ impl CommonError {
 }
 impl std::fmt::Display for CommonError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        match self {
-            CommonError::InitError(e) => write!(f, "{}", e),
-            CommonError::PileError(e) => write!(f, "{}", e),
-        }
+        write!(f, "{}", self);
+        Ok(())
     }
 }
 
