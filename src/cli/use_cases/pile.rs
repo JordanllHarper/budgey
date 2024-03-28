@@ -50,6 +50,7 @@ pub fn handle_pile_command(
     budgey_path: &str,
     budget_name: &str,
     subcommand: PileSubcommand,
+    get_pile_json: fn(&str, &str, &str) -> anyhow::Result<String, GetPileByNameError>,
 ) -> anyhow::Result<(), PileError> {
     match subcommand {
         PileSubcommand::New {
