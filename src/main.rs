@@ -1,16 +1,18 @@
 use clap::Parser;
 use cli::{
-    budgeter_cli,
+    budgeter_cli::{self, BudgetSubcommand},
     use_cases::{
         init::{handle_init, InitError},
-        pile::PileError,
+        pile::{handle_pile_command, PileError},
     },
 };
 use handling::{
     budget_handling::create_new_budget,
-    budgey_handling::{init_budgey, LocalConfig},
+    budgey_handling::{init_budgey, GetBudgeyStateError, LocalConfig},
     pile_handling::create_new_pile,
 };
+
+use crate::{handling::budgey_handling::get_budgey_state, models::budgey_state::BudgeyState};
 
 pub mod cli;
 pub mod config;
@@ -22,6 +24,7 @@ pub mod utils;
 pub enum CommonError {
     InitError(InitError),
     PileError(PileError),
+    GetBudgeyStateError(GetBudgeyStateError),
 }
 
 impl CommonError {
@@ -32,7 +35,12 @@ impl CommonError {
     pub fn wrap_pile(e: PileError) -> Self {
         CommonError::PileError(e)
     }
+
+    pub fn wrap_get_budgey_state(e: GetBudgeyStateError) -> Self {
+        CommonError::GetBudgeyStateError(e)
+    }
 }
+
 impl std::fmt::Display for CommonError {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
         write!(f, "{}", self);
