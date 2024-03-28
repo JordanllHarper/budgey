@@ -74,10 +74,10 @@ impl std::fmt::Display for GetBudgeyStateError {
     }
 }
 pub fn get_budgey_state(
-    budgey_directory: &str,
+    budgey_path: &str,
     budget_state_name: &str,
 ) -> anyhow::Result<models::budgey_state::BudgeyState, GetBudgeyStateError> {
-    let budgey_state_path = create_json_path(budgey_directory, &budget_state_name);
+    let budgey_state_path = create_json_path(budgey_path, &budget_state_name);
     let result = fs::read_to_string(budgey_state_path).map_err(|e| {
         if e.kind() == ErrorKind::NotFound {
             GetBudgeyStateError::BudgeyStateFileNotFound
