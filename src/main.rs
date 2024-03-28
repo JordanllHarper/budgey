@@ -61,9 +61,11 @@ fn main() {
             result.map_err(|e| CommonError::wrap_init(e))
         }
         budgeter_cli::Commands::Pile { subcommand } => {
-            todo!()
+            handle_pile(budgey_path, budget_state_name, subcommand)
         }
-        budgeter_cli::Commands::Budget { subcommand } => todo!(),
+        budgeter_cli::Commands::Budget { subcommand } => {
+            handle_budget(budgey_path, budget_state_name, subcommand)
+        }
     };
     if let Err(e) = result {
         println!("{}", e)
