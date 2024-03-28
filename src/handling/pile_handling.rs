@@ -29,7 +29,7 @@ pub fn create_new_pile(
 ) -> anyhow::Result<(), CreateNewPileError> {
     let pile_name = &pile.name;
     let pile_path = format!("{}/{}/{}", budgey_path, budget_name, pile_name);
-    fs::create_dir(&pile_path).map_err(|e| {
+    create_dir(&pile_path).map_err(|e| {
         if let std::io::ErrorKind::AlreadyExists = e.kind() {
             CreateNewPileError::PileDirectoryAlreadyExists
         } else {
