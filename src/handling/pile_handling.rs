@@ -116,3 +116,6 @@ pub enum DeletePileError {}
 pub fn delete_pile(_pile_name: &str) -> anyhow::Result<(), DeletePileError> {
     todo!()
 }
+
+#[cfg(test)]
+mod pile_handling_tests {}
