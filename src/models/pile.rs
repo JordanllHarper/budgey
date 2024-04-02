@@ -4,7 +4,6 @@ use super::record_transaction::{Record, Transaction};
 
 #[derive(Serialize, Deserialize)]
 pub struct Pile {
-    pub name: String,
     pub current_balance: f32,
     pub pile_type: PileType,
     pub records: Vec<Record>,
@@ -14,7 +13,6 @@ pub struct Pile {
 impl Default for Pile {
     fn default() -> Self {
         Pile::new(
-            "main",
             0.0,
             PileType::Main,
             &[Record::new_init("Initialised main", "0", 0.0, Some(0.0))],
@@ -29,12 +27,13 @@ pub enum PileType {
 }
 
 impl Pile {
-    pub fn new(
-        name: &str,
-        balance: f32,
-        pile_type: PileType,
-        source_record_history: &[Record],
-    ) -> Self {
+    pub fn get_name(&self) -> String {
+        match &self.pile_type {
+            PileType::Main => "main".to_string(),
+            PileType::UserCreated { source_pile_name } => source_pile_name.to_string(),
+        }
+    }
+    pub fn new(balance: f32, pile_type: PileType, source_record_history: &[Record]) -> Self {
         let up_to_date_history = vec![Record::new_init(
             "Initialised pile",
             "0",
@@ -46,7 +45,6 @@ impl Pile {
         .cloned()
         .collect::<Vec<Record>>();
         Self {
-            name: name.to_string(),
             current_balance: balance,
             pile_type,
             records: up_to_date_history,
@@ -55,7 +53,6 @@ impl Pile {
     }
     pub fn default_main_pile() -> Pile {
         Pile::new(
-            "main",
             0.0,
             PileType::Main,
             &[Record::new_init("Initialised main", "0", 0.0, Some(0.0))],
