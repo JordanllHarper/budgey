@@ -5,6 +5,10 @@ pub fn create_json_path(budgey_path: &str, name: &str) -> String {
     format!("{}/{}.json", budgey_path, name)
 }
 
+pub fn create_json_file_path(name: &str) -> String {
+    format!("{}.json", name)
+}
+
 // write a test for the above
 //
 #[cfg(test)]
