@@ -48,7 +48,7 @@ pub fn init_budgey(
     let init_state = models::budgey_state::BudgeyState::new_init();
     write_new_budgey_state(budgey_path, budgey_state_name, init_state)
         .map_err(|e| InitBudgeyError::WriteNewBudgeyStateError(e))?;
-    todo!()
+    Ok(())
 }
 #[derive(Debug)]
 pub enum GetBudgeyStateError {
