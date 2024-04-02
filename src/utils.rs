@@ -9,6 +9,10 @@ pub fn create_json_file_path(name: &str) -> String {
     format!("{}.json", name)
 }
 
+pub fn concat_path_and_name(budgey_path: &str, name: &str) -> String {
+    format!("{}/{}", budgey_path, name)
+}
+
 // write a test for the above
 //
 #[cfg(test)]
