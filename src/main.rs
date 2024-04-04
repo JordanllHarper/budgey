@@ -8,6 +8,17 @@ mod budgey_state;
 pub mod models;
 pub mod utils;
 
+struct BudgeyContext {
+    budgey_path: String,
+    state: BudgeyState,
+}
+
+impl BudgeyContext {
+    fn new(budgey_path: String, state: BudgeyState) -> Self {
+        Self { budgey_path, state }
+    }
+}
+
 fn main() {
     let home = env!("HOME").to_string();
     let budgey_path = format!("{}{}", home, "/budgey/");
