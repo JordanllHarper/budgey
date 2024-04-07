@@ -32,10 +32,10 @@ impl BudgeyState {
             .collect::<Vec<String>>();
         BudgeyState::new(&budget_names, &self.current_focused_budget_name)
     }
-    pub fn new_init() -> Self {
+    pub fn new_init(budget_name: &str) -> Self {
         Self {
-            budget_names: vec!["main".to_string()],
-            current_focused_budget_name: "main".to_string(),
+            budget_names: vec![budget_name.to_string()],
+            current_focused_budget_name: budget_name.to_string(),
         }
     }
 }

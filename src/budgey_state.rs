@@ -1,6 +1,6 @@
 use std::fs;
 
-use crate::{models::budgey_state::BudgeyState, utils::concat_path_and_name};
+use crate::{models::budgey_state::BudgeyState, utils::concat_paths};
 
 /// Gets the budgey state from the given path
 pub fn get_budgey_state(budgey_path_to_json: &str) -> anyhow::Result<BudgeyState, std::io::Error> {
@@ -25,7 +25,7 @@ pub fn create_budgey_state(
         }
         _ => {}
     };
-    fs::write(concat_path_and_name(budgey_path, json_name), serialized)?;
+    fs::write(concat_paths(budgey_path, json_name), serialized)?;
 
     Ok(())
 }

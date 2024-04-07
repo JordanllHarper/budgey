@@ -5,12 +5,13 @@ pub fn create_json_path(budgey_path: &str, name: &str) -> String {
     format!("{}/{}.json", budgey_path, name)
 }
 
-pub fn create_json_file_path(name: &str) -> String {
+pub fn create_json_file_name(name: &str) -> String {
     format!("{}.json", name)
 }
 
-pub fn concat_path_and_name(budgey_path: &str, name: &str) -> String {
-    format!("{}/{}", budgey_path, name)
+/// Concatenates the given path and name with a '/' in between.
+pub fn concat_paths(root: &str, new: &str) -> String {
+    format!("{}/{}", root, new)
 }
 
 // write a test for the above
