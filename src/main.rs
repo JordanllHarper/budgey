@@ -70,11 +70,10 @@ fn handle_init(
         budgey_path,
         json_name,
         &BudgeyState::new_init(starting_budget_name),
-    )
-    .unwrap();
+    )?;
 
     let budget_path = concat_paths(budgey_path, starting_budget_name);
-    create_new_budget(&budget_path, Budget::new(starting_budget_name)).unwrap();
+    create_new_budget(&budget_path, Budget::new(starting_budget_name))?;
     create_new_pile(&budget_path, Pile::default_main_pile())?;
     println!("Budgey initialised");
     Ok(())
@@ -93,24 +92,3 @@ fn handle_pile(
 ) -> anyhow::Result<()> {
     todo!()
 }
-// fn get_or_create_budgey_state(
-//     budgey_state_path: &str,
-//     json_name: &str,
-// ) -> anyhow::Result<BudgeyState> {
-//     let budgey_to_json = concat_path_and_name(budgey_state_path, json_name);
-//     let budgey_state_result = budgey_state::get_budgey_state(&budgey_to_json);
-//     match budgey_state_result {
-//         Ok(state) => Ok(state),
-//         Err(e) => {
-// if e.kind() == std::io::ErrorKind::NotFound {
-// let new_state = BudgeyState::new_init();
-// budgey_state::create_budgey_state(budgey_state_path, json_name, &new_state)
-//     .unwrap();
-// Ok(new_state)
-// } else {
-//     println!("{:?}", e);
-//     Err(e.into())
-// }
-//         }
-//     }
-// }
