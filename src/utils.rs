@@ -1,10 +1,11 @@
 /// Creates a json file with the given path and name.
 /// budgey_path -> path to the budgey directory
 /// name -> name of the json file
-pub fn create_json_path(budgey_path: &str, name: &str) -> String {
-    format!("{}/{}.json", budgey_path, name)
+pub fn create_json_path(root: &str, name: &str) -> String {
+    format!("{}/{}.json", root, name)
 }
 
+/// Appends the given name with a '.json' extension.
 pub fn create_json_file_name(name: &str) -> String {
     format!("{}.json", name)
 }
