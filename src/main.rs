@@ -68,7 +68,7 @@ fn main() -> anyhow::Result<()> {
             let budgey_state = budgey_state::get_budgey_state(&budgey_state_path)?;
             let context = BudgeyContext::new(&budgey_state, &budgey_config);
             if let Some(command) = subcommand {
-                handle_budget_subcommand(&budgey_config, &context, command)?;
+                handle_budget_subcommand(&context, command)?;
             } else {
                 let current_budget = budget_management::get_current_budget(&context)?;
                 println!("Current budget: {}", current_budget);
@@ -98,7 +98,6 @@ fn handle_init(budgey_config: BudgeyConfig, starting_budget_name: &str) -> anyho
 }
 
 fn handle_budget_subcommand(
-    budgey_config: &BudgeyConfig,
     context: &BudgeyContext,
     subcommand: budgey_cli::BudgetSubcommand,
 ) -> anyhow::Result<()> {
@@ -113,7 +112,7 @@ fn handle_budget_subcommand(
             }
 
             let new_state = state.change_focused_budget_name(&name);
-            write_budgey_state(&budgey_config, &new_state)?;
+            write_budgey_state(&context.budgey_config, &new_state)?;
             println!("Checked out new budget: {}", name);
             Ok(())
         }
@@ -123,12 +122,15 @@ fn handle_budget_subcommand(
                 println!("Budget already exists with the same name");
                 return Ok(());
             }
-            create_new_budget(&budgey_config.get_budget_path(&name), Budget::new(&name))?;
+            create_new_budget(
+                &context.budgey_config.get_budget_path(&name),
+                Budget::new(&name),
+            )?;
             let new_state = context
                 .state
                 .add_budget_name(&name)
                 .change_focused_budget_name(&name);
-            write_budgey_state(&budgey_config, &new_state)?;
+            write_budgey_state(&context.budgey_config, &new_state)?;
             println!("Created and focused new budget: {}", name);
             Ok(())
         }
