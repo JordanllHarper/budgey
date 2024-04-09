@@ -1,7 +1,7 @@
 use std::fs;
 
 use crate::{
-    models::{budget::Budget, budgey_state::BudgeyState},
+    models::budget::Budget,
     utils::{concat_paths, create_json_file_name, create_json_path},
     BudgeyContext,
 };
