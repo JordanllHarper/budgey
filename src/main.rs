@@ -14,6 +14,7 @@ mod budgey_state;
 pub mod models;
 pub mod pile_management;
 pub mod utils;
+#[derive(Debug, Clone)]
 pub struct BudgeyContext {
     budgey_path: String,
     state: BudgeyState,
