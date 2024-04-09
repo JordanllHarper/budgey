@@ -109,7 +109,6 @@ fn handle_budget(
             Ok(())
         }
         budgey_cli::BudgetSubcommand::New { name } => {
-            // TODO: Check if the budget already exists
             let budget_exists = budget_management::does_budget_exist(&context, &name)?;
             if budget_exists {
                 println!("Budget already exists with the same name");
