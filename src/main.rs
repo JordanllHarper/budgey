@@ -18,9 +18,11 @@ pub mod pile_management;
 pub mod utils;
 #[derive(Debug, Clone)]
 pub struct BudgeyContext {
-    budgey_path: String,
+    budgey_config: BudgeyConfig,
     state: BudgeyState,
 }
+
+#[derive(Debug, Clone)]
 pub struct BudgeyConfig {
     budgey_path: String,
     state_json_name: String,
@@ -42,10 +44,10 @@ impl BudgeyConfig {
 }
 
 impl BudgeyContext {
-    fn new(budgey_path: &str, state: BudgeyState) -> Self {
+    fn new(state: &BudgeyState, budgey_config: &BudgeyConfig) -> Self {
         Self {
-            budgey_path: budgey_path.to_string(),
-            state,
+            budgey_config: budgey_config.clone(),
+            state: state.clone(),
         }
     }
 }
@@ -63,7 +65,7 @@ fn main() -> anyhow::Result<()> {
         budgey_cli::Commands::Init { name } => handle_init(budgey_config, &name),
         budgey_cli::Commands::Budget { subcommand } => {
             let budgey_state = budgey_state::get_budgey_state(&budgey_state_path)?;
-            let context = BudgeyContext::new(&budgey_path, budgey_state);
+            let context = BudgeyContext::new(&budgey_state, &budgey_config);
             handle_budget(&budgey_config, &context, subcommand)
         }
         budgey_cli::Commands::Pile { subcommand } => {
@@ -71,7 +73,7 @@ fn main() -> anyhow::Result<()> {
                 &budgey_state_path,
                 &budgey_state_json_name,
             ))?;
-            let context = BudgeyContext::new(&budgey_path, budgey_state);
+            let context = BudgeyContext::new(&budgey_state, &budgey_config);
             handle_pile(context, subcommand)
         }
     };

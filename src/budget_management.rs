@@ -1,6 +1,7 @@
 use std::fs;
 
 use crate::{
+    budgey_state::write_budgey_state,
     models::budget::Budget,
     utils::{concat_paths, create_json_file_name, create_json_path},
     BudgeyContext,
@@ -25,7 +26,7 @@ pub fn does_budget_exist(
     {
         return Ok(true);
     }
-    let budget_path = concat_paths(&budgey_context.budgey_path, &budget_name);
+    let budget_path = concat_paths(&budgey_context.budgey_config.budgey_path, &budget_name);
     let budget_json_path = concat_paths(&budget_path, &create_json_file_name(&budget_name));
 
     match fs::read(budget_json_path) {

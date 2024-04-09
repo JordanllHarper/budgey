@@ -41,6 +41,10 @@ pub enum BudgetSubcommand {
     /// Create a new budget.
     #[command(name = "new", arg_required_else_help = true)]
     New { name: String },
+
+    /// Delete a budget.
+    #[command(name = "delete", arg_required_else_help = true)]
+    Delete { name: String },
 }
 
 #[derive(Debug, Subcommand)]

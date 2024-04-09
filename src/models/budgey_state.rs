@@ -25,8 +25,9 @@ impl BudgeyState {
         BudgeyState::new(&self.budget_names, budget_name)
     }
 
-    pub fn remove_budget_name(self, budget_name: &str) -> Self {
+    pub fn remove_budget_name(&self, budget_name: &str) -> Self {
         let budget_names = self
+            .clone()
             .budget_names
             .into_iter()
             .filter(|name| budget_name != name)
