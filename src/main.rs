@@ -5,6 +5,7 @@ use models::budgey_state::BudgeyState;
 use utils::{concat_paths, create_json_file_name};
 
 use crate::{
+    budget_management::create_new_budget,
     models::{budget::Budget, pile::Pile},
     pile_management::create_new_pile,
 };
