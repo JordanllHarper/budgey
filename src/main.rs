@@ -49,7 +49,7 @@ impl BudgeyContext {
 
 fn main() -> anyhow::Result<()> {
     let home = env!("HOME").to_string();
-    let budgey_path = format!("{}{}", home, "/budgey/");
+    let budgey_path = format!("{}{}", home, "/budgey");
     let budgey_state_json_name = create_json_file_name("budgey_state");
     let budgey_state_path = concat_paths(&budgey_path, &budgey_state_json_name);
     let budgey_config = BudgeyConfig::new(&budgey_path, &budgey_state_json_name);
