@@ -13,6 +13,16 @@ pub fn create_new_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()
     fs::write(&budget_file_path, serde_json::to_string(&budget)?)?;
     Ok(())
 }
+pub fn delete_budget(budgey_context: &BudgeyContext, budget_name: &str) -> anyhow::Result<()> {
+    let budget_path = concat_paths(&budgey_context.budgey_config.budgey_path, &budget_name);
+    let budget_json_path = create_json_path(&budget_path, &budget_name);
+    fs::remove_file(budget_json_path)?;
+    fs::remove_dir(budget_path)?;
+
+    let new_state = budgey_context.state.remove_budget_name(&budget_name);
+    write_budgey_state(&budgey_context.budgey_config, &new_state)?;
+    Ok(())
+}
 
 pub fn does_budget_exist(
     budgey_context: &BudgeyContext,

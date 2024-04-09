@@ -121,6 +121,17 @@ fn handle_budget(
             write_budgey_state(&budgey_config, &new_state)?;
             Ok(())
         }
+        budgey_cli::BudgetSubcommand::Delete { name } => {
+            let budget_exists = budget_management::does_budget_exist(&context, &name)?;
+            if !budget_exists {
+                println!("Budget doesn't exist, specify another name");
+                return Ok(());
+            }
+
+            budget_management::delete_budget(context, &name)?;
+            println!("Deleted budget: {}", name);
+            Ok(())
+        }
     }
 }
 
