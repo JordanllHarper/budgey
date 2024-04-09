@@ -1,3 +1,5 @@
+use anyhow::Ok;
+use budgey_state::write_budgey_state;
 use clap::Parser;
 use models::budgey_state::BudgeyState;
 use utils::{concat_paths, create_json_file_name};
@@ -58,16 +60,11 @@ fn main() -> anyhow::Result<()> {
     let args = budgey_cli::BudgeyCLI::parse();
 
     let result = match args.commands {
-        budgey_cli::Commands::Init { name } => {
-            handle_init(&budgey_path, &budgey_state_json_name, &name)
-        }
+        budgey_cli::Commands::Init { name } => handle_init(budgey_config, &name),
         budgey_cli::Commands::Budget { subcommand } => {
-            let budgey_state = budgey_state::get_budgey_state(&concat_paths(
-                &budgey_state_path,
-                &budgey_state_json_name,
-            ))?;
+            let budgey_state = budgey_state::get_budgey_state(&budgey_state_path)?;
             let context = BudgeyContext::new(&budgey_path, budgey_state);
-            handle_budget(context, subcommand)
+            handle_budget(&budgey_config, &context, subcommand)
         }
         budgey_cli::Commands::Pile { subcommand } => {
             let budgey_state = budgey_state::get_budgey_state(&concat_paths(
@@ -81,18 +78,10 @@ fn main() -> anyhow::Result<()> {
     result
 }
 
-fn handle_init(
-    budgey_path: &str,
-    json_name: &str,
-    starting_budget_name: &str,
-) -> anyhow::Result<()> {
-    budgey_state::create_budgey_state(
-        budgey_path,
-        json_name,
-        &BudgeyState::new_init(starting_budget_name),
-    )?;
+fn handle_init(budgey_config: BudgeyConfig, starting_budget_name: &str) -> anyhow::Result<()> {
+    budgey_state::write_budgey_state(&budgey_config, &BudgeyState::new_init(starting_budget_name))?;
 
-    let budget_path = concat_paths(budgey_path, starting_budget_name);
+    let budget_path = concat_paths(&budgey_config.budgey_path, starting_budget_name);
     create_new_budget(&budget_path, Budget::new(starting_budget_name))?;
     create_new_pile(&budget_path, Pile::default_main_pile())?;
     println!("Budgey initialised");
@@ -100,10 +89,38 @@ fn handle_init(
 }
 
 fn handle_budget(
-    context: BudgeyContext,
+    budgey_config: &BudgeyConfig,
+    context: &BudgeyContext,
     subcommand: budgey_cli::BudgetSubcommand,
 ) -> anyhow::Result<()> {
-    todo!()
+    match subcommand {
+        budgey_cli::BudgetSubcommand::Focus { name } => {
+            let state = &context.state;
+            let budget_exists = budget_management::does_budget_exist(&context, &name)?;
+
+            if !budget_exists {
+                println!("Budget doesn't exist, specify another name");
+                return Ok(());
+            }
+
+            let new_state = state.change_focused_budget_name(&name);
+            write_budgey_state(&budgey_config, &new_state)?;
+            println!("Checked out new budget: {}", name);
+            Ok(())
+        }
+        budgey_cli::BudgetSubcommand::New { name } => {
+            // TODO: Check if the budget already exists
+            let budget_exists = budget_management::does_budget_exist(&context, &name)?;
+            if budget_exists {
+                println!("Budget already exists with the same name");
+                return Ok(());
+            }
+            create_new_budget(&budgey_config.get_budget_path(&name), Budget::new(&name))?;
+            let new_state = context.state.add_budget_name(&name);
+            write_budgey_state(&budgey_config, &new_state)?;
+            Ok(())
+        }
+    }
 }
 
 fn handle_pile(

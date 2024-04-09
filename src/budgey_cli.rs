@@ -15,7 +15,6 @@ pub enum Commands {
     #[command(name = "init", arg_required_else_help = true)]
     Init {
         /// The name of the new budget. Must be unique.
-        #[arg(short, long, required = true)]
         name: String,
     },
     Budget {
@@ -33,12 +32,15 @@ pub enum Commands {
 #[derive(Debug, Subcommand)]
 pub enum BudgetSubcommand {
     /// Set the named working budget.
-    #[command(name = "new", arg_required_else_help = true)]
+    #[command(name = "focus", arg_required_else_help = true)]
     Focus {
         /// The name of the budget to focus on.
-        #[arg(short, long, required = true)]
+        // #[arg(name="name" short, long, required = true)]
         name: String,
     },
+    /// Create a new budget.
+    #[command(name = "new", arg_required_else_help = true)]
+    New { name: String },
 }
 
 #[derive(Debug, Subcommand)]
