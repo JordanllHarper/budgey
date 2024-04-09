@@ -37,6 +37,8 @@ pub enum BudgetSubcommand {
         /// The name of the budget to focus on.
         name: String,
     },
+    /// List all available budgets.
+    List,
     /// Create a new budget.
     #[command(name = "new", arg_required_else_help = true)]
     New { name: String },

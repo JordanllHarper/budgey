@@ -143,6 +143,25 @@ fn handle_budget_subcommand(
             println!("Deleted budget: {}", name);
             Ok(())
         }
+        budgey_cli::BudgetSubcommand::List => {
+            let budget_names = &context.state.budget_names;
+
+            if budget_names.is_empty() {
+                println!("No budgets found. Type budgey budget new <name> to create a new budget.");
+                return Ok(());
+            };
+            println!("Budgets: ");
+
+            for name in budget_names {
+                if name == &context.state.current_focused_budget_name {
+                    println!(" * {}", name);
+                } else {
+                    println!(" - {}", name);
+                }
+            }
+
+            Ok(())
+        }
     }
 }
 
