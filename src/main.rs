@@ -92,7 +92,8 @@ fn handle_init(budgey_config: BudgeyConfig, starting_budget_name: &str) -> anyho
 
     let budget_path = concat_paths(&budgey_config.budgey_path, starting_budget_name);
     create_new_budget(&budget_path, Budget::new(starting_budget_name))?;
-    create_new_pile(&budget_path, Pile::default_main_pile())?;
+    let context = BudgeyContext::new(&BudgeyState::new_init(starting_budget_name), &budgey_config);
+    create_new_pile(&context, Pile::default_main_pile())?;
     println!("Budgey initialised");
     Ok(())
 }
