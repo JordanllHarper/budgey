@@ -5,17 +5,17 @@ use models::budgey_state::BudgeyState;
 use utils::{concat_paths, create_json_file_name};
 
 use crate::{
-    budget_management::create_new_budget,
     models::{budget::Budget, pile::Pile},
     pile_management::create_new_pile,
 };
 
-pub mod budget_management;
-pub mod budgey_cli;
+mod budget_management;
+mod budgey_cli;
 mod budgey_state;
-pub mod models;
-pub mod pile_management;
-pub mod utils;
+mod models;
+mod pile_management;
+mod utils;
+
 #[derive(Debug, Clone)]
 pub struct BudgeyContext {
     budgey_config: BudgeyConfig,
