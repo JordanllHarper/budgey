@@ -14,10 +14,28 @@ mod budgey_state;
 pub mod models;
 pub mod pile_management;
 pub mod utils;
-
 pub struct BudgeyContext {
     budgey_path: String,
     state: BudgeyState,
+}
+pub struct BudgeyConfig {
+    budgey_path: String,
+    state_json_name: String,
+}
+
+impl BudgeyConfig {
+    pub fn new(budgey_path: &str, state_json_name: &str) -> Self {
+        Self {
+            budgey_path: budgey_path.to_string(),
+            state_json_name: state_json_name.to_string(),
+        }
+    }
+    pub fn get_state_path(&self) -> String {
+        concat_paths(&self.budgey_path, &self.state_json_name)
+    }
+    pub fn get_budget_path(&self, budget_name: &str) -> String {
+        concat_paths(&self.budgey_path, budget_name)
+    }
 }
 
 impl BudgeyContext {
@@ -34,6 +52,7 @@ fn main() -> anyhow::Result<()> {
     let budgey_path = format!("{}{}", home, "/budgey/");
     let budgey_state_json_name = create_json_file_name("budgey_state");
     let budgey_state_path = concat_paths(&budgey_path, &budgey_state_json_name);
+    let budgey_config = BudgeyConfig::new(&budgey_path, &budgey_state_json_name);
 
     let args = budgey_cli::BudgeyCLI::parse();
 
