@@ -6,6 +6,9 @@ use crate::{
     utils::{concat_paths, create_json_file_name, create_json_path},
     BudgeyContext,
 };
+pub fn get_current_budget(budgey_context: &BudgeyContext) -> anyhow::Result<String> {
+    Ok(budgey_context.state.current_focused_budget_name.to_string())
+}
 
 pub fn create_new_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()> {
     fs::create_dir(&budget_path)?;

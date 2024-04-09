@@ -66,7 +66,13 @@ fn main() -> anyhow::Result<()> {
         budgey_cli::Commands::Budget { subcommand } => {
             let budgey_state = budgey_state::get_budgey_state(&budgey_state_path)?;
             let context = BudgeyContext::new(&budgey_state, &budgey_config);
-            handle_budget(&budgey_config, &context, subcommand)
+            if let Some(command) = subcommand {
+                handle_budget_subcommand(&budgey_config, &context, command)?;
+            } else {
+                let current_budget = budget_management::get_current_budget(&context)?;
+                println!("Current budget: {}", current_budget);
+            }
+            Ok(())
         }
         budgey_cli::Commands::Pile { subcommand } => {
             let budgey_state = budgey_state::get_budgey_state(&concat_paths(
@@ -90,7 +96,7 @@ fn handle_init(budgey_config: BudgeyConfig, starting_budget_name: &str) -> anyho
     Ok(())
 }
 
-fn handle_budget(
+fn handle_budget_subcommand(
     budgey_config: &BudgeyConfig,
     context: &BudgeyContext,
     subcommand: budgey_cli::BudgetSubcommand,
@@ -117,8 +123,12 @@ fn handle_budget(
                 return Ok(());
             }
             create_new_budget(&budgey_config.get_budget_path(&name), Budget::new(&name))?;
-            let new_state = context.state.add_budget_name(&name);
+            let new_state = context
+                .state
+                .add_budget_name(&name)
+                .change_focused_budget_name(&name);
             write_budgey_state(&budgey_config, &new_state)?;
+            println!("Created and focused new budget: {}", name);
             Ok(())
         }
         budgey_cli::BudgetSubcommand::Delete { name } => {

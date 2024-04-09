@@ -19,7 +19,7 @@ pub enum Commands {
     },
     Budget {
         #[command(subcommand)]
-        subcommand: BudgetSubcommand,
+        subcommand: Option<BudgetSubcommand>,
     },
     /// Budgey Pile -> create and manage piles.
     #[command(name = "pile")]
