@@ -35,7 +35,6 @@ pub enum BudgetSubcommand {
     #[command(name = "focus", arg_required_else_help = true)]
     Focus {
         /// The name of the budget to focus on.
-        // #[arg(name="name" short, long, required = true)]
         name: String,
     },
     /// Create a new budget.
