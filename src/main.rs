@@ -2,6 +2,7 @@ use anyhow::Ok;
 use budget_management::update_budget;
 use budgey_state::write_budgey_state;
 use clap::Parser;
+use log::{info, trace};
 use models::budgey_state::BudgeyState;
 use utils::{concat_paths, create_json_file_name};
 
@@ -66,14 +67,20 @@ impl BudgeyContext {
 }
 
 fn main() -> anyhow::Result<()> {
+    simple_logger::SimpleLogger::new().env().init().unwrap();
     let home = env!("HOME").to_string();
+    info!("Home environment initialised: {}", home);
     let budgey_path = format!("{}{}", home, "/budgey");
+    info!("Budgey path: {}", budgey_path);
     let budgey_state_json_name = create_json_file_name("budgey_state");
     let budgey_state_path = concat_paths(&budgey_path, &budgey_state_json_name);
+    info!("Budgey state path created: {}", budgey_state_path);
     let budgey_config = BudgeyConfig::new(&budgey_path, &budgey_state_json_name);
-    simple_logger::SimpleLogger::new().env().init().unwrap();
+    info!("Budgey config created:\n {:#?}", budgey_config);
+    info!("Parsing CLI arguments");
 
     let args = budgey_cli::BudgeyCLI::parse();
+    trace!("Parsed CLI arguments: {:#?}", args);
 
     let result = match args.commands {
         budgey_cli::Commands::Init { name } => handle_init(budgey_config, &name),
@@ -188,6 +195,7 @@ fn handle_pile(
     context: BudgeyContext,
     subcommand: budgey_cli::PileSubcommand,
 ) -> anyhow::Result<()> {
+    trace!("Handling pile subcommand: {:?}", subcommand);
     match subcommand {
         budgey_cli::PileSubcommand::New {
             source,

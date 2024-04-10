@@ -1,6 +1,6 @@
 use std::fs;
 
-use log::{error, info};
+use log::{error, trace};
 
 use crate::{
     budget_management::get_current_budget,
@@ -9,12 +9,12 @@ use crate::{
     BudgeyContext,
 };
 pub fn get_current_pile(context: &BudgeyContext) -> anyhow::Result<Pile> {
-    info!("Getting current pile");
+    trace!("Getting current pile");
     let current_budget = get_current_budget(context)?;
     get_pile(context, &current_budget.current_pile_name)
 }
 pub fn get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<Pile> {
-    info!("Getting pile");
+    trace!("Getting pile");
     let pile_path = concat_paths(&context.get_current_budget_path(), &pile_name);
     let pile_json_path = create_json_path(&pile_path, &pile_name);
     let pile_json = fs::read_to_string(pile_json_path)?;
@@ -22,7 +22,7 @@ pub fn get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<Pile
 }
 
 pub fn maybe_get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<Option<Pile>> {
-    info!("Maybe getting pile");
+    trace!("Maybe getting pile");
     let current_budget = get_current_budget(context)?;
     let in_budget_ledger = current_budget.pile_names.contains(&pile_name.into());
     if !in_budget_ledger {
@@ -34,7 +34,7 @@ pub fn maybe_get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Resul
 }
 
 pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<()> {
-    info!("Creating new pile");
+    trace!("Creating new pile");
     let current_budget_path = context.get_current_budget_path();
     let pile_name = pile.get_name();
     let pile_directory_path = concat_paths(&current_budget_path, &pile_name);
@@ -66,7 +66,7 @@ pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<(
     Ok(())
 }
 pub fn delete_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<()> {
-    info!("Deleting pile");
+    trace!("Deleting pile");
     let pile_path = concat_paths(&context.get_current_budget_path(), &pile_name);
     fs::remove_dir_all(pile_path)?;
     Ok(())
