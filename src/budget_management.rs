@@ -24,7 +24,6 @@ pub fn create_new_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()
 }
 pub fn update_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()> {
     let budget_file_path = create_json_path(budget_path, &budget.budget_detail.budget_name);
-    println!("Updating budget at path: {}", budget_file_path);
     fs::write(&budget_file_path, serde_json::to_string(&budget)?)?;
     Ok(())
 }

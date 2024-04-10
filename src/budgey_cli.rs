@@ -71,6 +71,15 @@ pub enum PileSubcommand {
     /// List -> list available piles.
     #[command(name = "ls")]
     List,
+
+    /// Remove -> remove a pile.
+    #[command(name = "delete", arg_required_else_help = true)]
+    Delete {
+        /// The name of the pile to remove.
+        /// NOTE: use merge if you want to transfer the balance of the pile to another pile with
+        /// --delete-after-merge.
+        name: String,
+    },
     // TODO: Mvp stuff
     //
     // /// Add -> Adds a new transaction to the pile.
@@ -100,15 +109,6 @@ pub enum PileSubcommand {
     //     name: String,
     // },
     //
-    // /// Remove -> remove a pile.
-    // #[command(name = "remove", arg_required_else_help = true)]
-    // Remove {
-    //     /// The name of the pile to remove.
-    //     /// NOTE: use merge if you want to transfer the balance of the pile to another pile with
-    //     /// --delete-after-merge.
-    //     #[arg(short, long, required = true)]
-    //     name: String,
-    // },
     //
     // TODO: Non mvp stuff
     //

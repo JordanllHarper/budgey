@@ -65,4 +65,17 @@ impl Budget {
             self.current_pile_name.clone(),
         )
     }
+    pub fn delete_pile(&self, pile_name: &str) -> Self {
+        let new_pile_names = self
+            .pile_names
+            .clone()
+            .into_iter()
+            .filter(|name| name != pile_name)
+            .collect::<Vec<String>>();
+        Budget::new(
+            self.budget_detail.clone(),
+            new_pile_names,
+            self.current_pile_name.clone(),
+        )
+    }
 }

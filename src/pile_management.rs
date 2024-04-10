@@ -38,3 +38,8 @@ pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<(
     fs::write(&pile_file_path, serde_json::to_string(&pile)?)?;
     Ok(())
 }
+pub fn delete_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<()> {
+    let pile_path = concat_paths(&context.get_current_budget_path(), &pile_name);
+    fs::remove_dir_all(pile_path)?;
+    Ok(())
+}

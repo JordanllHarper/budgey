@@ -236,6 +236,11 @@ fn handle_pile(
 
             Ok(())
         }
+        budgey_cli::PileSubcommand::Delete { name } => {
+            pile_management::delete_pile(&context, &name)?;
+            let current_budget = get_current_budget(&context)?.delete_pile(&name);
+            update_budget(&context.get_current_budget_path(), current_budget)
+        }
     }
 }
 fn maybe_get_user_defined_pile(
