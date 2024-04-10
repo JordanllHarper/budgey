@@ -1,13 +1,14 @@
 use anyhow::Ok;
+use budget_management::update_budget;
 use budgey_state::write_budgey_state;
 use clap::Parser;
 use models::budgey_state::BudgeyState;
-use utils::{concat_paths, create_json_file_name};
+use utils::{concat_paths, create_json_file_name, create_json_path};
 
 use crate::{
-    budget_management::create_new_budget,
+    budget_management::{create_new_budget, get_current_budget},
     models::{budget::Budget, pile::Pile},
-    pile_management::create_new_pile,
+    pile_management::{create_new_pile, get_current_pile, maybe_get_pile},
 };
 
 mod budget_management;
@@ -45,11 +46,22 @@ impl BudgeyConfig {
 }
 
 impl BudgeyContext {
-    fn new(state: &BudgeyState, budgey_config: &BudgeyConfig) -> Self {
+    pub fn new(state: &BudgeyState, budgey_config: &BudgeyConfig) -> Self {
         Self {
             budgey_config: budgey_config.clone(),
             state: state.clone(),
         }
+    }
+    pub fn get_current_budget_path(&self) -> String {
+        let current_budget = &self.state.current_focused_budget_name;
+        let budgey_path = &self.budgey_config.budgey_path;
+        concat_paths(&budgey_path, &current_budget)
+    }
+    pub fn get_current_budget_json_path(&self) -> String {
+        concat_paths(
+            &self.get_current_budget_path(),
+            &create_json_file_name(&self.state.current_focused_budget_name),
+        )
     }
 }
 
@@ -70,16 +82,13 @@ fn main() -> anyhow::Result<()> {
             if let Some(command) = subcommand {
                 handle_budget_subcommand(&context, command)?;
             } else {
-                let current_budget = budget_management::get_current_budget(&context)?;
-                println!("Current budget: {}", current_budget);
+                let current_budget = budget_management::get_current_budget_name(&context)?;
+                println!("Current budget: {:?}", current_budget);
             }
             Ok(())
         }
         budgey_cli::Commands::Pile { subcommand } => {
-            let budgey_state = budgey_state::get_budgey_state(&concat_paths(
-                &budgey_state_path,
-                &budgey_state_json_name,
-            ))?;
+            let budgey_state = budgey_state::get_budgey_state(&budgey_state_path)?;
             let context = BudgeyContext::new(&budgey_state, &budgey_config);
             handle_pile(context, subcommand)
         }
@@ -88,12 +97,12 @@ fn main() -> anyhow::Result<()> {
 }
 
 fn handle_init(budgey_config: BudgeyConfig, starting_budget_name: &str) -> anyhow::Result<()> {
+    println!("Initialising Budgey...");
     budgey_state::write_budgey_state(&budgey_config, &BudgeyState::new_init(starting_budget_name))?;
-
     let budget_path = concat_paths(&budgey_config.budgey_path, starting_budget_name);
-    create_new_budget(&budget_path, Budget::new(starting_budget_name))?;
+    create_new_budget(&budget_path, Budget::new_init(starting_budget_name))?;
     let context = BudgeyContext::new(&BudgeyState::new_init(starting_budget_name), &budgey_config);
-    create_new_pile(&context, Pile::default_main_pile())?;
+    create_new_pile(&context, &Pile::default_main_pile())?;
     println!("Budgey initialised");
     Ok(())
 }
@@ -125,7 +134,7 @@ fn handle_budget_subcommand(
             }
             create_new_budget(
                 &context.budgey_config.get_budget_path(&name),
-                Budget::new(&name),
+                Budget::new_init(&name),
             )?;
             let new_state = context
                 .state
@@ -172,5 +181,44 @@ fn handle_pile(
     context: BudgeyContext,
     subcommand: budgey_cli::PileSubcommand,
 ) -> anyhow::Result<()> {
-    todo!()
+    match subcommand {
+        budgey_cli::PileSubcommand::New {
+            source,
+            new_pile_name,
+            initial_balance,
+        } => {
+            let initial_balance = if let Some(b) = initial_balance {
+                b
+            } else {
+                0.0
+            };
+
+            let pile = match maybe_get_user_defined_pile(&context, source.as_deref())? {
+                Some(source_pile) => source_pile,
+                None => {
+                    println!("Couldn't get the source pile specified");
+                    return Ok(());
+                }
+            };
+
+            let new_pile = Pile::new_user_created(initial_balance, &new_pile_name, &pile.records);
+            create_new_pile(&context, &new_pile)?;
+            let budget = get_current_budget(&context)?
+                .add_pile(&new_pile_name)
+                .change_pile_name(&new_pile_name);
+            update_budget(&context.get_current_budget_path(), budget)?;
+
+            Ok(())
+        }
+    }
+}
+fn maybe_get_user_defined_pile(
+    context: &BudgeyContext,
+    maybe_pile_name: Option<&str>,
+) -> anyhow::Result<Option<Pile>> {
+    if let Some(p) = maybe_pile_name {
+        maybe_get_pile(context, p)
+    } else {
+        Ok(Some(get_current_pile(context)?))
+    }
 }

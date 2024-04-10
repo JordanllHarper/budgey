@@ -6,13 +6,25 @@ use crate::{
     utils::{concat_paths, create_json_file_name, create_json_path},
     BudgeyContext,
 };
-pub fn get_current_budget(budgey_context: &BudgeyContext) -> anyhow::Result<String> {
+pub fn get_current_budget_name(budgey_context: &BudgeyContext) -> anyhow::Result<String> {
     Ok(budgey_context.state.current_focused_budget_name.to_string())
 }
 
+pub fn get_current_budget(budgey_context: &BudgeyContext) -> anyhow::Result<Budget> {
+    let current_budget_path = &budgey_context.get_current_budget_json_path();
+    let current_budget_json = fs::read_to_string(&current_budget_path)?;
+    let current_budget: Budget = serde_json::from_str(&current_budget_json)?;
+    Ok(current_budget)
+}
 pub fn create_new_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()> {
     fs::create_dir(&budget_path)?;
     let budget_file_path = create_json_path(budget_path, &budget.budget_detail.budget_name);
+    fs::write(&budget_file_path, serde_json::to_string(&budget)?)?;
+    Ok(())
+}
+pub fn update_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()> {
+    let budget_file_path = create_json_path(budget_path, &budget.budget_detail.budget_name);
+    println!("Updating budget at path: {}", budget_file_path);
     fs::write(&budget_file_path, serde_json::to_string(&budget)?)?;
     Ok(())
 }

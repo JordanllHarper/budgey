@@ -53,15 +53,16 @@ pub enum PileSubcommand {
     /// new -> creates a new pile.
     #[command(name = "new", arg_required_else_help = true)]
     New {
-        /// The name of the source pile to create the new pile from.
-        #[arg(short, long)]
-        source: String,
-
         /// The name of the new pile. Must be unique.
-        new_name: String,
+        new_pile_name: String,
 
-        /// The initial balance of the pile. Will be taken from the source pile.
+        /// The name of the source pile to create the new pile from.
+        /// If not provided, the new pile will be created from the currently focused pile.
         #[arg(short, long)]
+        source: Option<String>,
+
+        /// The initial balance of the pile. Will be 0.0 if not provided.
+        #[arg(name = "initial", short, long)]
         initial_balance: Option<f32>,
     },
     // TODO: Mvp stuff
