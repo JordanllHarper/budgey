@@ -1,7 +1,7 @@
 use nanoid::nanoid;
 use serde::{Deserialize, Serialize};
 
-#[derive(Clone, Serialize, Deserialize)]
+#[derive(Clone, Serialize, Deserialize, Debug)]
 pub struct BudgetDetail {
     id: String,
     pub budget_name: String,
@@ -18,7 +18,7 @@ impl BudgetDetail {
 
 /// Represents a collection of piles that a user might have
 /// Stored in /budgey/[budget_name]/
-#[derive(Serialize, Deserialize)]
+#[derive(Serialize, Deserialize, Debug)]
 pub struct Budget {
     pub budget_detail: BudgetDetail,
     pub pile_names: Vec<String>,

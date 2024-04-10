@@ -1,9 +1,12 @@
 use std::fs;
 
+use log::info;
+
 use crate::{models::budgey_state::BudgeyState, utils::concat_paths, BudgeyConfig};
 
 /// Gets the budgey state from the given path
 pub fn get_budgey_state(budgey_path_to_json: &str) -> anyhow::Result<BudgeyState, std::io::Error> {
+    info!("Getting budgey state");
     let read_result = fs::read_to_string(budgey_path_to_json)?;
     let state: BudgeyState = serde_json::from_str(&read_result)?;
     Ok(state)
@@ -14,6 +17,7 @@ pub fn write_budgey_state(
     budgey_config: &BudgeyConfig,
     new_state: &BudgeyState,
 ) -> anyhow::Result<(), std::io::Error> {
+    info!("Writing budgey state");
     let serialized = serde_json::to_string(new_state)?;
     let check_path_result = fs::read_dir(&budgey_config.budgey_path);
     match check_path_result {

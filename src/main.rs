@@ -71,6 +71,7 @@ fn main() -> anyhow::Result<()> {
     let budgey_state_json_name = create_json_file_name("budgey_state");
     let budgey_state_path = concat_paths(&budgey_path, &budgey_state_json_name);
     let budgey_config = BudgeyConfig::new(&budgey_path, &budgey_state_json_name);
+    simple_logger::SimpleLogger::new().env().init().unwrap();
 
     let args = budgey_cli::BudgeyCLI::parse();
 
