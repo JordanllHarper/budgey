@@ -3,7 +3,7 @@ use budget_management::update_budget;
 use budgey_state::write_budgey_state;
 use clap::Parser;
 use models::budgey_state::BudgeyState;
-use utils::{concat_paths, create_json_file_name, create_json_path};
+use utils::{concat_paths, create_json_file_name};
 
 use crate::{
     budget_management::{create_new_budget, get_current_budget},
@@ -90,7 +90,13 @@ fn main() -> anyhow::Result<()> {
         budgey_cli::Commands::Pile { subcommand } => {
             let budgey_state = budgey_state::get_budgey_state(&budgey_state_path)?;
             let context = BudgeyContext::new(&budgey_state, &budgey_config);
-            handle_pile(context, subcommand)
+            if let Some(p) = subcommand {
+                handle_pile(context, p)?;
+            } else {
+                let current_pile = pile_management::get_current_pile(&context)?;
+                println!("Current pile: {}", current_pile.get_name());
+            }
+            Ok(())
         }
     };
     result
@@ -207,6 +213,26 @@ fn handle_pile(
                 .add_pile(&new_pile_name)
                 .change_pile_name(&new_pile_name);
             update_budget(&context.get_current_budget_path(), budget)?;
+
+            Ok(())
+        }
+        budgey_cli::PileSubcommand::List => {
+            let current_budget = get_current_budget(&context)?;
+            let pile_names = &current_budget.pile_names;
+
+            if pile_names.is_empty() {
+                println!("No piles found. Type budgey pile new <name> to create a new pile.");
+                return Ok(());
+            };
+            println!("Piles: ");
+
+            for name in pile_names {
+                if name == &current_budget.current_pile_name {
+                    println!(" * {}", name);
+                } else {
+                    println!(" | {}", name);
+                }
+            }
 
             Ok(())
         }

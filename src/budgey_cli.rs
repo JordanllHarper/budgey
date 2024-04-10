@@ -25,8 +25,9 @@ pub enum Commands {
     #[command(name = "pile")]
     Pile {
         ///The subcommand to run.
+        ///If not provided, will display the current pile.
         #[command(subcommand)]
-        subcommand: PileSubcommand,
+        subcommand: Option<PileSubcommand>,
     },
 }
 #[derive(Debug, Subcommand)]
@@ -38,6 +39,7 @@ pub enum BudgetSubcommand {
         name: String,
     },
     /// List all available budgets.
+    #[command(name = "ls")]
     List,
     /// Create a new budget.
     #[command(name = "new", arg_required_else_help = true)]
@@ -65,6 +67,10 @@ pub enum PileSubcommand {
         #[arg(name = "initial", short, long)]
         initial_balance: Option<f32>,
     },
+
+    /// List -> list available piles.
+    #[command(name = "ls")]
+    List,
     // TODO: Mvp stuff
     //
     // /// Add -> Adds a new transaction to the pile.
@@ -93,10 +99,6 @@ pub enum PileSubcommand {
     //     #[arg(short, long, required = true)]
     //     name: String,
     // },
-    //
-    // /// List -> list available piles.
-    // #[command(name = "list", arg_required_else_help = true)]
-    // List,
     //
     // /// Remove -> remove a pile.
     // #[command(name = "remove", arg_required_else_help = true)]
