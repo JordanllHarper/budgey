@@ -19,6 +19,7 @@ chrono = "0.4.37"
 
 # Logging
 log = "0.4.21"
+simple_logger = "4.3.3"
 
 # nanoid 
 nanoid = "0.4.0"
