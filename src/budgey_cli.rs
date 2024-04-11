@@ -10,18 +10,18 @@ pub struct BudgeyCLI {
 /// Commands for the Budgey CLI
 #[derive(Debug, Subcommand)]
 pub enum Commands {
-    /// Budgey init -> inits a new budget to work with and creates a default pile
-    /// called "main".
+    /// Initialises Budgey, or make a new budget if budgey is already initialised.
     #[command(name = "init", arg_required_else_help = true)]
     Init {
         /// The name of the new budget. Must be unique.
         name: String,
     },
+    /// Create, manage and switch between budgets.
     Budget {
         #[command(subcommand)]
         subcommand: Option<BudgetSubcommand>,
     },
-    /// Budgey Pile -> create and manage piles.
+    /// Create, manage and switch piles in the currently focused budget.
     #[command(name = "pile")]
     Pile {
         ///The subcommand to run.
