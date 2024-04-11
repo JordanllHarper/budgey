@@ -285,8 +285,13 @@ fn handle_pile(
                 from.as_deref(),
             ));
             trace!("Updating pile with new amount...");
-            update_pile(&context, new_pile)?;
+            update_pile(&context, &new_pile)?;
             trace!("Updated pile with new amount");
+            println!(
+                "New balance of {} is {}",
+                new_pile.get_name(),
+                new_pile.current_balance
+            );
             Ok(())
         }
         budgey_cli::PileSubcommand::Focus { name } => {
