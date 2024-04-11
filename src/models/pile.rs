@@ -14,8 +14,9 @@ impl Default for Pile {
     fn default() -> Self {
         Pile::new(
             0.0,
-            PileType::Main,
+            &PileType::Main,
             &[Record::new_init("Initialised main", "0", 0.0, Some(0.0))],
+            &[],
         )
     }
 }
@@ -33,6 +34,20 @@ impl Pile {
             PileType::UserCreated { pile_name } => pile_name.to_string(),
         }
     }
+    pub fn add_transaction(&self, transaction: &Transaction) -> Self {
+        Self::new(
+            self.current_balance + transaction.amount,
+            &self.pile_type,
+            &self.records,
+            &self
+                .clone()
+                .current_staged_transactions
+                .into_iter()
+                .chain(vec![transaction.clone()])
+                .collect::<Vec<Transaction>>()
+                .as_slice(),
+        )
+    }
     pub fn new_user_created(
         balance: f32,
         pile_name: &str,
@@ -40,17 +55,23 @@ impl Pile {
     ) -> Self {
         Self::new(
             balance,
-            PileType::UserCreated {
+            &PileType::UserCreated {
                 pile_name: pile_name.to_string(),
             },
-            source_record_history,
+            &source_record_history,
+            &[],
         )
     }
-    pub fn new(balance: f32, pile_type: PileType, source_record_history: &[Record]) -> Self {
+    pub fn new(
+        balance: f32,
+        pile_type: &PileType,
+        source_record_history: &[Record],
+        transactions: &[Transaction],
+    ) -> Self {
         let up_to_date_history = vec![Record::new_init(
             "Initialised pile",
             "0",
-            balance,
+            balance.clone(),
             Some(balance),
         )]
         .iter()
@@ -59,16 +80,17 @@ impl Pile {
         .collect::<Vec<Record>>();
         Self {
             current_balance: balance,
-            pile_type,
+            pile_type: pile_type.clone(),
             records: up_to_date_history,
-            current_staged_transactions: vec![],
+            current_staged_transactions: transactions.to_vec(),
         }
     }
     pub fn default_main_pile() -> Pile {
         Pile::new(
             0.0,
-            PileType::Main,
+            &PileType::Main,
             &[Record::new_init("Initialised main", "0", 0.0, Some(0.0))],
+            &[],
         )
     }
 }

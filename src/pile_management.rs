@@ -8,11 +8,21 @@ use crate::{
     utils::{concat_paths, create_json_path},
     BudgeyContext,
 };
+
 pub fn get_current_pile(context: &BudgeyContext) -> anyhow::Result<Pile> {
     trace!("Getting current pile");
     let current_budget = get_current_budget(context)?;
     get_pile(context, &current_budget.current_pile_name)
 }
+
+pub fn update_pile(context: &BudgeyContext, new_pile: Pile) -> anyhow::Result<()> {
+    trace!("Updating pile: {}", new_pile.get_name());
+    let pile_path = concat_paths(&context.get_current_budget_path(), &new_pile.get_name());
+    let pile_json_path = create_json_path(&pile_path, &new_pile.get_name());
+    fs::write(pile_json_path, serde_json::to_string(&new_pile)?)?;
+    Ok(())
+}
+
 pub fn get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<Pile> {
     trace!("Getting pile");
     let pile_path = concat_paths(&context.get_current_budget_path(), &pile_name);
@@ -66,6 +76,7 @@ pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<(
     };
     Ok(())
 }
+
 pub fn delete_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<()> {
     trace!("Deleting pile");
     let pile_path = concat_paths(&context.get_current_budget_path(), &pile_name);

@@ -56,7 +56,7 @@ pub enum BudgetSubcommand {
 
 #[derive(Debug, Subcommand)]
 pub enum PileSubcommand {
-    /// new -> creates a new pile.
+    /// Creates a new pile.
     #[command(name = "new", arg_required_else_help = true)]
     New {
         /// The name of the new pile. Must be unique.
@@ -72,11 +72,11 @@ pub enum PileSubcommand {
         initial_balance: Option<f32>,
     },
 
-    /// List -> list available piles.
+    /// List available piles.
     #[command(name = "ls")]
     List,
 
-    /// Remove -> remove a pile.
+    /// Remove a pile.
     #[command(name = "delete", arg_required_else_help = true)]
     Delete {
         /// The name of the pile to remove.
@@ -85,76 +85,81 @@ pub enum PileSubcommand {
         name: String,
     },
 
-    /// Balance -> check the balance of a pile.
+    /// Check the balance of a pile.
     #[command(name = "balance")]
     Balance {
         /// The name of the pile to check the balance of.
         name: Option<String>,
     },
-    // TODO: Mvp stuff
-    //
-    // /// Add -> Adds a new transaction to the pile.
-    // #[command(name = "push", arg_required_else_help = true)]
-    // Add {
-    //     #[arg(short, long, required = true)]
-    //     /// The amount of the transaction.
-    //     amount: f32,
-    //
-    //     /// The optional source of the transaction.
-    //     source: Option<String>,
-    // },
-    //
-    // // Commit -> commits this transaction, making it a part of the transaction history.
-    // // This can only be undone with a revert.
-    // #[command(name = "commit", arg_required_else_help = true)]
-    // Commit {
-    //     /// An optional message for the transaction commit.
-    //     message: Option<String>,
-    // },
-    // TODO: Non mvp stuff
-    //
-    // /// Revert -> reverts a transaction commit.
-    // #[command(name = "revert", arg_required_else_help = true)]
-    // Revert {
-    //     /// An optional message for the transaction revert.
-    //     message: Option<String>,
-    // },
-    //
-    // /// Restore -> restores all added transactions to the last commit.
-    // #[command(name = "restore", arg_required_else_help = true)]
-    // Restore,
-    //
-    // /// Merge -> merge a source pile into a destination pile.
-    // #[command(name = "merge", arg_required_else_help = true)]
-    // Merge {
-    //     /// The amount of the transaction.
-    //     #[arg(short, long, required = true)]
-    //     amount: f32,
-    //
-    //     /// The source pile name.
-    //     #[arg(short, long, required = true)]
-    //     source: String,
-    //
-    //     /// The destination pile name.
-    //     #[arg(short, long, required = true)]
-    //     destination: String,
-    //
-    //     /// Delete source pile after merge.
-    //     #[arg(short, long)]
-    //     delete_after_merge: bool,
-    //
-    //     /// An optional comment for the merge.
-    //     #[arg(short, long)]
-    //     usage: Option<String>,
-    // },
-    //
 
-    // /// View -> view transactions of a pile
-    // #[command(name = "view", arg_required_else_help = true)]
-    // View {
-    //     /// The name of the pile to view transactions of.
-    //     #[arg(short, long, required = true)]
-    //     name: String,
-    // },
-    //
+    /// Adds a new transaction to the pile.
+    #[command(name = "add", arg_required_else_help = true)]
+    Add {
+        /// The amount of the transaction.
+        amount: f32,
+
+        /// The optional pile where the transaction will come from.
+        #[arg(short, long)]
+        from: Option<String>,
+    },
+    /// Focus a new pile.
+    #[command(name = "focus", arg_required_else_help = true)]
+    Focus {
+        /// The name of the pile to focus on.
+        name: String,
+    }, // TODO: Mvp stuff
+       //
+       // // Commit -> commits this transaction, making it a part of the transaction history.
+       // // This can only be undone with a revert.
+       // #[command(name = "commit", arg_required_else_help = true)]
+       // Commit {
+       //     /// An optional message for the transaction commit.
+       //     message: Option<String>,
+       // },
+       // TODO: Non mvp stuff
+       //
+       // /// Revert -> reverts a transaction commit.
+       // #[command(name = "revert", arg_required_else_help = true)]
+       // Revert {
+       //     /// An optional message for the transaction revert.
+       //     message: Option<String>,
+       // },
+       //
+       // /// Restore -> restores all added transactions to the last commit.
+       // #[command(name = "restore", arg_required_else_help = true)]
+       // Restore,
+       //
+       // /// Merge -> merge a source pile into a destination pile.
+       // #[command(name = "merge", arg_required_else_help = true)]
+       // Merge {
+       //     /// The amount of the transaction.
+       //     #[arg(short, long, required = true)]
+       //     amount: f32,
+       //
+       //     /// The source pile name.
+       //     #[arg(short, long, required = true)]
+       //     source: String,
+       //
+       //     /// The destination pile name.
+       //     #[arg(short, long, required = true)]
+       //     destination: String,
+       //
+       //     /// Delete source pile after merge.
+       //     #[arg(short, long)]
+       //     delete_after_merge: bool,
+       //
+       //     /// An optional comment for the merge.
+       //     #[arg(short, long)]
+       //     usage: Option<String>,
+       // },
+       //
+
+       // /// View -> view transactions of a pile
+       // #[command(name = "view", arg_required_else_help = true)]
+       // View {
+       //     /// The name of the pile to view transactions of.
+       //     #[arg(short, long, required = true)]
+       //     name: String,
+       // },
+       //
 }

@@ -8,8 +8,12 @@ use utils::{concat_paths, create_json_file_name};
 
 use crate::{
     budget_management::{create_new_budget, get_current_budget},
-    models::{budget::Budget, pile::Pile},
-    pile_management::{create_new_pile, get_current_pile, maybe_get_pile},
+    models::{
+        budget::Budget,
+        pile::Pile,
+        record_transaction::{Transaction, TransactionType},
+    },
+    pile_management::{create_new_pile, get_current_pile, maybe_get_pile, update_pile},
 };
 
 mod budget_management;
@@ -228,7 +232,7 @@ fn handle_pile(
             create_new_pile(&context, &new_pile)?;
             let budget = get_current_budget(&context)?
                 .add_pile(&new_pile_name)
-                .change_pile_name(&new_pile_name);
+                .change_current_pile(&new_pile_name);
             update_budget(&context.get_current_budget_path(), budget)?;
 
             Ok(())
@@ -271,6 +275,30 @@ fn handle_pile(
                 println!("Couldn't get the pile specified");
                 Ok(())
             }
+        }
+        budgey_cli::PileSubcommand::Add { amount, from } => {
+            trace!("Adding to pile: amount: {:?}, from: {:?}", amount, from);
+            let current_pile = get_current_pile(&context)?;
+            let new_pile = current_pile.add_transaction(&Transaction::new(
+                TransactionType::Add,
+                amount,
+                from.as_deref(),
+            ));
+            trace!("Updating pile with new amount...");
+            update_pile(&context, new_pile)?;
+            trace!("Updated pile with new amount");
+            Ok(())
+        }
+        budgey_cli::PileSubcommand::Focus { name } => {
+            let current_budget = get_current_budget(&context)?;
+            if !current_budget.pile_names.contains(&name) {
+                println!("Pile doesn't exist in the current budget. Specify another name.");
+                return Ok(());
+            }
+            let new = current_budget.change_current_pile(&name);
+            update_budget(&context.get_current_budget_path(), new)?;
+            println!("Focused on pile: {}", name);
+            Ok(())
         }
     }
 }

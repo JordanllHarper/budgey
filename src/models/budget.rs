@@ -45,7 +45,7 @@ impl Budget {
             "main".to_string(),
         )
     }
-    pub fn change_pile_name(&self, name: &str) -> Self {
+    pub fn change_current_pile(&self, name: &str) -> Self {
         Budget::new(
             self.budget_detail.clone(),
             self.pile_names.clone(),
