@@ -39,6 +39,20 @@ pub fn create_new_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()
     match fs::create_dir(&budget_path) {
         Ok(_) => {}
         Err(e) => {
+            match e.kind() {
+                std::io::ErrorKind::AlreadyExists => {
+                    error!(
+                        "Budget {} already exists at: {}",
+                        budget.budget_detail.budget_name, budget_path
+                    );
+                    println!(
+                        "It looks like a budget with the name {} already exists. Please choose a different name.",
+                        budget.budget_detail.budget_name
+                    );
+                    return Err(e.into());
+                }
+                _ => {}
+            }
             error!("Error creating budget directory at: {}", budget_path);
             return Err(e.into());
         }

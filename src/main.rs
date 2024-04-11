@@ -82,7 +82,7 @@ fn main() -> anyhow::Result<()> {
     let args = budgey_cli::BudgeyCLI::parse();
     trace!("Parsed CLI arguments: {:#?}", args);
 
-    let result = match args.commands {
+    let _ = match args.commands {
         budgey_cli::Commands::Init { name } => handle_init(budgey_config, &name),
         budgey_cli::Commands::Budget { subcommand } => {
             let budgey_state = budgey_state::get_budgey_state(&budgey_state_path)?;
@@ -107,17 +107,30 @@ fn main() -> anyhow::Result<()> {
             Ok(())
         }
     };
-    result
+    Ok(())
 }
 
 fn handle_init(budgey_config: BudgeyConfig, starting_budget_name: &str) -> anyhow::Result<()> {
-    println!("Initialising Budgey...");
-    budgey_state::write_budgey_state(&budgey_config, &BudgeyState::new_init(starting_budget_name))?;
+    let check_budgey_state_initialised =
+        budgey_state::check_budgey_state_initialised(&budgey_config)?;
+
+    if check_budgey_state_initialised {
+        println!("Budgey already initialised. Creating budget instead. ");
+    } else {
+        println!("Initialising Budgey...");
+        budgey_state::write_budgey_state(
+            &budgey_config,
+            &BudgeyState::new_init(starting_budget_name),
+        )?;
+    }
     let budget_path = concat_paths(&budgey_config.budgey_path, starting_budget_name);
+    println!("Creating new budget: {}", starting_budget_name);
     create_new_budget(&budget_path, Budget::new_init(starting_budget_name))?;
+
     let context = BudgeyContext::new(&BudgeyState::new_init(starting_budget_name), &budgey_config);
     create_new_pile(&context, &Pile::default_main_pile())?;
-    println!("Budgey initialised");
+
+    println!("Budgey init finished. Run `budgey` to see help.");
     Ok(())
 }
 
@@ -202,12 +215,7 @@ fn handle_pile(
             new_pile_name,
             initial_balance,
         } => {
-            let initial_balance = if let Some(b) = initial_balance {
-                b
-            } else {
-                0.0
-            };
-
+            let initial_balance = initial_balance.unwrap_or(0.0);
             let pile = match maybe_get_user_defined_pile(&context, source.as_deref())? {
                 Some(source_pile) => source_pile,
                 None => {
