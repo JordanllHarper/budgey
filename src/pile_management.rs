@@ -21,6 +21,7 @@ pub fn get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<Pile
     Ok(serde_json::from_str::<Pile>(&pile_json)?)
 }
 
+/// Gets a pile if it exists in the current budget.
 pub fn maybe_get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<Option<Pile>> {
     trace!("Maybe getting pile");
     let current_budget = get_current_budget(context)?;

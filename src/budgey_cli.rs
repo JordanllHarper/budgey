@@ -16,11 +16,13 @@ pub enum Commands {
         /// The name of the new budget. Must be unique.
         name: String,
     },
+
     /// Create, manage and switch between budgets.
     Budget {
         #[command(subcommand)]
         subcommand: Option<BudgetSubcommand>,
     },
+
     /// Create, manage and switch piles in the currently focused budget.
     #[command(name = "pile")]
     Pile {
@@ -38,9 +40,11 @@ pub enum BudgetSubcommand {
         /// The name of the budget to focus on.
         name: String,
     },
+
     /// List all available budgets.
     #[command(name = "ls")]
     List,
+
     /// Create a new budget.
     #[command(name = "new", arg_required_else_help = true)]
     New { name: String },
@@ -80,6 +84,13 @@ pub enum PileSubcommand {
         /// --delete-after-merge.
         name: String,
     },
+
+    /// Balance -> check the balance of a pile.
+    #[command(name = "balance")]
+    Balance {
+        /// The name of the pile to check the balance of.
+        name: Option<String>,
+    },
     // TODO: Mvp stuff
     //
     // /// Add -> Adds a new transaction to the pile.
@@ -100,16 +111,6 @@ pub enum PileSubcommand {
     //     /// An optional message for the transaction commit.
     //     message: Option<String>,
     // },
-    //
-    // /// Balance -> check the balance of a pile.
-    // #[command(name = "balance", arg_required_else_help = true)]
-    // Balance {
-    //     /// The name of the pile to check the balance of.
-    //     #[arg(short, long, required = true)]
-    //     name: String,
-    // },
-    //
-    //
     // TODO: Non mvp stuff
     //
     // /// Revert -> reverts a transaction commit.

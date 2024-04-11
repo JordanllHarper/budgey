@@ -258,8 +258,23 @@ fn handle_pile(
             let current_budget = get_current_budget(&context)?.delete_pile(&name);
             update_budget(&context.get_current_budget_path(), current_budget)
         }
+        budgey_cli::PileSubcommand::Balance { name } => {
+            let get_pile = maybe_get_user_defined_pile(&context, name.as_deref())?;
+            if let Some(pile) = get_pile {
+                println!(
+                    "Balance of pile {}: {}",
+                    pile.get_name(),
+                    pile.current_balance
+                );
+                Ok(())
+            } else {
+                println!("Couldn't get the pile specified");
+                Ok(())
+            }
+        }
     }
 }
+/// Gets the user defined pile if it exists, or the current pile if not.
 fn maybe_get_user_defined_pile(
     context: &BudgeyContext,
     maybe_pile_name: Option<&str>,
