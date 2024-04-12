@@ -85,10 +85,10 @@ pub fn handle_pile_subcommand(
                 amount,
                 from.as_deref(),
             ));
+            update_pile(&context, &new_pile)?;
             println!(
-                "New balance of {} is {}",
-                new_pile.get_name(),
-                new_pile.current_balance
+                "Staged transaction of {}. Pile now at: {}",
+                amount, new_pile.current_balance
             );
             Ok(())
         }
