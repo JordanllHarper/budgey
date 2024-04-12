@@ -60,6 +60,9 @@ impl Pile {
             &self.current_staged_transactions,
         )
     }
+    pub fn clear_staged_transactions(self) -> Self {
+        Self::new(self.current_balance, &self.pile_type, &self.records, &[])
+    }
     pub fn new_user_created(
         balance: f32,
         pile_name: &str,

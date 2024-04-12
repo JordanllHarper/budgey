@@ -82,7 +82,7 @@ pub fn commit_record_to_current_pile(
     record: &Record,
 ) -> anyhow::Result<()> {
     let current_pile = get_current_pile(context)?;
-    let new_pile = current_pile.add_record(record);
+    let new_pile = current_pile.add_record(record).clear_staged_transactions();
     update_pile(context, &new_pile)
 }
 
