@@ -80,16 +80,10 @@ impl Pile {
         source_record_history: &[Record],
         transactions: &[Transaction],
     ) -> Self {
-        let up_to_date_history = vec![Record::new_init(
-            "Initialised pile",
-            "0",
-            balance.clone(),
-            Some(balance),
-        )]
-        .iter()
-        .chain(source_record_history)
-        .cloned()
-        .collect::<Vec<Record>>();
+        let up_to_date_history = source_record_history
+            .iter()
+            .cloned()
+            .collect::<Vec<Record>>();
         Self {
             current_balance: balance,
             pile_type: pile_type.clone(),
