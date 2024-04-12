@@ -1,4 +1,8 @@
-use crate::{budget_management, budgey_cli, budgey_state, models, BudgeyContext};
+use crate::{
+    budget_management, budgey_cli, budgey_state,
+    models::{self, pile::Pile},
+    pile_management, BudgeyContext,
+};
 
 pub fn handle_budget_subcommand(
     context: &BudgeyContext,
@@ -29,6 +33,7 @@ pub fn handle_budget_subcommand(
                 &context.budgey_config.get_budget_path(&name),
                 models::budget::Budget::new_init(&name),
             )?;
+            pile_management::create_new_pile(&context, &Pile::default_main_pile())?;
             let new_state = context
                 .state
                 .add_budget_name(&name)
