@@ -111,15 +111,18 @@ pub fn handle_pile_subcommand(
                 .to_string();
             let balance = current_pile.current_balance;
             trace!("Difference: {}", balance);
-            commit_record_to_current_pile(
-                &context,
-                &Record::new(
-                    &message,
-                    &current_time,
-                    balance,
-                    &current_pile.current_staged_transactions,
-                ),
-            )?;
+
+            let new_record = &Record::new(
+                &message,
+                &current_time,
+                balance,
+                &current_pile.current_staged_transactions,
+            );
+            commit_record_to_current_pile(&context, new_record)?;
+            println!(
+                "Record {} committed. Balance: {}",
+                new_record.id, new_record.amount_after_record
+            );
             Ok(())
         }
     }
