@@ -23,7 +23,9 @@ impl Default for Pile {
 
 #[derive(Serialize, Deserialize, Debug, Clone)]
 pub enum PileType {
+    #[serde(rename = "main")]
     Main,
+    #[serde(rename = "user_created")]
     UserCreated { pile_name: String },
 }
 

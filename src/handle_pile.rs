@@ -59,6 +59,10 @@ pub fn handle_pile_subcommand(
             Ok(())
         }
         budgey_cli::PileSubcommand::Delete { name } => {
+            if name.to_lowercase() == "main" {
+                println!("Cannot delete the main pile of a budget.\nIf you want to delete the budget, use the budget delete command.");
+                return Ok(());
+            }
             pile_management::delete_pile(&context, &name)?;
             let current_budget = get_current_budget(&context)?.delete_pile(&name);
             update_budget(&context.get_current_budget_path(), current_budget)
