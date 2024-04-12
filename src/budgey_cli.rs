@@ -32,7 +32,7 @@ pub enum Commands {
         subcommand: Option<PileSubcommand>,
     },
 }
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Subcommand, Clone)]
 pub enum BudgetSubcommand {
     /// Set the named working budget.
     #[command(name = "focus", arg_required_else_help = true)]
@@ -54,7 +54,7 @@ pub enum BudgetSubcommand {
     Delete { name: String },
 }
 
-#[derive(Debug, Subcommand)]
+#[derive(Debug, Subcommand, Clone)]
 pub enum PileSubcommand {
     /// Creates a new pile.
     #[command(name = "new", arg_required_else_help = true)]
