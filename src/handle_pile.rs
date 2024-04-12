@@ -109,21 +109,14 @@ pub fn handle_pile_subcommand(
                 .duration_since(SystemTime::UNIX_EPOCH)?
                 .as_secs()
                 .to_string();
-            let difference =
-                current_pile
-                    .current_staged_transactions
-                    .iter()
-                    .fold(0.0, |acc, elem| match elem.transaction_type {
-                        TransactionType::Add => acc + elem.amount,
-                        TransactionType::Withdraw => acc - elem.amount,
-                        _ => acc,
-                    });
+            let balance = current_pile.current_balance;
+            trace!("Difference: {}", balance);
             commit_record_to_current_pile(
                 &context,
                 &Record::new(
                     &message,
                     &current_time,
-                    current_pile.current_balance - difference,
+                    balance,
                     &current_pile.current_staged_transactions,
                 ),
             )?;
