@@ -5,11 +5,13 @@ use crate::{
 };
 
 pub fn handle_init(budgey_config: BudgeyConfig, starting_budget_name: &str) -> anyhow::Result<()> {
-    let check_budgey_state_initialised =
-        budgey_state::check_budgey_state_initialised(&budgey_config)?;
+    let budget_already_initialised = budgey_state::check_budgey_state_initialised(&budgey_config)?;
 
-    if check_budgey_state_initialised {
-        println!("Budgey already initialised. Creating budget instead. ");
+    if budget_already_initialised {
+        println!(
+            "Budgey already initialised. Run `budgey budget new <budget name>` to create new budgets. "
+        );
+        return Ok(());
     } else {
         println!("Initialising Budgey...");
         budgey_state::write_budgey_state(
