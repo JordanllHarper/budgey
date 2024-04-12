@@ -1,7 +1,7 @@
+use crate::budgey_state::BudgeyState;
 use anyhow::Ok;
 use clap::Parser;
 use log::{info, trace};
-use models::budgey_state::BudgeyState;
 use utils::{concat_paths, create_json_file_name};
 
 mod budget_management;
@@ -62,7 +62,6 @@ impl BudgeyContext {
 }
 
 fn main() -> anyhow::Result<()> {
-    simple_logger::SimpleLogger::new().env().init().unwrap();
     let home = env!("HOME").to_string();
     info!("Home environment initialised: {}", home);
     let budgey_path = format!("{}{}", home, "/budgey");
@@ -82,8 +81,8 @@ fn main() -> anyhow::Result<()> {
         budgey_cli::Commands::Budget { subcommand } => {
             let budgey_state = budgey_state::get_budgey_state(&budgey_state_path)?;
             let context = BudgeyContext::new(&budgey_state, &budgey_config);
-            if let Some(command) = subcommand {
-                handle_budget::handle_budget_subcommand(&context, command)?;
+            if let Some(sub) = subcommand {
+                handle_budget::handle_budget_subcommand(&context, sub)?;
             } else {
                 let current_budget = budget_management::get_current_budget_name(&context)?;
                 println!("Current budget: {:?}", current_budget);
@@ -93,8 +92,8 @@ fn main() -> anyhow::Result<()> {
         budgey_cli::Commands::Pile { subcommand } => {
             let budgey_state = budgey_state::get_budgey_state(&budgey_state_path)?;
             let context = BudgeyContext::new(&budgey_state, &budgey_config);
-            if let Some(p) = subcommand {
-                handle_pile::handle_pile_subcommand(context, p)?;
+            if let Some(sub) = subcommand {
+                handle_pile::handle_pile_subcommand(context, sub)?;
             } else {
                 let current_pile = pile_management::get_current_pile(&context)?;
                 println!("Current pile: {}", current_pile.get_name());
