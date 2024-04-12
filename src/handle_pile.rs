@@ -105,6 +105,10 @@ pub fn handle_pile_subcommand(
         }
         budgey_cli::PileSubcommand::Commit { message } => {
             let current_pile = get_current_pile(&context)?;
+            if current_pile.current_staged_transactions.is_empty() {
+                println!("No staged transactions to commit. Add some transactions first.");
+                return Ok(());
+            }
             let current_time = SystemTime::now()
                 .duration_since(SystemTime::UNIX_EPOCH)?
                 .as_secs()
