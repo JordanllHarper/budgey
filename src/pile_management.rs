@@ -47,6 +47,7 @@ pub fn maybe_get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Resul
 pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<()> {
     trace!("Creating new pile");
     let current_budget_path = context.get_current_budget_path();
+    trace!("Current budget path: {}", current_budget_path);
     let pile_name = pile.get_name();
     let pile_directory_path = concat_paths(&current_budget_path, &pile_name);
     match fs::create_dir(&pile_directory_path) {

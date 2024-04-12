@@ -59,9 +59,14 @@ impl BudgeyContext {
             &create_json_file_name(&self.state.current_focused_budget_name),
         )
     }
+
+    pub fn update_state(&self, new_state: &BudgeyState) -> Self {
+        Self::new(new_state, &self.budgey_config)
+    }
 }
 
 fn main() -> anyhow::Result<()> {
+    simple_logger::init().unwrap();
     let home = env!("HOME").to_string();
     info!("Home environment initialised: {}", home);
     let budgey_path = format!("{}{}", home, "/budgey");
