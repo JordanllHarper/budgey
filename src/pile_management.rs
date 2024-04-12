@@ -4,7 +4,7 @@ use log::{error, trace};
 
 use crate::{
     budget_management::get_current_budget,
-    models::pile::Pile,
+    models::{pile::Pile, record_transaction::Record},
     utils::{concat_paths, create_json_path},
     BudgeyContext,
 };
@@ -15,7 +15,7 @@ pub fn get_current_pile(context: &BudgeyContext) -> anyhow::Result<Pile> {
     get_pile(context, &current_budget.current_pile_name)
 }
 
-pub fn update_pile(context: &BudgeyContext, new_pile: Pile) -> anyhow::Result<()> {
+pub fn update_pile(context: &BudgeyContext, new_pile: &Pile) -> anyhow::Result<()> {
     trace!("Updating pile: {}", new_pile.get_name());
     let pile_path = concat_paths(&context.get_current_budget_path(), &new_pile.get_name());
     let pile_json_path = create_json_path(&pile_path, &new_pile.get_name());
@@ -75,6 +75,14 @@ pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<(
         }
     };
     Ok(())
+}
+pub fn commit_record_to_current_pile(
+    context: &BudgeyContext,
+    record: &Record,
+) -> anyhow::Result<()> {
+    let current_pile = get_current_pile(context)?;
+    let new_pile = current_pile.add_record(record);
+    update_pile(context, &new_pile)
 }
 
 pub fn delete_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<()> {

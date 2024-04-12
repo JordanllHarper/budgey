@@ -34,7 +34,7 @@ impl Pile {
             PileType::UserCreated { pile_name } => pile_name.to_string(),
         }
     }
-    pub fn add_transaction(&self, transaction: &Transaction) -> Self {
+    pub fn add_transaction(self, transaction: &Transaction) -> Self {
         Self::new(
             self.current_balance + transaction.amount,
             &self.pile_type,
@@ -46,6 +46,18 @@ impl Pile {
                 .chain(vec![transaction.clone()])
                 .collect::<Vec<Transaction>>()
                 .as_slice(),
+        )
+    }
+    pub fn add_record(self, record: &Record) -> Self {
+        Self::new(
+            self.current_balance,
+            &self.pile_type,
+            self.records
+                .into_iter()
+                .chain(vec![record.clone()])
+                .collect::<Vec<Record>>()
+                .as_slice(),
+            &self.current_staged_transactions,
         )
     }
     pub fn new_user_created(

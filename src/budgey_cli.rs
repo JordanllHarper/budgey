@@ -107,59 +107,62 @@ pub enum PileSubcommand {
     Focus {
         /// The name of the pile to focus on.
         name: String,
-    }, // TODO: Mvp stuff
-       //
-       // // Commit -> commits this transaction, making it a part of the transaction history.
-       // // This can only be undone with a revert.
-       // #[command(name = "commit", arg_required_else_help = true)]
-       // Commit {
-       //     /// An optional message for the transaction commit.
-       //     message: Option<String>,
-       // },
-       // TODO: Non mvp stuff
-       //
-       // /// Revert -> reverts a transaction commit.
-       // #[command(name = "revert", arg_required_else_help = true)]
-       // Revert {
-       //     /// An optional message for the transaction revert.
-       //     message: Option<String>,
-       // },
-       //
-       // /// Restore -> restores all added transactions to the last commit.
-       // #[command(name = "restore", arg_required_else_help = true)]
-       // Restore,
-       //
-       // /// Merge -> merge a source pile into a destination pile.
-       // #[command(name = "merge", arg_required_else_help = true)]
-       // Merge {
-       //     /// The amount of the transaction.
-       //     #[arg(short, long, required = true)]
-       //     amount: f32,
-       //
-       //     /// The source pile name.
-       //     #[arg(short, long, required = true)]
-       //     source: String,
-       //
-       //     /// The destination pile name.
-       //     #[arg(short, long, required = true)]
-       //     destination: String,
-       //
-       //     /// Delete source pile after merge.
-       //     #[arg(short, long)]
-       //     delete_after_merge: bool,
-       //
-       //     /// An optional comment for the merge.
-       //     #[arg(short, long)]
-       //     usage: Option<String>,
-       // },
-       //
+    },
 
-       // /// View -> view transactions of a pile
-       // #[command(name = "view", arg_required_else_help = true)]
-       // View {
-       //     /// The name of the pile to view transactions of.
-       //     #[arg(short, long, required = true)]
-       //     name: String,
-       // },
-       //
+    // TODO: Mvp stuff
+    // Commit -> commits this transaction, making it a part of the transaction history.
+    // This can only be undone with a revert.
+    #[command(name = "commit", arg_required_else_help = true)]
+    Commit {
+        /// A required message for the transaction commit.
+        ///
+        /// This message should be used to describe the transactions made.
+        message: String,
+    },
+    // TODO: Non mvp stuff
+    //
+    // /// Revert -> reverts a transaction commit.
+    // #[command(name = "revert", arg_required_else_help = true)]
+    // Revert {
+    //     /// An optional message for the transaction revert.
+    //     message: Option<String>,
+    // },
+    //
+    // /// Restore -> restores all added transactions to the last commit.
+    // #[command(name = "restore", arg_required_else_help = true)]
+    // Restore,
+    //
+    // /// Merge -> merge a source pile into a destination pile.
+    // #[command(name = "merge", arg_required_else_help = true)]
+    // Merge {
+    //     /// The amount of the transaction.
+    //     #[arg(short, long, required = true)]
+    //     amount: f32,
+    //
+    //     /// The source pile name.
+    //     #[arg(short, long, required = true)]
+    //     source: String,
+    //
+    //     /// The destination pile name.
+    //     #[arg(short, long, required = true)]
+    //     destination: String,
+    //
+    //     /// Delete source pile after merge.
+    //     #[arg(short, long)]
+    //     delete_after_merge: bool,
+    //
+    //     /// An optional comment for the merge.
+    //     #[arg(short, long)]
+    //     usage: Option<String>,
+    // },
+    //
+
+    // /// View -> view transactions of a pile
+    // #[command(name = "view", arg_required_else_help = true)]
+    // View {
+    //     /// The name of the pile to view transactions of.
+    //     #[arg(short, long, required = true)]
+    //     name: String,
+    // },
+    //
 }
