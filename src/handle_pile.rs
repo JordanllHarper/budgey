@@ -81,15 +81,12 @@ pub fn handle_pile_subcommand(
                 Ok(())
             }
         }
-        budgey_cli::PileSubcommand::Add { amount, from } => {
-            trace!("Adding to pile: amount: {:?}, from: {:?}", amount, from);
-            let current_pile = get_current_pile(&context)?;
-            let new_pile = current_pile.add_transaction(&Transaction::new(
-                TransactionType::Add,
-                amount,
-                from.as_deref(),
-            ));
-            update_pile(&context, &new_pile)?;
+        budgey_cli::PileSubcommand::Add { amount } => {
+            trace!("Adding to pile: amount: {:?}", amount);
+            let new_pile = update_pile_with_action(&context, |pile| {
+                Ok(pile.add_transaction(&Transaction::new(TransactionType::Add, amount)))
+            })?;
+
             println!(
                 "Staged transaction of {}. Pile now at: {}",
                 amount, new_pile.current_balance
@@ -108,28 +105,46 @@ pub fn handle_pile_subcommand(
             Ok(())
         }
         budgey_cli::PileSubcommand::Commit { message } => {
-            let current_pile = get_current_pile(&context)?;
-            if current_pile.current_staged_transactions.is_empty() {
-                println!("No staged transactions to commit. Add some transactions first.");
-                return Ok(());
-            }
-            let current_time = SystemTime::now()
-                .duration_since(SystemTime::UNIX_EPOCH)?
-                .as_secs()
-                .to_string();
-            let balance = current_pile.current_balance;
-            trace!("Difference: {}", balance);
+            update_pile_with_action(&context, |current_pile| {
+                if current_pile.current_staged_transactions.is_empty() {
+                    println!("No staged transactions to commit. Add some transactions first.");
+                    return Ok(current_pile);
+                }
+                let current_time = SystemTime::now()
+                    .duration_since(SystemTime::UNIX_EPOCH)?
+                    .as_secs()
+                    .to_string();
+                let balance = current_pile.current_balance;
+                trace!("Difference: {}", balance);
 
-            let new_record = &Record::new(
-                &message,
-                &current_time,
-                balance,
-                &current_pile.current_staged_transactions,
-            );
-            commit_record_to_current_pile(&context, new_record)?;
+                let new_record = &Record::new(
+                    &message,
+                    &current_time,
+                    balance,
+                    &current_pile.current_staged_transactions,
+                );
+
+                let new_pile = current_pile
+                    .add_record(new_record)
+                    .clear_staged_transactions();
+
+                println!(
+                    "Record {} committed. Balance: {}",
+                    new_record.id, new_record.amount_after_record
+                );
+                Ok(new_pile)
+            })?;
+            Ok(())
+        }
+        budgey_cli::PileSubcommand::Withdraw { amount } => {
+            trace!("Withdrawing from pile: amount: {:?}", amount);
+            let new_pile = update_pile_with_action(&context, |pile| {
+                Ok(pile.add_transaction(&Transaction::new(TransactionType::Withdraw, amount)))
+            })?;
+
             println!(
-                "Record {} committed. Balance: {}",
-                new_record.id, new_record.amount_after_record
+                "Staged transaction of {}. Pile now at: {}",
+                amount, new_pile.current_balance
             );
             Ok(())
         }
