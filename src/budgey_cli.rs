@@ -98,6 +98,11 @@ pub enum PileSubcommand {
         /// The amount of the transaction.
         amount: f32,
     },
+    /// Create an 'withdraw' transaction, where money is withdrawn from a pile.
+    #[command(name = "withdraw", arg_required_else_help = true)]
+    Withdraw {
+        /// The amount of the transaction.
+        amount: f32,
     },
     /// Focus a new pile.
     #[command(name = "focus", arg_required_else_help = true)]
