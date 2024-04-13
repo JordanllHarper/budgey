@@ -26,16 +26,13 @@ pub struct Transaction {
     pub transaction_type: TransactionType,
     /// The amount dealt with in this transaction.
     pub amount: f32,
-    /// Which pile this transaction is from.
-    pub from: Option<String>,
 }
 
 impl Transaction {
-    pub fn new(transaction_type: TransactionType, amount: f32, from: Option<&str>) -> Self {
+    pub fn new(transaction_type: TransactionType, amount: f32) -> Self {
         Self {
             transaction_type,
             amount,
-            from: from.map(|s| s.to_string()),
         }
     }
 }
@@ -64,7 +61,6 @@ impl Record {
             &[Transaction::new(
                 TransactionType::Init,
                 amount.unwrap_or(0.0),
-                None,
             )],
         )
     }
