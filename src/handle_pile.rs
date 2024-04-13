@@ -147,3 +147,13 @@ fn maybe_get_user_defined_pile(
         Ok(Some(get_current_pile(context)?))
     }
 }
+
+fn update_pile_with_action(
+    context: &BudgeyContext,
+    action: impl Fn(Pile) -> anyhow::Result<Pile>,
+) -> anyhow::Result<Pile> {
+    let current_pile = get_current_pile(context)?;
+    let new_pile = action(current_pile)?;
+    update_pile(context, &new_pile)?;
+    Ok(new_pile)
+}
