@@ -49,8 +49,7 @@ impl Pile {
             },
             &self.pile_type,
             &self.records,
-            &self
-                .clone()
+            self.clone()
                 .current_staged_transactions
                 .into_iter()
                 .chain(vec![transaction.clone()])
@@ -83,7 +82,7 @@ impl Pile {
             &PileType::UserCreated {
                 pile_name: pile_name.to_string(),
             },
-            &source_record_history,
+            source_record_history,
             &[],
         )
     }
@@ -93,10 +92,7 @@ impl Pile {
         source_record_history: &[Record],
         transactions: &[Transaction],
     ) -> Self {
-        let up_to_date_history = source_record_history
-            .iter()
-            .cloned()
-            .collect::<Vec<Record>>();
+        let up_to_date_history: Vec<Record> = source_record_history.to_vec();
         Self {
             current_balance: balance,
             pile_type: pile_type.clone(),

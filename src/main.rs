@@ -51,7 +51,7 @@ impl BudgeyContext {
     pub fn get_current_budget_path(&self) -> String {
         let current_budget = &self.state.current_focused_budget_name;
         let budgey_path = &self.budgey_config.budgey_path;
-        concat_paths(&budgey_path, &current_budget)
+        concat_paths(budgey_path, current_budget)
     }
     pub fn get_current_budget_json_path(&self) -> String {
         concat_paths(

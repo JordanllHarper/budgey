@@ -15,7 +15,7 @@ pub fn get_current_budget_name(budgey_context: &BudgeyContext) -> anyhow::Result
 pub fn get_current_budget(budgey_context: &BudgeyContext) -> anyhow::Result<Budget> {
     trace!("Getting current budget");
     let current_budget_path = &budgey_context.get_current_budget_json_path();
-    let current_budget_json = match fs::read_to_string(&current_budget_path) {
+    let current_budget_json = match fs::read_to_string(current_budget_path) {
         Ok(json) => json,
         Err(e) => {
             error!("Error reading current budget json: {:?}", e);
@@ -36,22 +36,19 @@ pub fn get_current_budget(budgey_context: &BudgeyContext) -> anyhow::Result<Budg
 }
 pub fn create_new_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()> {
     trace!("Creating new budget");
-    match fs::create_dir(&budget_path) {
+    match fs::create_dir(budget_path) {
         Ok(_) => {}
         Err(e) => {
-            match e.kind() {
-                std::io::ErrorKind::AlreadyExists => {
-                    error!(
-                        "Budget {} already exists at: {}",
-                        budget.budget_detail.budget_name, budget_path
-                    );
-                    println!(
-                        "It looks like a budget with the name {} already exists. Please choose a different name.",
-                        budget.budget_detail.budget_name
-                    );
-                    return Err(e.into());
-                }
-                _ => {}
+            if let std::io::ErrorKind::AlreadyExists = e.kind() {
+                error!(
+                    "Budget {} already exists at: {}",
+                    budget.budget_detail.budget_name, budget_path
+                );
+                println!(
+                    "It looks like a budget with the name {} already exists. Please choose a different name.",
+                    budget.budget_detail.budget_name
+                );
+                return Err(e.into());
             }
             error!("Error creating budget directory at: {}", budget_path);
             return Err(e.into());
@@ -59,7 +56,7 @@ pub fn create_new_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()
     };
     let budget_file_path = create_json_path(budget_path, &budget.budget_detail.budget_name);
     match fs::write(
-        &budget_file_path,
+        budget_file_path,
         match serde_json::to_string(&budget) {
             Ok(it) => it,
             Err(e) => {
@@ -98,7 +95,7 @@ pub fn update_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()> {
 }
 pub fn delete_budget(budgey_context: &BudgeyContext, budget_name: &str) -> anyhow::Result<()> {
     trace!("Deleting budget");
-    let budget_path = concat_paths(&budgey_context.budgey_config.budgey_path, &budget_name);
+    let budget_path = concat_paths(&budgey_context.budgey_config.budgey_path, budget_name);
     match fs::remove_dir_all(&budget_path) {
         Ok(_) => {}
         Err(e) => {
@@ -110,7 +107,7 @@ pub fn delete_budget(budgey_context: &BudgeyContext, budget_name: &str) -> anyho
         }
     };
 
-    let new_state = budgey_context.state.remove_budget_name(&budget_name);
+    let new_state = budgey_context.state.remove_budget_name(budget_name);
     match write_budgey_state(&budgey_context.budgey_config, &new_state) {
         Ok(_) => {}
         Err(e) => {
@@ -134,8 +131,8 @@ pub fn does_budget_exist(
     {
         return Ok(true);
     }
-    let budget_path = concat_paths(&budgey_context.budgey_config.budgey_path, &budget_name);
-    let budget_json_path = concat_paths(&budget_path, &create_json_file_name(&budget_name));
+    let budget_path = concat_paths(&budgey_context.budgey_config.budgey_path, budget_name);
+    let budget_json_path = concat_paths(&budget_path, &create_json_file_name(budget_name));
 
     match fs::read(&budget_json_path) {
         Ok(_) => Ok(true),

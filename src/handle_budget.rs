@@ -11,7 +11,7 @@ pub fn handle_budget_subcommand(
     match subcommand {
         budgey_cli::BudgetSubcommand::Focus { name } => {
             let state = &context.state;
-            let budget_exists = budget_management::does_budget_exist(&context, &name)?;
+            let budget_exists = budget_management::does_budget_exist(context, &name)?;
 
             if !budget_exists {
                 println!("Budget doesn't exist, specify another name");
@@ -24,7 +24,7 @@ pub fn handle_budget_subcommand(
             Ok(())
         }
         budgey_cli::BudgetSubcommand::New { name } => {
-            let budget_exists = budget_management::does_budget_exist(&context, &name)?;
+            let budget_exists = budget_management::does_budget_exist(context, &name)?;
             if budget_exists {
                 println!("Budget already exists with the same name");
                 return Ok(());
@@ -47,7 +47,7 @@ pub fn handle_budget_subcommand(
             Ok(())
         }
         budgey_cli::BudgetSubcommand::Delete { name } => {
-            let budget_exists = budget_management::does_budget_exist(&context, &name)?;
+            let budget_exists = budget_management::does_budget_exist(context, &name)?;
             if !budget_exists {
                 println!("Budget doesn't exist, specify another name");
                 return Ok(());

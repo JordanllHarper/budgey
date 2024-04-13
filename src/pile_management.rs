@@ -4,7 +4,7 @@ use log::{error, trace};
 
 use crate::{
     budget_management::get_current_budget,
-    models::{pile::Pile, record_transaction::Record},
+    models::pile::Pile,
     utils::{concat_paths, create_json_path},
     BudgeyContext,
 };
@@ -25,8 +25,8 @@ pub fn update_pile(context: &BudgeyContext, new_pile: &Pile) -> anyhow::Result<(
 
 pub fn get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<Pile> {
     trace!("Getting pile");
-    let pile_path = concat_paths(&context.get_current_budget_path(), &pile_name);
-    let pile_json_path = create_json_path(&pile_path, &pile_name);
+    let pile_path = concat_paths(&context.get_current_budget_path(), pile_name);
+    let pile_json_path = create_json_path(&pile_path, pile_name);
     let pile_json = fs::read_to_string(pile_json_path)?;
     Ok(serde_json::from_str::<Pile>(&pile_json)?)
 }
@@ -50,7 +50,7 @@ pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<(
     trace!("Current budget path: {}", current_budget_path);
     let pile_name = pile.get_name();
     let pile_directory_path = concat_paths(&current_budget_path, &pile_name);
-    match fs::create_dir(&pile_directory_path) {
+    match fs::create_dir(pile_directory_path) {
         Ok(it) => it,
         Err(err) => {
             error!("Error creating pile directory: {:?}", err);
@@ -60,7 +60,7 @@ pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<(
     let pile_file_path =
         create_json_path(&concat_paths(&current_budget_path, &pile_name), &pile_name);
     match fs::write(
-        &pile_file_path,
+        pile_file_path,
         match serde_json::to_string(&pile) {
             Ok(it) => it,
             Err(e) => {
@@ -80,7 +80,7 @@ pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<(
 
 pub fn delete_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<()> {
     trace!("Deleting pile");
-    let pile_path = concat_paths(&context.get_current_budget_path(), &pile_name);
+    let pile_path = concat_paths(&context.get_current_budget_path(), pile_name);
     fs::remove_dir_all(pile_path)?;
     Ok(())
 }
