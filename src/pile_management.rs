@@ -77,14 +77,6 @@ pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<(
     };
     Ok(())
 }
-pub fn commit_record_to_current_pile(
-    context: &BudgeyContext,
-    record: &Record,
-) -> anyhow::Result<()> {
-    let current_pile = get_current_pile(context)?;
-    let new_pile = current_pile.add_record(record).clear_staged_transactions();
-    update_pile(context, &new_pile)
-}
 
 pub fn delete_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<()> {
     trace!("Deleting pile");
