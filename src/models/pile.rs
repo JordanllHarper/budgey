@@ -38,7 +38,15 @@ impl Pile {
     }
     pub fn add_transaction(self, transaction: &Transaction) -> Self {
         Self::new(
-            self.current_balance + transaction.amount,
+            match transaction.transaction_type {
+                super::record_transaction::TransactionType::Add => {
+                    self.current_balance + transaction.amount
+                }
+                super::record_transaction::TransactionType::Withdraw => {
+                    self.current_balance - transaction.amount
+                }
+                super::record_transaction::TransactionType::Init => self.current_balance,
+            },
             &self.pile_type,
             &self.records,
             &self
