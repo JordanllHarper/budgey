@@ -92,15 +92,12 @@ pub enum PileSubcommand {
         name: Option<String>,
     },
 
-    /// Adds a new transaction to the pile.
+    /// Create an 'add' transaction, where money is added to a pile.
     #[command(name = "add", arg_required_else_help = true)]
     Add {
         /// The amount of the transaction.
         amount: f32,
-
-        /// The optional pile where the transaction will come from.
-        #[arg(short, long)]
-        from: Option<String>,
+    },
     },
     /// Focus a new pile.
     #[command(name = "focus", arg_required_else_help = true)]
