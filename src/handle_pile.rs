@@ -81,18 +81,7 @@ pub fn handle_pile_subcommand(
                 Ok(())
             }
         }
-        budgey_cli::PileSubcommand::Add { amount } => {
-            trace!("Adding to pile: amount: {:?}", amount);
-            let new_pile = update_pile_with_action(&context, |pile| {
-                Ok(pile.add_transaction(&Transaction::new(TransactionType::Add, amount)))
-            })?;
 
-            println!(
-                "Staged transaction of {}. Pile now at: {}",
-                amount, new_pile.current_balance
-            );
-            Ok(())
-        }
         budgey_cli::PileSubcommand::Focus { name } => {
             let current_budget = get_current_budget(&context)?;
             if !current_budget.pile_names.contains(&name) {
@@ -102,50 +91,6 @@ pub fn handle_pile_subcommand(
             let new = current_budget.change_current_pile(&name);
             update_budget(&context.get_current_budget_path(), new)?;
             println!("Focused on pile: {}", name);
-            Ok(())
-        }
-        budgey_cli::PileSubcommand::Commit { message } => {
-            update_pile_with_action(&context, |current_pile| {
-                if current_pile.current_staged_transactions.is_empty() {
-                    println!("No staged transactions to commit. Add some transactions first.");
-                    return Ok(current_pile);
-                }
-                let current_time = SystemTime::now()
-                    .duration_since(SystemTime::UNIX_EPOCH)?
-                    .as_secs()
-                    .to_string();
-                let balance = current_pile.current_balance;
-                trace!("Difference: {}", balance);
-
-                let new_record = &Record::new(
-                    &message,
-                    &current_time,
-                    balance,
-                    &current_pile.current_staged_transactions,
-                );
-
-                let new_pile = current_pile
-                    .add_record(new_record)
-                    .clear_staged_transactions();
-
-                println!(
-                    "Record {} committed. Balance: {}",
-                    new_record.id, new_record.amount_after_record
-                );
-                Ok(new_pile)
-            })?;
-            Ok(())
-        }
-        budgey_cli::PileSubcommand::Withdraw { amount } => {
-            trace!("Withdrawing from pile: amount: {:?}", amount);
-            let new_pile = update_pile_with_action(&context, |pile| {
-                Ok(pile.add_transaction(&Transaction::new(TransactionType::Withdraw, amount)))
-            })?;
-
-            println!(
-                "Staged transaction of {}. Pile now at: {}",
-                amount, new_pile.current_balance
-            );
             Ok(())
         }
     }
@@ -161,14 +106,4 @@ fn maybe_get_user_defined_pile(
     } else {
         Ok(Some(get_current_pile(context)?))
     }
-}
-
-fn update_pile_with_action(
-    context: &BudgeyContext,
-    action: impl Fn(Pile) -> anyhow::Result<Pile>,
-) -> anyhow::Result<Pile> {
-    let current_pile = get_current_pile(context)?;
-    let new_pile = action(current_pile)?;
-    update_pile(context, &new_pile)?;
-    Ok(new_pile)
 }

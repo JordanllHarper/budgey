@@ -1,4 +1,7 @@
-use crate::budgey_state::BudgeyState;
+use crate::{
+    budgey_state::BudgeyState,
+    models::record_transaction::{Record, Transaction, TransactionType},
+};
 use anyhow::Ok;
 use clap::Parser;
 use log::{info, trace};
@@ -64,9 +67,6 @@ impl BudgeyContext {
         Self::new(new_state, &self.budgey_config)
     }
 }
-fn is_budgey_initialised(path: &str) -> bool {
-    std::path::Path::new(path).exists()
-}
 
 fn main() -> anyhow::Result<()> {
     simple_logger::init().unwrap();
@@ -86,50 +86,121 @@ fn main() -> anyhow::Result<()> {
 
     info!("Parsing CLI arguments");
     let args = budgey_cli::BudgeyCLI::parse();
-
     trace!("Parsed CLI arguments: {:#?}", args);
 
     let _ = match args.commands {
         budgey_cli::Commands::Init { name } => handle_init::handle_init(budgey_config, &name),
         budgey_cli::Commands::Budget { subcommand } => {
-            handle_non_init(&budgey_config, &budgey_state_path, |context| {
-                if let Some(sub) = &subcommand {
-                    handle_budget::handle_budget_subcommand(&context, sub.clone())
-                } else {
-                    let current_budget = budget_management::get_current_budget_name(&context)?;
-                    println!("Current budget: {:?}", current_budget);
-                    Ok(())
-                }
-            })
+            let context = BudgeyContext::new(
+                &budgey_state::get_budgey_state(&budgey_state_path)?,
+                &budgey_config,
+            );
+            if let Some(sub) = &subcommand {
+                handle_budget::handle_budget_subcommand(&context, sub.clone())
+            } else {
+                let current_budget = budget_management::get_current_budget_name(&context)?;
+                println!("Current budget: {:?}", current_budget);
+                Ok(())
+            }
         }
         budgey_cli::Commands::Pile { subcommand } => {
-            handle_non_init(&budgey_config, &budgey_state_path, |context| {
-                if let Some(sub) = &subcommand {
-                    return handle_pile::handle_pile_subcommand(context, sub.clone());
-                } else {
-                    let current_pile = pile_management::get_current_pile(&context)?;
-                    println!("Current pile: {}", current_pile.get_name());
-                }
-                Ok(())
-            })
+            let context = BudgeyContext::new(
+                &budgey_state::get_budgey_state(&budgey_state_path)?,
+                &budgey_config,
+            );
+            if let Some(sub) = &subcommand {
+                return handle_pile::handle_pile_subcommand(context, sub.clone());
+            } else {
+                let current_pile = pile_management::get_current_pile(&context)?;
+                println!("Current pile: {}", current_pile.get_name());
+            }
+            Ok(())
         }
+        budgey_cli::Commands::Add { amount } => {
+            let context = BudgeyContext::new(
+                &budgey_state::get_budgey_state(&budgey_state_path)?,
+                &budgey_config,
+            );
+            trace!("Adding to pile: amount: {:?}", amount);
+            let new_pile = update_pile_with_action(&context, |pile| {
+                Ok(pile.add_transaction(&Transaction::new(TransactionType::Add, amount)))
+            })?;
+
+            println!(
+                "Staged transaction of {}. Pile now at: {}",
+                amount, new_pile.current_balance
+            );
+            Ok(())
+        }
+
+        budgey_cli::Commands::Commit { message } => {
+            let context = BudgeyContext::new(
+                &budgey_state::get_budgey_state(&budgey_state_path)?,
+                &budgey_config,
+            );
+            update_pile_with_action(&context, |current_pile| {
+                if current_pile.current_staged_transactions.is_empty() {
+                    println!("No staged transactions to commit. Add some transactions first.");
+                    return Ok(current_pile);
+                }
+                let current_time = std::time::SystemTime::now()
+                    .duration_since(std::time::SystemTime::UNIX_EPOCH)?
+                    .as_secs()
+                    .to_string();
+                let balance = current_pile.current_balance;
+                trace!("Difference: {}", balance);
+
+                let new_record = &Record::new(
+                    &message,
+                    &current_time,
+                    balance,
+                    &current_pile.current_staged_transactions,
+                );
+
+                let new_pile = current_pile
+                    .add_record(new_record)
+                    .clear_staged_transactions();
+
+                println!(
+                    "Record {} committed. Balance: {}",
+                    new_record.id, new_record.amount_after_record
+                );
+                Ok(new_pile)
+            })?;
+            Ok(())
+        }
+        budgey_cli::Commands::Withdraw { amount } => {
+            let context = BudgeyContext::new(
+                &budgey_state::get_budgey_state(&budgey_state_path)?,
+                &budgey_config,
+            );
+            trace!("Withdrawing from pile: amount: {:?}", amount);
+            let new_pile = update_pile_with_action(&context, |pile| {
+                Ok(
+                    pile.add_transaction(&models::record_transaction::Transaction::new(
+                        TransactionType::Withdraw,
+                        amount,
+                    )),
+                )
+            })?;
+
+            println!(
+                "Staged transaction of {}. Pile now at: {}",
+                amount, new_pile.current_balance
+            );
+            Ok(())
+        }
+        budgey_cli::Commands::Restore => todo!(),
     };
     Ok(())
 }
-fn handle_non_init(
-    budgey_config: &BudgeyConfig,
-    budgey_state_path: &str,
-    f: impl Fn(BudgeyContext) -> anyhow::Result<()>,
-) -> anyhow::Result<()> {
-    if !is_budgey_initialised(&budgey_config.budgey_path) {
-        info!("Budgey is not initialised");
-        println!(
-            "Budgey is not initialised, run `budgey init <starting budget name>` to initialise"
-        );
-        return Ok(());
-    }
-    let budgey_state = budgey_state::get_budgey_state(budgey_state_path)?;
-    let context = BudgeyContext::new(&budgey_state, budgey_config);
 
-    f(context)
+fn update_pile_with_action(
+    context: &BudgeyContext,
+    action: impl Fn(models::pile::Pile) -> anyhow::Result<models::pile::Pile>,
+) -> anyhow::Result<models::pile::Pile> {
+    let current_pile = pile_management::get_current_pile(context)?;
+    let new_pile = action(current_pile)?;
+    pile_management::update_pile(context, &new_pile)?;
+    Ok(new_pile)
 }

@@ -10,7 +10,7 @@ pub struct BudgeyCLI {
 /// Commands for the Budgey CLI
 #[derive(Debug, Subcommand)]
 pub enum Commands {
-    /// Initialises Budgey, or make a new budget if budgey is already initialised.
+    /// Initialises Budgey
     #[command(name = "init", arg_required_else_help = true)]
     Init {
         /// The name of the new budget. Must be unique.
@@ -30,6 +30,36 @@ pub enum Commands {
         ///If not provided, will display the current pile.
         #[command(subcommand)]
         subcommand: Option<PileSubcommand>,
+    },
+
+    /// Restore -> restores all added transactions to the last commit for the current working
+    /// pile.
+    #[command(name = "restore", arg_required_else_help = true)]
+    Restore,
+
+    /// Commit -> commits the focused pile's list of transactions to a record, making it a part of the
+    /// record history.
+    ///
+    /// This can only be undone with a revert.
+    #[command(name = "commit", arg_required_else_help = true)]
+    Commit {
+        /// A required message for the transaction commit.
+        ///
+        /// This message should be used to describe the transactions made.
+        message: String,
+    },
+
+    /// Create an 'add' transaction, where money is added to the current pile.
+    #[command(name = "add", arg_required_else_help = true)]
+    Add {
+        /// The amount of the transaction.
+        amount: f32,
+    },
+    /// Create an 'withdraw' transaction, where money is withdrawn from the pile.
+    #[command(name = "withdraw", arg_required_else_help = true)]
+    Withdraw {
+        /// The amount of the transaction.
+        amount: f32,
     },
 }
 #[derive(Debug, Subcommand, Clone)]
@@ -92,34 +122,11 @@ pub enum PileSubcommand {
         name: Option<String>,
     },
 
-    /// Create an 'add' transaction, where money is added to a pile.
-    #[command(name = "add", arg_required_else_help = true)]
-    Add {
-        /// The amount of the transaction.
-        amount: f32,
-    },
-    /// Create an 'withdraw' transaction, where money is withdrawn from a pile.
-    #[command(name = "withdraw", arg_required_else_help = true)]
-    Withdraw {
-        /// The amount of the transaction.
-        amount: f32,
-    },
     /// Focus a new pile.
     #[command(name = "focus", arg_required_else_help = true)]
     Focus {
         /// The name of the pile to focus on.
         name: String,
-    },
-
-    // TODO: Mvp stuff
-    // Commit -> commits this transaction, making it a part of the transaction history.
-    // This can only be undone with a revert.
-    #[command(name = "commit", arg_required_else_help = true)]
-    Commit {
-        /// A required message for the transaction commit.
-        ///
-        /// This message should be used to describe the transactions made.
-        message: String,
     },
     // TODO: Non mvp stuff
     //
@@ -130,9 +137,6 @@ pub enum PileSubcommand {
     //     message: Option<String>,
     // },
     //
-    // /// Restore -> restores all added transactions to the last commit.
-    // #[command(name = "restore", arg_required_else_help = true)]
-    // Restore,
     //
     // /// Merge -> merge a source pile into a destination pile.
     // #[command(name = "merge", arg_required_else_help = true)]

@@ -89,10 +89,13 @@ pub fn write_budgey_state(
     trace!("Writing budgey state");
     let serialized = serde_json::to_string(new_state)?;
     let check_path_result = fs::read_dir(&budgey_config.budgey_path);
-    if let Err(e) = check_path_result {
-        if e.kind() == std::io::ErrorKind::NotFound {
-            fs::create_dir_all(&budgey_config.budgey_path)?;
+    match check_path_result {
+        Err(e) => {
+            if e.kind() == std::io::ErrorKind::NotFound {
+                fs::create_dir_all(&budgey_config.budgey_path)?;
+            }
         }
+        _ => {}
     };
     fs::write(
         concat_paths(&budgey_config.budgey_path, &budgey_config.state_json_name),
