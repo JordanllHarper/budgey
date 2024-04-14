@@ -120,14 +120,15 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             show_transactions,
         } => {
             if let Some(sub) = subcommand {
-                return handle_pile::handle_pile_subcommand(context, sub);
+                handle_pile::handle_pile_subcommand(context, sub)?;
             } else {
                 let current_pile = pile_management::get_current_pile(&context)?;
                 println!("Current pile: {}", current_pile.get_name());
+            }
 
-                if show_transactions {
-                    handle_showing_transactions(&current_pile)?;
-                }
+            let current_pile = pile_management::get_current_pile(&context)?;
+            if show_transactions {
+                handle_showing_transactions(&current_pile)?;
             }
             Ok(())
         }
@@ -225,7 +226,6 @@ fn update_pile_with_action(
     Ok(new_pile)
 }
 fn handle_showing_transactions(current_pile: &models::pile::Pile) -> anyhow::Result<()> {
-    trace!("{:?}", current_pile);
     if current_pile.current_staged_transactions.is_empty() {
         println!("No transactions in pile");
         return Ok(());
@@ -254,10 +254,7 @@ fn handle_showing_transactions(current_pile: &models::pile::Pile) -> anyhow::Res
         if !start {
             println!("{}", separators);
         }
-
-        if start {
-            println!(" --- Start of transaction chain ---");
-        }
     }
+    println!(" --- Start of transaction chain ---");
     Ok(())
 }

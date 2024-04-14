@@ -1,3 +1,5 @@
+use colored::Colorize;
+
 use crate::{
     budget_management, budgey_cli, budgey_state,
     models::{self, pile::Pile},
@@ -61,17 +63,20 @@ pub fn handle_budget_subcommand(
             let budget_names = &context.state.budget_names;
 
             if budget_names.is_empty() {
-                println!("No budgets found. Type budgey budget new <name> to create a new budget.");
+                println!(
+                    "No budgets found. \n\nType `budgey budget new <name>` to create a new budget."
+                );
                 return Ok(());
             };
             println!("Budgets: ");
 
             for name in budget_names {
-                if name == &context.state.current_focused_budget_name {
-                    println!(" * {}", name);
+                let sign = if name == &context.state.current_focused_budget_name {
+                    " *".green()
                 } else {
-                    println!(" - {}", name);
-                }
+                    " -".white().bold()
+                };
+                println!("{} {}", sign, name)
             }
 
             Ok(())

@@ -42,7 +42,7 @@ pub fn handle_pile_subcommand(
             let pile_names = &current_budget.pile_names;
 
             if pile_names.is_empty() {
-                println!("No piles found. Type budgey pile new <name> to create a new pile.");
+                println!("No piles found. \n\nType `budgey pile new <name>` to create a new pile");
                 return Ok(());
             };
             println!("Piles: ");
@@ -59,7 +59,7 @@ pub fn handle_pile_subcommand(
         }
         budgey_cli::PileSubcommand::Delete { name } => {
             if name.to_lowercase() == "main" {
-                println!("Cannot delete the main pile of a budget.\nIf you want to delete the budget, use the budget delete command.");
+                println!("Cannot delete the main pile of a budget.\n\nIf you want to delete the budget, type `budget delete <name>`");
                 return Ok(());
             }
             pile_management::delete_pile(&context, &name)?;
