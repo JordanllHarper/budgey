@@ -84,6 +84,7 @@ dependencies = [
  "anyhow",
  "chrono",
  "clap",
+ "colored",
  "log",
  "nanoid",
  "serde",

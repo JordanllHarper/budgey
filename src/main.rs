@@ -5,6 +5,7 @@ use crate::{
 use anyhow::Ok;
 use budgey_cli::Commands;
 use clap::Parser;
+use colored::Colorize;
 use log::{info, trace};
 use utils::{concat_paths, create_json_file_name};
 
@@ -70,7 +71,7 @@ impl BudgeyContext {
 }
 
 fn main() -> anyhow::Result<()> {
-    simple_logger::init().unwrap();
+    // simple_logger::init().unwrap();
 
     let home = env!("HOME").to_string();
     info!("Home environment initialised: {}", home);
@@ -114,12 +115,19 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
                 Ok(())
             }
         }
-        budgey_cli::Commands::Pile { subcommand } => {
-            if let Some(sub) = &subcommand {
-                return handle_pile::handle_pile_subcommand(context, sub.clone());
+        budgey_cli::Commands::Pile {
+            subcommand,
+            show_transactions,
+        } => {
+            if let Some(sub) = subcommand {
+                return handle_pile::handle_pile_subcommand(context, sub);
             } else {
                 let current_pile = pile_management::get_current_pile(&context)?;
                 println!("Current pile: {}", current_pile.get_name());
+
+                if show_transactions {
+                    handle_showing_transactions(&current_pile)?;
+                }
             }
             Ok(())
         }
@@ -215,4 +223,41 @@ fn update_pile_with_action(
     let new_pile = action(current_pile)?;
     pile_management::update_pile(context, &new_pile)?;
     Ok(new_pile)
+}
+fn handle_showing_transactions(current_pile: &models::pile::Pile) -> anyhow::Result<()> {
+    trace!("{:?}", current_pile);
+    if current_pile.current_staged_transactions.is_empty() {
+        println!("No transactions in pile");
+        return Ok(());
+    }
+
+    println!(" --- End of transaction chain ---");
+    for (index, current_transaction) in current_pile
+        .current_staged_transactions
+        .iter()
+        .enumerate()
+        .rev()
+    {
+        let transaction_indicator = "*".bold();
+        let separators = "|\n|".bold();
+        let sign = match current_transaction.transaction_type {
+            TransactionType::Add => "+".green(),
+            TransactionType::Withdraw => "-".red(),
+            TransactionType::Init => "~".white(),
+        };
+
+        println!(
+            "{} {}{}",
+            transaction_indicator, sign, current_transaction.amount
+        );
+        let start = index == 0;
+        if !start {
+            println!("{}", separators);
+        }
+
+        if start {
+            println!(" --- Start of transaction chain ---");
+        }
+    }
+    Ok(())
 }

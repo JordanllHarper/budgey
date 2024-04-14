@@ -30,6 +30,10 @@ pub enum Commands {
         ///If not provided, will display the current pile.
         #[command(subcommand)]
         subcommand: Option<PileSubcommand>,
+
+        /// Show transactions after the specified command has executed.
+        #[arg(short = 't', long = "transactions", default_value_t = false)]
+        show_transactions: bool,
     },
 
     /// Restores all added transactions to the last record for the current working

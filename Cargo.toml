@@ -26,3 +26,6 @@ nanoid = "0.4.0"
 
 # thiserror
 thiserror = "1.0.58"
+
+# Cli colors
+colored = "2.1.0"
