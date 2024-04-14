@@ -34,7 +34,7 @@ pub enum Commands {
 
     /// Restores all added transactions to the last record for the current working
     /// pile.
-    #[command(name = "restore", arg_required_else_help = true)]
+    #[command(name = "restore")]
     Restore,
 
     /// Commits the focused pile's list of transactions to a record, making it a part of the

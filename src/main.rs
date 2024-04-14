@@ -185,7 +185,25 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             );
             Ok(())
         }
-        budgey_cli::Commands::Restore => todo!(),
+        budgey_cli::Commands::Restore => {
+            let updated_pile = update_pile_with_action(&context, |pile| {
+                let new_balance = pile
+                    .records
+                    .last()
+                    .map(|record| record.amount_after_record)
+                    .unwrap_or_else(|| pile.current_balance);
+                let new_pile = pile.set_balance(new_balance);
+
+                Ok(new_pile.clear_staged_transactions())
+            })?;
+
+            println!(
+                "Restored to last record. Pile now at: {}",
+                updated_pile.current_balance
+            );
+
+            Ok(())
+        }
     }
 }
 
