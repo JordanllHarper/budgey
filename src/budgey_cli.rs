@@ -2,14 +2,7 @@ use clap::{Parser, Subcommand};
 
 /// A finance tracking and budgeting tool
 #[derive(Debug, Parser)]
-pub struct BudgeyCLI {
-    #[command(subcommand)]
-    pub commands: Commands,
-}
-
-/// Commands for the Budgey CLI
-#[derive(Debug, Subcommand)]
-pub enum Commands {
+pub enum BudgeyCLI {
     /// Initialises Budgey
     #[command(name = "init", arg_required_else_help = true)]
     Init {
@@ -17,6 +10,13 @@ pub enum Commands {
         name: String,
     },
 
+    #[command(flatten)]
+    Subcommands(Commands),
+}
+
+/// Commands for the Budgey CLI
+#[derive(Debug, Clone, Parser)]
+pub enum Commands {
     /// Create, manage and switch between budgets.
     Budget {
         #[command(subcommand)]
@@ -32,12 +32,12 @@ pub enum Commands {
         subcommand: Option<PileSubcommand>,
     },
 
-    /// Restore -> restores all added transactions to the last commit for the current working
+    /// Restores all added transactions to the last record for the current working
     /// pile.
     #[command(name = "restore", arg_required_else_help = true)]
     Restore,
 
-    /// Commit -> commits the focused pile's list of transactions to a record, making it a part of the
+    /// Commits the focused pile's list of transactions to a record, making it a part of the
     /// record history.
     ///
     /// This can only be undone with a revert.
@@ -46,6 +46,7 @@ pub enum Commands {
         /// A required message for the transaction commit.
         ///
         /// This message should be used to describe the transactions made.
+        #[arg(short, long, required = true)]
         message: String,
     },
 
@@ -128,27 +129,15 @@ pub enum PileSubcommand {
         /// The name of the pile to focus on.
         name: String,
     },
-    // TODO: Non mvp stuff
-    //
-    // /// Revert -> reverts a transaction commit.
+    // TODO:
+    // /// Reverts a transaction commit.
     // #[command(name = "revert", arg_required_else_help = true)]
-    // Revert {
-    //     /// An optional message for the transaction revert.
-    //     message: Option<String>,
-    // },
+    // Revert,
     //
-    //
-    // /// Merge -> merge a source pile into a destination pile.
+    // /// Merge the current pile with another pile.
+    // TODO:
     // #[command(name = "merge", arg_required_else_help = true)]
     // Merge {
-    //     /// The amount of the transaction.
-    //     #[arg(short, long, required = true)]
-    //     amount: f32,
-    //
-    //     /// The source pile name.
-    //     #[arg(short, long, required = true)]
-    //     source: String,
-    //
     //     /// The destination pile name.
     //     #[arg(short, long, required = true)]
     //     destination: String,
@@ -156,19 +145,10 @@ pub enum PileSubcommand {
     //     /// Delete source pile after merge.
     //     #[arg(short, long)]
     //     delete_after_merge: bool,
-    //
-    //     /// An optional comment for the merge.
-    //     #[arg(short, long)]
-    //     usage: Option<String>,
     // },
-    //
 
-    // /// View -> view transactions of a pile
+    // /// View staged transactions of the current pile
+    // TODO:
     // #[command(name = "view", arg_required_else_help = true)]
-    // View {
-    //     /// The name of the pile to view transactions of.
-    //     #[arg(short, long, required = true)]
-    //     name: String,
-    // },
-    //
+    // View,
 }

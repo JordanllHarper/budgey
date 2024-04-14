@@ -3,6 +3,7 @@ use crate::{
     models::record_transaction::{Record, Transaction, TransactionType},
 };
 use anyhow::Ok;
+use budgey_cli::Commands;
 use clap::Parser;
 use log::{info, trace};
 use utils::{concat_paths, create_json_file_name};
@@ -88,13 +89,23 @@ fn main() -> anyhow::Result<()> {
     let args = budgey_cli::BudgeyCLI::parse();
     trace!("Parsed CLI arguments: {:#?}", args);
 
-    let _ = match args.commands {
-        budgey_cli::Commands::Init { name } => handle_init::handle_init(budgey_config, &name),
-        budgey_cli::Commands::Budget { subcommand } => {
+    let _ = match args {
+        budgey_cli::BudgeyCLI::Init { name } => handle_init::handle_init(budgey_config, &name),
+        budgey_cli::BudgeyCLI::Subcommands(c) => {
             let context = BudgeyContext::new(
                 &budgey_state::get_budgey_state(&budgey_state_path)?,
                 &budgey_config,
             );
+
+            handle_subcommands(&context, c)
+        }
+    };
+    Ok(())
+}
+
+fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Result<()> {
+    match command {
+        budgey_cli::Commands::Budget { subcommand } => {
             if let Some(sub) = &subcommand {
                 handle_budget::handle_budget_subcommand(&context, sub.clone())
             } else {
@@ -104,10 +115,6 @@ fn main() -> anyhow::Result<()> {
             }
         }
         budgey_cli::Commands::Pile { subcommand } => {
-            let context = BudgeyContext::new(
-                &budgey_state::get_budgey_state(&budgey_state_path)?,
-                &budgey_config,
-            );
             if let Some(sub) = &subcommand {
                 return handle_pile::handle_pile_subcommand(context, sub.clone());
             } else {
@@ -117,10 +124,6 @@ fn main() -> anyhow::Result<()> {
             Ok(())
         }
         budgey_cli::Commands::Add { amount } => {
-            let context = BudgeyContext::new(
-                &budgey_state::get_budgey_state(&budgey_state_path)?,
-                &budgey_config,
-            );
             trace!("Adding to pile: amount: {:?}", amount);
             let new_pile = update_pile_with_action(&context, |pile| {
                 Ok(pile.add_transaction(&Transaction::new(TransactionType::Add, amount)))
@@ -134,10 +137,6 @@ fn main() -> anyhow::Result<()> {
         }
 
         budgey_cli::Commands::Commit { message } => {
-            let context = BudgeyContext::new(
-                &budgey_state::get_budgey_state(&budgey_state_path)?,
-                &budgey_config,
-            );
             update_pile_with_action(&context, |current_pile| {
                 if current_pile.current_staged_transactions.is_empty() {
                     println!("No staged transactions to commit. Add some transactions first.");
@@ -170,10 +169,6 @@ fn main() -> anyhow::Result<()> {
             Ok(())
         }
         budgey_cli::Commands::Withdraw { amount } => {
-            let context = BudgeyContext::new(
-                &budgey_state::get_budgey_state(&budgey_state_path)?,
-                &budgey_config,
-            );
             trace!("Withdrawing from pile: amount: {:?}", amount);
             let new_pile = update_pile_with_action(&context, |pile| {
                 Ok(
@@ -191,8 +186,7 @@ fn main() -> anyhow::Result<()> {
             Ok(())
         }
         budgey_cli::Commands::Restore => todo!(),
-    };
-    Ok(())
+    }
 }
 
 fn update_pile_with_action(

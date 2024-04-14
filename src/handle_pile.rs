@@ -1,16 +1,15 @@
 use log::trace;
-use std::time::SystemTime;
 
 use crate::{
     budget_management::{get_current_budget, update_budget},
     budgey_cli,
-    models::{pile::Pile, record_transaction::*},
+    models::pile::Pile,
     pile_management::{self, *},
     BudgeyContext,
 };
 
 pub fn handle_pile_subcommand(
-    context: BudgeyContext,
+    context: &BudgeyContext,
     subcommand: budgey_cli::PileSubcommand,
 ) -> anyhow::Result<()> {
     trace!("Handling pile subcommand: {:?}", subcommand);
