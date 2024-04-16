@@ -17,9 +17,7 @@ pub fn handle_pile_subcommand(
         budgey_cli::PileSubcommand::New {
             source,
             new_pile_name,
-            initial_balance,
         } => {
-            let initial_balance = initial_balance.unwrap_or(0.0);
             let pile = match maybe_get_user_defined_pile(&context, source.as_deref())? {
                 Some(source_pile) => source_pile,
                 None => {
@@ -27,6 +25,7 @@ pub fn handle_pile_subcommand(
                     return Ok(());
                 }
             };
+            let initial_balance = pile.current_balance;
 
             let new_pile = Pile::new_user_created(initial_balance, &new_pile_name, &pile.records);
             create_new_pile(&context, &new_pile)?;

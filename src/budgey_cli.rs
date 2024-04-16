@@ -101,10 +101,6 @@ pub enum PileSubcommand {
         /// If not provided, the new pile will be created from the currently focused pile.
         #[arg(short, long)]
         source: Option<String>,
-
-        /// The initial balance of the pile. Will be 0.0 if not provided.
-        #[arg(name = "initial", short, long)]
-        initial_balance: Option<f32>,
     },
 
     /// List available piles.
