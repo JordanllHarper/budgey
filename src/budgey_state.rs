@@ -1,5 +1,6 @@
-use std::fs;
+use std::{fs, io::ErrorKind};
 
+use colored::Colorize;
 use log::{error, trace};
 
 use crate::{utils::concat_paths, BudgeyConfig};
@@ -51,7 +52,21 @@ impl BudgeyState {
 /// Gets the budgey state from the given path
 pub fn get_budgey_state(budgey_path_to_json: &str) -> anyhow::Result<BudgeyState, std::io::Error> {
     trace!("Getting budgey state");
-    let read_result = fs::read_to_string(budgey_path_to_json)?;
+    let read_result = match fs::read_to_string(budgey_path_to_json) {
+        Ok(v) => v,
+        Err(e) => {
+            if let ErrorKind::NotFound = e.kind() {
+                println!(
+                    "Couldn't find the state file.\n\nPlease run {}",
+                    "`budgey init`".green()
+                );
+                return Err(e);
+            } else {
+                error!("Error reading budgey state: {:?}", e);
+                return Err(e);
+            }
+        }
+    };
     let state: BudgeyState = serde_json::from_str(&read_result)?;
     Ok(state)
 }
