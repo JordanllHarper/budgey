@@ -72,11 +72,11 @@ pub fn handle_budget_subcommand(
 
             for name in budget_names {
                 let sign = if name == &context.state.current_focused_budget_name {
-                    " *".green()
+                    "*".green()
                 } else {
-                    " -".white().bold()
+                    "-".white().bold()
                 };
-                println!("{} {}", sign, name)
+                println!(" {} {}", sign, name)
             }
 
             Ok(())
