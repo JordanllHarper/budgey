@@ -1,5 +1,3 @@
-use std::fmt::Write;
-
 use nanoid::nanoid;
 use serde::{Deserialize, Serialize};
 
