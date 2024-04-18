@@ -34,6 +34,7 @@ pub fn handle_pile_subcommand(
                 .change_current_pile(&new_pile_name);
             update_budget(&context.get_current_budget_path(), budget)?;
 
+            println!("Created and checked out new pile: {}", new_pile_name);
 
             Ok(())
         }
