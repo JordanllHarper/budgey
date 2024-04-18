@@ -3,7 +3,7 @@ use std::fs;
 use log::{error, trace};
 
 use crate::{
-    budget_management::get_current_budget,
+    budget_management::{get_current_budget, update_budget},
     models::pile::Pile,
     utils::{concat_paths, create_json_path},
     BudgeyContext,
@@ -53,6 +53,14 @@ pub fn create_new_pile(context: &BudgeyContext, pile: &Pile) -> anyhow::Result<(
     match fs::create_dir(pile_directory_path) {
         Ok(it) => it,
         Err(err) => {
+            if let std::io::ErrorKind::AlreadyExists = err.kind() {
+                error!("Pile already exists: {:?}", err);
+                println!(
+                    "Pile \"{}\" already exists, try selecting a different name or deleting the pile",
+                    pile_name
+                );
+                return Err(err.into());
+            }
             error!("Error creating pile directory: {:?}", err);
             return Err(err.into());
         }
@@ -82,5 +90,8 @@ pub fn delete_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<(
     trace!("Deleting pile");
     let pile_path = concat_paths(&context.get_current_budget_path(), pile_name);
     fs::remove_dir_all(pile_path)?;
+    let current_budget = get_current_budget(context)?;
+    let new_budget = current_budget.delete_pile(pile_name);
+    update_budget(&context.get_current_budget_path(), new_budget)?;
     Ok(())
 }
