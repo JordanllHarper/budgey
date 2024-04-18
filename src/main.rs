@@ -115,20 +115,12 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
                 Ok(())
             }
         }
-        Commands::Pile {
-            subcommand,
-            show_transactions,
-        } => {
+        Commands::Pile { subcommand } => {
             if let Some(sub) = subcommand {
                 handle_pile::handle_pile_subcommand(context, sub)?;
             } else {
                 let current_pile = pile_management::get_current_pile(&context)?;
                 println!("Current pile: {}", current_pile.get_name());
-            }
-
-            let current_pile = pile_management::get_current_pile(&context)?;
-            if show_transactions {
-                handle_showing_transactions(&current_pile)?;
             }
             Ok(())
         }
@@ -243,6 +235,11 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
 
                 println!("{}", separators);
             }
+            Ok(())
+        }
+        Commands::Chain => {
+            let current_pile = pile_management::get_current_pile(&context)?;
+            let _ = handle_showing_transactions(&current_pile)?;
             Ok(())
         }
     }
