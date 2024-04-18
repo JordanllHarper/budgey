@@ -72,10 +72,15 @@ impl Budget {
             .into_iter()
             .filter(|name| name != pile_name)
             .collect::<Vec<String>>();
+        let new_current_pile_name = new_pile_names
+            .first()
+            .map(|it| it.to_string())
+            .unwrap_or("main".to_string());
+
         Budget::new(
             self.budget_detail.clone(),
             new_pile_names,
-            self.current_pile_name.clone(),
+            new_current_pile_name,
         )
     }
 }
