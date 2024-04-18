@@ -65,7 +65,9 @@ pub fn handle_pile_subcommand(
             }
             pile_management::delete_pile(&context, &name)?;
             let current_budget = get_current_budget(&context)?.delete_pile(&name);
-            update_budget(&context.get_current_budget_path(), current_budget)
+            update_budget(&context.get_current_budget_path(), current_budget)?;
+            println!("Deleted pile: {}", name);
+            Ok(())
         }
         budgey_cli::PileSubcommand::Balance { name } => {
             let get_pile = maybe_get_user_defined_pile(&context, name.as_deref())?;
