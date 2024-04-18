@@ -62,12 +62,20 @@ pub enum Commands {
     Add {
         /// The amount of the transaction.
         amount: f32,
+
+        /// An optional note for the transaction.
+        #[arg(short, long)]
+        note: Option<String>,
     },
     /// Create an 'withdraw' transaction, where money is withdrawn from the pile.
     #[command(name = "withdraw", arg_required_else_help = true)]
     Withdraw {
         /// The amount of the transaction.
         amount: f32,
+
+        /// An optional note for the transaction.
+        #[arg(short, long)]
+        note: Option<String>,
     },
 }
 #[derive(Debug, Subcommand, Clone)]

@@ -6,7 +6,7 @@ use anyhow::Ok;
 use budgey_cli::Commands;
 use clap::Parser;
 use colored::Colorize;
-use log::{info, trace, warn};
+use log::{info, trace};
 use utils::{concat_paths, create_json_file_name};
 
 mod budget_management;
@@ -132,10 +132,14 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             }
             Ok(())
         }
-        Commands::Add { amount } => {
+        Commands::Add { amount, note } => {
             trace!("Adding to pile: amount: {:?}", amount);
             let new_pile = update_pile_with_action(&context, |pile| {
-                Ok(pile.add_transaction(&Transaction::new(TransactionType::Add, amount)))
+                Ok(pile.add_transaction(&Transaction::new(
+                    TransactionType::Add,
+                    amount,
+                    note.as_deref(),
+                )))
             })?;
 
             println!(
@@ -177,13 +181,14 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             })?;
             Ok(())
         }
-        Commands::Withdraw { amount } => {
+        Commands::Withdraw { amount, note } => {
             trace!("Withdrawing from pile: amount: {:?}", amount);
             let new_pile = update_pile_with_action(&context, |pile| {
                 Ok(
                     pile.add_transaction(&models::record_transaction::Transaction::new(
                         TransactionType::Withdraw,
                         amount,
+                        note.as_deref(),
                     )),
                 )
             })?;
@@ -272,10 +277,18 @@ fn handle_showing_transactions(current_pile: &models::pile::Pile) -> anyhow::Res
             TransactionType::Withdraw => "-".red(),
             TransactionType::Init => "~".white(),
         };
+        let note = if let Some(note) = &current_transaction.note {
+            format!("{}", note)
+        } else {
+            "".to_string()
+        };
 
         println!(
-            "{} {}{}",
-            transaction_indicator, sign, current_transaction.amount
+            "{} {}{}    {}",
+            transaction_indicator,
+            sign,
+            current_transaction.amount,
+            note.yellow()
         );
         let start = index == 0;
         if !start {
