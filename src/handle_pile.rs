@@ -34,6 +34,7 @@ pub fn handle_pile_subcommand(
                 .change_current_pile(&new_pile_name);
             update_budget(&context.get_current_budget_path(), budget)?;
 
+
             Ok(())
         }
         budgey_cli::PileSubcommand::List => {
@@ -89,13 +90,13 @@ pub fn handle_pile_subcommand(
             let new_budget = current_budget.change_current_pile(&name);
             update_budget(&context.get_current_budget_path(), new_budget)?;
             let amount = get_current_pile(&context)?.current_balance;
-            let noCurrentStagedTransactions = get_current_pile(&context)?
+            let no_current_staged_transactions = get_current_pile(&context)?
                 .current_staged_transactions
                 .iter()
                 .count();
             println!("Focused pile: {}\nAmount: {}", name, amount);
-            if noCurrentStagedTransactions > 0 {
-                println!("Staged transactions: {}", noCurrentStagedTransactions);
+            if no_current_staged_transactions > 0 {
+                println!("Staged transactions: {}", no_current_staged_transactions);
             } else {
                 println!("No staged transactions");
             }
