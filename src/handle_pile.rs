@@ -86,9 +86,19 @@ pub fn handle_pile_subcommand(
                 println!("Pile doesn't exist in the current budget. Specify another name.");
                 return Ok(());
             }
-            let new = current_budget.change_current_pile(&name);
-            update_budget(&context.get_current_budget_path(), new)?;
-            println!("Focused on pile: {}", name);
+            let new_budget = current_budget.change_current_pile(&name);
+            update_budget(&context.get_current_budget_path(), new_budget)?;
+            let amount = get_current_pile(&context)?.current_balance;
+            let noCurrentStagedTransactions = get_current_pile(&context)?
+                .current_staged_transactions
+                .iter()
+                .count();
+            println!("Focused pile: {}\nAmount: {}", name, amount);
+            if noCurrentStagedTransactions > 0 {
+                println!("Staged transactions: {}", noCurrentStagedTransactions);
+            } else {
+                println!("No staged transactions");
+            }
             Ok(())
         }
     }
