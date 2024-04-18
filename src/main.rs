@@ -6,7 +6,7 @@ use anyhow::Ok;
 use budgey_cli::Commands;
 use clap::Parser;
 use colored::Colorize;
-use log::{info, trace};
+use log::{info, trace, warn};
 use utils::{concat_paths, create_json_file_name};
 
 mod budget_management;
@@ -106,7 +106,7 @@ fn main() -> anyhow::Result<()> {
 
 fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Result<()> {
     match command {
-        budgey_cli::Commands::Budget { subcommand } => {
+        Commands::Budget { subcommand } => {
             if let Some(sub) = &subcommand {
                 handle_budget::handle_budget_subcommand(&context, sub.clone())
             } else {
@@ -115,7 +115,7 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
                 Ok(())
             }
         }
-        budgey_cli::Commands::Pile {
+        Commands::Pile {
             subcommand,
             show_transactions,
         } => {
@@ -132,7 +132,7 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             }
             Ok(())
         }
-        budgey_cli::Commands::Add { amount } => {
+        Commands::Add { amount } => {
             trace!("Adding to pile: amount: {:?}", amount);
             let new_pile = update_pile_with_action(&context, |pile| {
                 Ok(pile.add_transaction(&Transaction::new(TransactionType::Add, amount)))
@@ -145,7 +145,7 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             Ok(())
         }
 
-        budgey_cli::Commands::Commit { message } => {
+        Commands::Commit { message } => {
             update_pile_with_action(&context, |current_pile| {
                 if current_pile.current_staged_transactions.is_empty() {
                     println!("No staged transactions to commit. Add some transactions first.");
@@ -177,7 +177,7 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             })?;
             Ok(())
         }
-        budgey_cli::Commands::Withdraw { amount } => {
+        Commands::Withdraw { amount } => {
             trace!("Withdrawing from pile: amount: {:?}", amount);
             let new_pile = update_pile_with_action(&context, |pile| {
                 Ok(
@@ -194,7 +194,7 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             );
             Ok(())
         }
-        budgey_cli::Commands::Restore => {
+        Commands::Restore => {
             let updated_pile = update_pile_with_action(&context, |pile| {
                 let new_balance = pile
                     .records
@@ -211,6 +211,33 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
                 updated_pile.current_balance
             );
 
+            Ok(())
+        }
+        Commands::Log => {
+            let current_pile = pile_management::get_current_pile(&context)?;
+
+            let records = current_pile.records;
+            println!(" --- Current Record ---");
+            for record in records.iter().rev() {
+                let record_indicator = "*".bold();
+                let separators = "|".bold();
+                let message = format!("{}", record.message).yellow();
+                let amount_after_record = if record.amount_after_record > 0.0 {
+                    format!("+{}", record.amount_after_record).green()
+                } else {
+                    format!("{}", record.amount_after_record).red()
+                };
+
+                println!("{} {} ", record_indicator, record.id.purple());
+                println!("{}", separators);
+                println!(
+                    "{}     Amount after record: {}",
+                    separators, amount_after_record
+                );
+                println!("{}     Message: {}", separators, message);
+
+                println!("{}", separators);
+            }
             Ok(())
         }
     }

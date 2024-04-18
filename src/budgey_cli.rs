@@ -23,6 +23,9 @@ pub enum Commands {
         subcommand: Option<BudgetSubcommand>,
     },
 
+    #[command(name = "log")]
+    Log,
+
     /// Create, manage and switch piles in the currently focused budget.
     #[command(name = "pile")]
     Pile {
