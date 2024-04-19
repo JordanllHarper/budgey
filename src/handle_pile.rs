@@ -1,3 +1,4 @@
+use colored::Colorize;
 use log::trace;
 
 use crate::{
@@ -49,11 +50,13 @@ pub fn handle_pile_subcommand(
             println!("Piles: ");
 
             for name in pile_names {
-                if name == &current_budget.current_pile_name {
-                    println!(" * {}", name);
+                let sign = if name == &current_budget.current_pile_name {
+                    "*".green()
                 } else {
-                    println!(" | {}", name);
-                }
+                    "|".white()
+                };
+
+                println!(" {} {}", sign, name);
             }
 
             Ok(())
