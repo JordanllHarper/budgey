@@ -147,10 +147,7 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
                     println!("No staged transactions to commit. Add some transactions first.");
                     return Ok(current_pile);
                 }
-                let current_time = std::time::SystemTime::now()
-                    .duration_since(std::time::SystemTime::UNIX_EPOCH)?
-                    .as_secs()
-                    .to_string();
+                let current_time = utils::get_current_timestamp()?;
                 let balance = current_pile.current_balance;
                 trace!("Difference: {}", balance);
 

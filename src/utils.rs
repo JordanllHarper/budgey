@@ -15,6 +15,14 @@ pub fn concat_paths(root: &str, new: &str) -> String {
     format!("{}/{}", root, new)
 }
 
+pub fn get_current_timestamp() -> anyhow::Result<String> {
+    let current_time = std::time::SystemTime::now()
+        .duration_since(std::time::SystemTime::UNIX_EPOCH)?
+        .as_secs()
+        .to_string();
+    Ok(current_time)
+}
+
 // write a test for the above
 //
 #[cfg(test)]
