@@ -23,9 +23,11 @@ pub enum Commands {
         subcommand: Option<BudgetSubcommand>,
     },
 
+    /// Display the record log for the current pile.  
     #[command(name = "log")]
     Log,
 
+    /// Display the current transaction chain for the current pile.
     #[command(name = "chain")]
     Chain,
 
@@ -156,9 +158,4 @@ pub enum PileSubcommand {
     //     #[arg(short, long)]
     //     delete_after_merge: bool,
     // },
-
-    // /// View staged transactions of the current pile
-    // TODO:
-    // #[command(name = "view", arg_required_else_help = true)]
-    // View,
 }
