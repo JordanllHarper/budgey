@@ -76,7 +76,7 @@ fn main() -> anyhow::Result<()> {
     let home = env!("HOME").to_string();
     info!("Home environment initialised: {}", home);
 
-    let budgey_path = format!("{}{}", home, "/budgey");
+    let budgey_path = format!("{}{}", home, "/.budgey");
     info!("Budgey path: {}", budgey_path);
 
     let budgey_state_json_name = create_json_file_name("budgey_state");
