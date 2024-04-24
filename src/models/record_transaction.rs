@@ -75,7 +75,7 @@ impl Record {
             message: message.to_string(),
             amount_after_record,
             transactions: transactions.to_vec(),
-            local_commit_time: time_stamp.clone(),
+            local_commit_time: *time_stamp,
         }
     }
 }
