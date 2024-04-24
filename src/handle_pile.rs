@@ -19,7 +19,7 @@ pub fn handle_pile_subcommand(
             source,
             new_pile_name,
         } => {
-            let pile = match maybe_get_user_defined_pile(&context, source.as_deref())? {
+            let pile = match maybe_get_user_defined_pile(context, source.as_deref())? {
                 Some(source_pile) => source_pile,
                 None => {
                     println!("Couldn't get the source pile specified");
@@ -29,8 +29,8 @@ pub fn handle_pile_subcommand(
             let initial_balance = pile.current_balance;
 
             let new_pile = Pile::new_user_created(initial_balance, &new_pile_name, &pile.records);
-            create_new_pile(&context, &new_pile)?;
-            let budget = get_current_budget(&context)?
+            create_new_pile(context, &new_pile)?;
+            let budget = get_current_budget(context)?
                 .add_pile(&new_pile_name)
                 .change_current_pile(&new_pile_name);
             update_budget(&context.get_current_budget_path(), budget)?;
@@ -40,7 +40,7 @@ pub fn handle_pile_subcommand(
             Ok(())
         }
         budgey_cli::PileSubcommand::List => {
-            let current_budget = get_current_budget(&context)?;
+            let current_budget = get_current_budget(context)?;
             let pile_names = &current_budget.pile_names;
 
             if pile_names.is_empty() {
@@ -66,14 +66,14 @@ pub fn handle_pile_subcommand(
                 println!("Cannot delete the main pile of a budget.\n\nIf you want to delete the budget, type `budget delete <name>`");
                 return Ok(());
             }
-            pile_management::delete_pile(&context, &name)?;
-            let current_budget = get_current_budget(&context)?.delete_pile(&name);
+            pile_management::delete_pile(context, &name)?;
+            let current_budget = get_current_budget(context)?.delete_pile(&name);
             update_budget(&context.get_current_budget_path(), current_budget)?;
             println!("Deleted pile: {}", name);
             Ok(())
         }
         budgey_cli::PileSubcommand::Balance { name } => {
-            let get_pile = maybe_get_user_defined_pile(&context, name.as_deref())?;
+            let get_pile = maybe_get_user_defined_pile(context, name.as_deref())?;
             if let Some(pile) = get_pile {
                 println!(
                     "Balance of pile {}: {}",
@@ -88,18 +88,16 @@ pub fn handle_pile_subcommand(
         }
 
         budgey_cli::PileSubcommand::Focus { name } => {
-            let current_budget = get_current_budget(&context)?;
+            let current_budget = get_current_budget(context)?;
             if !current_budget.pile_names.contains(&name) {
                 println!("Pile doesn't exist in the current budget. Specify another name.");
                 return Ok(());
             }
             let new_budget = current_budget.change_current_pile(&name);
             update_budget(&context.get_current_budget_path(), new_budget)?;
-            let amount = get_current_pile(&context)?.current_balance;
-            let no_current_staged_transactions = get_current_pile(&context)?
-                .current_staged_transactions
-                .iter()
-                .count();
+            let amount = get_current_pile(context)?.current_balance;
+            let no_current_staged_transactions =
+                get_current_pile(context)?.current_staged_transactions.len();
             println!("Focused pile: {}\nAmount: {}", name, amount);
             if no_current_staged_transactions > 0 {
                 println!("Staged transactions: {}", no_current_staged_transactions);

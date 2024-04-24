@@ -108,9 +108,9 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
     match command {
         Commands::Budget { subcommand } => {
             if let Some(sub) = &subcommand {
-                handle_budget::handle_budget_subcommand(&context, sub.clone())
+                handle_budget::handle_budget_subcommand(context, sub.clone())
             } else {
-                let current_budget = budget_management::get_current_budget_name(&context)?;
+                let current_budget = budget_management::get_current_budget_name(context)?;
                 println!("Current budget: {:?}", current_budget);
                 Ok(())
             }
@@ -119,14 +119,14 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             if let Some(sub) = subcommand {
                 handle_pile::handle_pile_subcommand(context, sub)?;
             } else {
-                let current_pile = pile_management::get_current_pile(&context)?;
+                let current_pile = pile_management::get_current_pile(context)?;
                 println!("Current pile: {}", current_pile.get_name());
             }
             Ok(())
         }
         Commands::Add { amount, note } => {
             trace!("Adding to pile: amount: {:?}", amount);
-            let new_pile = update_pile_with_action(&context, |pile| {
+            let new_pile = update_pile_with_action(context, |pile| {
                 Ok(pile.add_transaction(&Transaction::new(
                     TransactionType::Add,
                     amount,
@@ -142,7 +142,7 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
         }
 
         Commands::Commit { message } => {
-            update_pile_with_action(&context, |current_pile| {
+            update_pile_with_action(context, |current_pile| {
                 if current_pile.current_staged_transactions.is_empty() {
                     println!("No staged transactions to commit. Add some transactions first.");
                     return Ok(current_pile);
@@ -172,7 +172,7 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
         }
         Commands::Withdraw { amount, note } => {
             trace!("Withdrawing from pile: amount: {:?}", amount);
-            let new_pile = update_pile_with_action(&context, |pile| {
+            let new_pile = update_pile_with_action(context, |pile| {
                 Ok(
                     pile.add_transaction(&models::record_transaction::Transaction::new(
                         TransactionType::Withdraw,
@@ -189,7 +189,7 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             Ok(())
         }
         Commands::Restore => {
-            let updated_pile = update_pile_with_action(&context, |pile| {
+            let updated_pile = update_pile_with_action(context, |pile| {
                 let new_balance = pile
                     .records
                     .last()
@@ -208,14 +208,14 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             Ok(())
         }
         Commands::Log => {
-            let current_pile = pile_management::get_current_pile(&context)?;
+            let current_pile = pile_management::get_current_pile(context)?;
 
             let records = current_pile.records;
             println!(" --- Current Record ---");
             for record in records.iter().rev() {
                 let record_indicator = "*".bold();
                 let separators = "|".bold();
-                let message = format!("{}", record.message).yellow();
+                let message = record.message.to_string().yellow();
                 let amount_after_record = if record.amount_after_record > 0.0 {
                     format!("+{}", record.amount_after_record).green()
                 } else {
@@ -235,8 +235,8 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             Ok(())
         }
         Commands::Chain => {
-            let current_pile = pile_management::get_current_pile(&context)?;
-            let _ = handle_showing_transactions(&current_pile)?;
+            let current_pile = pile_management::get_current_pile(context)?;
+            handle_showing_transactions(&current_pile)?;
             Ok(())
         }
     }
@@ -272,7 +272,7 @@ fn handle_showing_transactions(current_pile: &models::pile::Pile) -> anyhow::Res
             TransactionType::Init => "~".white(),
         };
         let note = if let Some(note) = &current_transaction.note {
-            format!("{}", note)
+            note.to_string()
         } else {
             "".to_string()
         };
