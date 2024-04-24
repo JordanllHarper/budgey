@@ -15,7 +15,8 @@ anyhow = "1.0.82"
 
 # clap for cli
 clap = {version = "4.5.4", features = ["derive"] }
-chrono = "0.4.37"
+# chrono for datetime 
+chrono = {version = "0.4.37", features = ["serde"]}
 
 # Logging
 log = "0.4.21"
