@@ -15,7 +15,7 @@ impl Default for Pile {
         Pile::new(
             0.0,
             &PileType::Main,
-            &[Record::new_init("Initialised main", "0", 0.0, Some(0.0))],
+            &[Record::new_init("Initialised main", 0.0, Some(0.0))],
             &[],
         )
     }
@@ -112,7 +112,7 @@ impl Pile {
         Pile::new(
             0.0,
             &PileType::Main,
-            &[Record::new_init("Initialised main", "0", 0.0, Some(0.0))],
+            &[Record::new_init("Initialised main", 0.0, Some(0.0))],
             &[],
         )
     }

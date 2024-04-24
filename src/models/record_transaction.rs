@@ -1,3 +1,4 @@
+use chrono::{DateTime, Local};
 use nanoid::nanoid;
 use serde::{Deserialize, Serialize};
 
@@ -10,7 +11,7 @@ pub struct Record {
     /// The message for this record.
     pub message: String,
     /// The time stamp for this record. In epoch time.
-    pub time_stamp: String,
+    pub local_commit_time: DateTime<Local>,
     /// The amount the pile has after this record.
     pub amount_after_record: f32,
     /// The actions that have been made in this record.
@@ -51,15 +52,10 @@ pub enum TransactionType {
 }
 
 impl Record {
-    pub fn new_init(
-        message: &str,
-        time_stamp: &str,
-        amount_after_record: f32,
-        amount: Option<f32>,
-    ) -> Self {
+    pub fn new_init(message: &str, amount_after_record: f32, amount: Option<f32>) -> Self {
         Self::new(
             message,
-            time_stamp,
+            &chrono::Local::now(),
             amount_after_record,
             &[Transaction::new(
                 TransactionType::Init,
@@ -70,7 +66,7 @@ impl Record {
     }
     pub fn new(
         message: &str,
-        time_stamp: &str,
+        time_stamp: &DateTime<chrono::Local>,
         amount_after_record: f32,
         transactions: &[Transaction],
     ) -> Self {
@@ -79,7 +75,7 @@ impl Record {
             message: message.to_string(),
             amount_after_record,
             transactions: transactions.to_vec(),
-            time_stamp: time_stamp.to_string(),
+            local_commit_time: time_stamp.clone(),
         }
     }
 }
