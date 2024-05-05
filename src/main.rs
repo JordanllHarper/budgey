@@ -2,7 +2,7 @@ use crate::{
     budgey_state::BudgeyState,
     models::record_transaction::{Record, Transaction, TransactionType},
 };
-use anyhow::Ok;
+use anyhow::anyhow;
 use budgey_cli::Commands;
 use clap::Parser;
 use colored::Colorize;
@@ -90,7 +90,7 @@ fn main() -> anyhow::Result<()> {
     let args = budgey_cli::BudgeyCLI::parse();
     trace!("Parsed CLI arguments: {:#?}", args);
 
-    let _ = match args {
+    let result = match args {
         budgey_cli::BudgeyCLI::Init { name } => handle_init::handle_init(budgey_config, &name),
         budgey_cli::BudgeyCLI::Subcommands(c) => {
             let context = BudgeyContext::new(
@@ -101,7 +101,7 @@ fn main() -> anyhow::Result<()> {
             handle_subcommands(&context, c)
         }
     };
-    Ok(())
+    result
 }
 
 fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Result<()> {
@@ -126,10 +126,17 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
         }
         Commands::Add { amount, note } => {
             trace!("Adding to pile: amount: {:?}", amount);
+            let amount = match evalexpr::eval(&amount) {
+                Ok(v) => v.as_number()?,
+                Err(e) => {
+                    println!("Invalid amount or expression. Please try again.");
+                    return Err(anyhow!("Invalid amount or expression: {:?}", e));
+                }
+            };
             let new_pile = update_pile_with_action(&context, |pile| {
                 Ok(pile.add_transaction(&Transaction::new(
                     TransactionType::Add,
-                    amount,
+                    amount as f32,
                     note.as_deref(),
                 )))
             })?;

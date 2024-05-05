@@ -61,8 +61,8 @@ pub enum Commands {
     /// Create an 'add' transaction, where money is added to the current pile.
     #[command(name = "add", arg_required_else_help = true)]
     Add {
-        /// The amount of the transaction.
-        amount: f32,
+        /// The amount of the transaction. Supports expressions.
+        amount: String,
 
         /// An optional note for the transaction.
         #[arg(short, long)]
