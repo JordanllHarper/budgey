@@ -19,7 +19,11 @@ chrono = "0.4.37"
 
 # Logging
 log = "0.4.21"
-simple_logger = "4.3.3"
+simple_logger = "5.0.0"
+
+# expression parsing
+evalexpr = "11.3.0"
+
 
 # nanoid 
 nanoid = "0.4.0"
