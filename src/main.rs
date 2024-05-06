@@ -1,6 +1,7 @@
 use crate::{
     budgey_state::BudgeyState,
     models::record_transaction::{Record, Transaction, TransactionType},
+    utils::round_to_two_decimals,
 };
 use anyhow::anyhow;
 use budgey_cli::Commands;
@@ -136,7 +137,7 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             let new_pile = update_pile_with_action(&context, |pile| {
                 Ok(pile.add_transaction(&Transaction::new(
                     TransactionType::Add,
-                    amount as f32,
+                    round_to_two_decimals(amount as f32),
                     note.as_deref(),
                 )))
             })?;
@@ -178,12 +179,19 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             Ok(())
         }
         Commands::Withdraw { amount, note } => {
+            let amount = match evalexpr::eval(&amount) {
+                Ok(v) => v.as_number()?,
+                Err(e) => {
+                    println!("Invalid amount or expression. Please try again.");
+                    return Err(anyhow!("Invalid amount or expression: {:?}", e));
+                }
+            };
             trace!("Withdrawing from pile: amount: {:?}", amount);
             let new_pile = update_pile_with_action(&context, |pile| {
                 Ok(
                     pile.add_transaction(&models::record_transaction::Transaction::new(
                         TransactionType::Withdraw,
-                        amount,
+                        round_to_two_decimals(amount as f32),
                         note.as_deref(),
                     )),
                 )

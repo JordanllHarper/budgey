@@ -23,6 +23,10 @@ pub fn get_current_timestamp() -> anyhow::Result<String> {
     Ok(current_time)
 }
 
+pub fn round_to_two_decimals(value: f32) -> f32 {
+    (value * 100.0).round() / 100.0
+}
+
 // write a test for the above
 //
 #[cfg(test)]
