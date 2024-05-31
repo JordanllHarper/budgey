@@ -5,13 +5,13 @@ use log::{error, trace};
 use crate::{
     budget_management::{get_current_budget, update_budget},
     models::pile::Pile,
-    utils::{concat_paths, create_json_path},
+    utils::{concat_paths, create_json_path, read_from_str_path},
     BudgeyContext,
 };
 
 pub fn get_current_pile(context: &BudgeyContext) -> anyhow::Result<Pile> {
     trace!("Getting current pile");
-    let current_budget = get_current_budget(context)?;
+    let current_budget = get_current_budget(context, read_from_str_path)?;
     get_pile(context, &current_budget.current_pile_name)
 }
 
@@ -34,7 +34,7 @@ pub fn get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<Pile
 /// Gets a pile if it exists in the current budget.
 pub fn maybe_get_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<Option<Pile>> {
     trace!("Maybe getting pile");
-    let current_budget = get_current_budget(context)?;
+    let current_budget = get_current_budget(context, read_from_str_path)?;
     let in_budget_ledger = current_budget.pile_names.contains(&pile_name.into());
     if !in_budget_ledger {
         return Ok(None);
@@ -90,7 +90,7 @@ pub fn delete_pile(context: &BudgeyContext, pile_name: &str) -> anyhow::Result<(
     trace!("Deleting pile");
     let pile_path = concat_paths(&context.get_current_budget_path(), pile_name);
     fs::remove_dir_all(pile_path)?;
-    let current_budget = get_current_budget(context)?;
+    let current_budget = get_current_budget(context, read_from_str_path)?;
     let new_budget = current_budget.delete_pile(pile_name);
     update_budget(&context.get_current_budget_path(), new_budget)?;
     Ok(())

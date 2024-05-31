@@ -2,7 +2,7 @@ use colored::Colorize;
 use log::trace;
 
 use crate::{
-    budget_management::{get_current_budget, update_budget},
+    budget_management::{get_current_budget, read_from_str_path, update_budget},
     budgey_cli,
     models::pile::Pile,
     pile_management::{self, *},
@@ -30,7 +30,7 @@ pub fn handle_pile_subcommand(
 
             let new_pile = Pile::new_user_created(initial_balance, &new_pile_name, &pile.records);
             create_new_pile(context, &new_pile)?;
-            let budget = get_current_budget(context)?
+            let budget = get_current_budget(context, read_from_str_path)?
                 .add_pile(&new_pile_name)
                 .change_current_pile(&new_pile_name);
             update_budget(&context.get_current_budget_path(), budget)?;
@@ -40,7 +40,7 @@ pub fn handle_pile_subcommand(
             Ok(())
         }
         budgey_cli::PileSubcommand::List => {
-            let current_budget = get_current_budget(context)?;
+            let current_budget = get_current_budget(context, read_from_str_path)?;
             let pile_names = &current_budget.pile_names;
 
             if pile_names.is_empty() {
@@ -67,7 +67,8 @@ pub fn handle_pile_subcommand(
                 return Ok(());
             }
             pile_management::delete_pile(context, &name)?;
-            let current_budget = get_current_budget(context)?.delete_pile(&name);
+            let current_budget =
+                get_current_budget(context, read_from_str_path)?.delete_pile(&name);
             update_budget(&context.get_current_budget_path(), current_budget)?;
             println!("Deleted pile: {}", name);
             Ok(())
@@ -88,7 +89,7 @@ pub fn handle_pile_subcommand(
         }
 
         budgey_cli::PileSubcommand::Focus { name } => {
-            let current_budget = get_current_budget(context)?;
+            let current_budget = get_current_budget(context, read_from_str_path)?;
             if !current_budget.pile_names.contains(&name) {
                 println!("Pile doesn't exist in the current budget. Specify another name.");
                 return Ok(());

@@ -1,4 +1,4 @@
-use std::fs;
+use std::{fs, io};
 
 use log::{error, trace};
 
@@ -12,10 +12,14 @@ pub fn get_current_budget_name(budgey_context: &BudgeyContext) -> anyhow::Result
     Ok(budgey_context.state.current_focused_budget_name.to_string())
 }
 
-pub fn get_current_budget(budgey_context: &BudgeyContext) -> anyhow::Result<Budget> {
+pub fn get_current_budget(
+    budgey_context: &BudgeyContext,
+    read_to_string: fn(&str) -> io::Result<String>,
+) -> anyhow::Result<Budget> {
     trace!("Getting current budget");
     let current_budget_path = &budgey_context.get_current_budget_json_path();
-    let current_budget_json = match fs::read_to_string(current_budget_path) {
+    let read_to_string = read_to_string(current_budget_path);
+    let current_budget_json = match read_to_string {
         Ok(json) => json,
         Err(e) => {
             error!("Error reading current budget json: {:?}", e);

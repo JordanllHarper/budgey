@@ -1,3 +1,5 @@
+use std::fs;
+
 /// Creates a json file with the given path and name.
 /// budgey_path -> path to the budgey directory
 /// name -> name of the json file
@@ -25,6 +27,10 @@ pub fn get_current_timestamp() -> anyhow::Result<String> {
 
 pub fn round_to_two_decimals(value: f32) -> f32 {
     (value * 100.0).round() / 100.0
+}
+
+pub fn read_from_str_path(path: &str) -> Result<String, std::io::Error> {
+    fs::read_to_string(path)
 }
 
 // write a test for the above
