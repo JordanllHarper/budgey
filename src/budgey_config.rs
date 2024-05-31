@@ -17,3 +17,16 @@ impl BudgeyConfig {
         concat_paths(&self.budgey_path, budget_name)
     }
 }
+
+#[cfg(test)]
+mod test {
+    use super::BudgeyConfig;
+
+    #[test]
+    fn get_budget_path_gives_custom_path() {
+        let sample = BudgeyConfig::new("test", "path.json");
+        let expected = "test/path.json";
+        let actual = sample.get_budget_path("path.json");
+        assert_eq!(expected, actual);
+    }
+}
