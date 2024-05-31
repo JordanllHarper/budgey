@@ -5,7 +5,7 @@ use log::{error, trace};
 
 use crate::{utils::concat_paths, BudgeyConfig};
 
-#[derive(Debug, serde::Serialize, serde::Deserialize, Clone)]
+#[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct BudgeyState {
     pub current_focused_budget_name: String,
     pub budget_names: Vec<String>,
@@ -104,13 +104,10 @@ pub fn write_budgey_state(
     trace!("Writing budgey state");
     let serialized = serde_json::to_string(new_state)?;
     let check_path_result = fs::read_dir(&budgey_config.budgey_path);
-    match check_path_result {
-        Err(e) => {
-            if e.kind() == std::io::ErrorKind::NotFound {
-                fs::create_dir_all(&budgey_config.budgey_path)?;
-            }
+    if let Err(e) = check_path_result {
+        if e.kind() == std::io::ErrorKind::NotFound {
+            fs::create_dir_all(&budgey_config.budgey_path)?;
         }
-        _ => {}
     };
     fs::write(
         concat_paths(&budgey_config.budgey_path, &budgey_config.state_json_name),
@@ -118,4 +115,58 @@ pub fn write_budgey_state(
     )?;
 
     Ok(())
+}
+
+#[cfg(test)]
+mod test {
+    use super::BudgeyState;
+
+    fn sample_data() -> BudgeyState {
+        BudgeyState::new(
+            &["budget_one".to_string(), "budget_two".to_string()],
+            "budget_one",
+        )
+    }
+
+    #[test]
+    fn budgey_state_add_budget_name_to_state() {
+        let state = sample_data();
+        let expected = BudgeyState::new(
+            &[
+                "budget_one".to_string(),
+                "budget_two".to_string(),
+                "budget_three".to_string(),
+            ],
+            "budget_one",
+        );
+        let actual = state.add_budget_name("budget_three");
+
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn budgey_state_change_budget_name_in_state() {
+        let state = sample_data();
+        let expected = BudgeyState::new(
+            &["budget_one".to_string(), "budget_two".to_string()],
+            "budget_two",
+        );
+        let actual = state.change_focused_budget_name("budget_two");
+
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn budgey_state_remove_budget_name_in_state() {
+        let state = sample_data();
+        let expected = BudgeyState::new(&["budget_one".to_string()], "budget_one");
+        let actual = state.remove_budget_name("budget_two");
+
+        assert_eq!(expected, actual);
+    }
+    #[test]
+    fn budgey_state_new_init_creates_new_budget_and_adds_to_list() {
+        let expected = BudgeyState::new(&["budget_one".to_string()], "budget_one");
+        let actual = BudgeyState::new_init("budget_one");
+
+        assert_eq!(expected, actual);
+    }
 }
