@@ -3,7 +3,7 @@ use std::{fs, io::ErrorKind};
 use colored::Colorize;
 use log::{error, trace};
 
-use crate::{utils::concat_paths, BudgeyConfig};
+use crate::{budgey_config::BudgeyConfig, utils::concat_paths};
 
 #[derive(Debug, serde::Serialize, serde::Deserialize, Clone, PartialEq, Eq)]
 pub struct BudgeyState {
