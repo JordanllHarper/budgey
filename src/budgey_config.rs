@@ -1,6 +1,6 @@
 use crate::utils::concat_paths;
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct BudgeyConfig {
     pub budgey_path: String,
     pub state_json_name: String,

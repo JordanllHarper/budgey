@@ -24,8 +24,6 @@ mod pile_management;
 mod utils;
 
 fn main() -> anyhow::Result<()> {
-    // simple_logger::init().unwrap();
-
     let home = env!("HOME").to_string();
     info!("Home environment initialised: {}", home);
 
