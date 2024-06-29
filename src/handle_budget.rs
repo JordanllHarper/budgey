@@ -21,7 +21,7 @@ pub fn handle_budget_subcommand(
             }
 
             let new_state = state.change_focused_budget_name(&name);
-            budgey_state::write_budgey_state(&context.budgey_config, &new_state)?;
+            budgey_state::write_budgey_state(&context.config, &new_state)?;
             println!("Checked out new budget: {}", name);
             Ok(())
         }
@@ -32,7 +32,7 @@ pub fn handle_budget_subcommand(
                 return Ok(());
             }
             budget_management::create_new_budget(
-                &context.budgey_config.get_budget_path(&name),
+                &context.config.get_budget_path(&name),
                 models::budget::Budget::new_init(&name),
             )?;
 
@@ -41,7 +41,7 @@ pub fn handle_budget_subcommand(
                 .add_budget_name(&name)
                 .change_focused_budget_name(&name);
 
-            budgey_state::write_budgey_state(&context.budgey_config, &new_state)?;
+            budgey_state::write_budgey_state(&context.config, &new_state)?;
 
             let context = context.update_state(&new_state);
             pile_management::create_new_pile(&context, &Pile::default_main_pile())?;

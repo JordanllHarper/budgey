@@ -74,7 +74,7 @@ pub fn get_budgey_state(budgey_path_to_json: &str) -> anyhow::Result<BudgeyState
 /// Checks if the budgey state has already been initialised
 pub fn check_budgey_state_initialised(budgey_config: &BudgeyConfig) -> anyhow::Result<bool> {
     trace!("Checking if budgey state is initialised");
-    let check_path_result = match fs::read_dir(&budgey_config.budgey_path) {
+    let check_path_result = match fs::read_dir(&budgey_config.root_path) {
         Ok(r) => r,
         Err(e) => {
             if e.kind() == std::io::ErrorKind::NotFound {
@@ -103,17 +103,17 @@ pub fn write_budgey_state(
 ) -> anyhow::Result<(), std::io::Error> {
     trace!("Writing budgey state");
     let serialized = serde_json::to_string(new_state)?;
-    let check_path_result = fs::read_dir(&budgey_config.budgey_path);
+    let check_path_result = fs::read_dir(&budgey_config.root_path);
     match check_path_result {
         Err(e) => {
             if e.kind() == std::io::ErrorKind::NotFound {
-                fs::create_dir_all(&budgey_config.budgey_path)?;
+                fs::create_dir_all(&budgey_config.root_path)?;
             }
         }
         _ => {}
     };
     fs::write(
-        concat_paths(&budgey_config.budgey_path, &budgey_config.state_json_name),
+        concat_paths(&budgey_config.root_path, &budgey_config.state_json_name),
         serialized,
     )?;
 

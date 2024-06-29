@@ -95,7 +95,7 @@ pub fn update_budget(budget_path: &str, budget: Budget) -> anyhow::Result<()> {
 }
 pub fn delete_budget(budgey_context: &BudgeyContext, budget_name: &str) -> anyhow::Result<()> {
     trace!("Deleting budget");
-    let budget_path = concat_paths(&budgey_context.budgey_config.budgey_path, budget_name);
+    let budget_path = concat_paths(&budgey_context.config.root_path, budget_name);
     match fs::remove_dir_all(&budget_path) {
         Ok(_) => {}
         Err(e) => {
@@ -108,7 +108,7 @@ pub fn delete_budget(budgey_context: &BudgeyContext, budget_name: &str) -> anyho
     };
 
     let new_state = budgey_context.state.remove_budget_name(budget_name);
-    match write_budgey_state(&budgey_context.budgey_config, &new_state) {
+    match write_budgey_state(&budgey_context.config, &new_state) {
         Ok(_) => {}
         Err(e) => {
             error!("Error writing new state after deleting budget: {:?}", e);
@@ -131,7 +131,7 @@ pub fn does_budget_exist(
     {
         return Ok(true);
     }
-    let budget_path = concat_paths(&budgey_context.budgey_config.budgey_path, budget_name);
+    let budget_path = concat_paths(&budgey_context.config.root_path, budget_name);
     let budget_json_path = concat_paths(&budget_path, &create_json_file_name(budget_name));
 
     match fs::read(&budget_json_path) {
