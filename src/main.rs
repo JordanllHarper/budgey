@@ -8,7 +8,7 @@ use budgey_cli::Commands;
 use clap::Parser;
 use colored::Colorize;
 use file::{
-    budget_io::{self, BudgetIO, BudgetIOImpl},
+    budget_io::BudgetIOImpl,
     state_io::{StateIO, StateIOImpl},
 };
 use log::{info, trace};
@@ -86,24 +86,15 @@ fn main() -> anyhow::Result<()> {
     info!("Budgey path: {}", root_path);
 
     let state_json_name = create_json_file_name("budgey_state");
-    let state_path = concat_paths(&root_path, &state_json_name);
-    info!("Budgey state path created: {}", state_path);
-
     let config = BudgeyConfig::new(&root_path, &state_json_name);
-    info!("Budgey config created:\n {:#?}", config);
-
-    info!("Parsing CLI arguments");
     let args = budgey_cli::BudgeyCLI::parse();
-    trace!("Parsed CLI arguments: {:#?}", args);
 
     let state_io = StateIOImpl::new(&config);
     let budget_io = BudgetIOImpl::new(&config);
 
-    let context = BudgeyContext::new(&state_io.read_budgey_state()?, &config);
-
     match args {
         budgey_cli::BudgeyCLI::Init { name } => {
-            handle_init::handle_init(&name, &context, state_io, budget_io)
+            handle_init::handle_init(&name, &config, state_io, budget_io)
         }
         budgey_cli::BudgeyCLI::Subcommands(c) => {
             let context = BudgeyContext::new(&state_io.read_budgey_state()?, &config);

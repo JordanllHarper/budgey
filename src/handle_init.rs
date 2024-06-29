@@ -2,12 +2,12 @@ use crate::{
     budgey_state::BudgeyState,
     file::{budget_io::BudgetIO, state_io::StateIO},
     models::{budget::Budget, pile::Pile},
-    pile_management, BudgeyContext,
+    pile_management, BudgeyConfig, BudgeyContext,
 };
 
 pub fn handle_init(
     starting_budget_name: &str,
-    context: &BudgeyContext,
+    config: &BudgeyConfig,
     state_io: impl StateIO,
     budget_io: impl BudgetIO,
 ) -> anyhow::Result<()> {
@@ -21,13 +21,15 @@ pub fn handle_init(
     }
     println!("Initialising Budgey...");
 
-    let new_budget = &Budget::new_init(starting_budget_name);
-    budget_io.create_new_budget(new_budget)?;
+    let new_budget = Budget::new_init(starting_budget_name);
 
     let init_state = BudgeyState::new_init(starting_budget_name);
+
     state_io.write_budgey_state(&init_state)?;
 
-    let new_context = BudgeyContext::new(&init_state, &context.config);
+    budget_io.create_new_budget(&new_budget)?;
+
+    let new_context = BudgeyContext::new(&init_state, &config);
     pile_management::create_new_pile(&new_context, &Pile::default_main_pile())?;
 
     println!("Budgey init finished. Run `budgey` to see help.");
