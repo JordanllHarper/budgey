@@ -1,15 +1,19 @@
 use crate::{
     budgey_state::BudgeyState,
-    file::{budget_io::BudgetIO, state_io::StateIO},
+    file::{
+        budget_io::BudgetIO,
+        pile_io::{PileIO, PileIOImpl},
+        state_io::StateIO,
+    },
     models::{budget::Budget, pile::Pile},
-    pile_management, BudgeyConfig, BudgeyContext,
+    BudgeyConfig, BudgeyContext,
 };
 
 pub fn handle_init(
     starting_budget_name: &str,
     config: &BudgeyConfig,
-    state_io: impl StateIO,
-    budget_io: impl BudgetIO,
+    state_io: &impl StateIO,
+    budget_io: &impl BudgetIO,
 ) -> anyhow::Result<()> {
     let budget_already_initialised = state_io.check_state_initialised()?;
 
@@ -29,8 +33,9 @@ pub fn handle_init(
 
     budget_io.create_new_budget(&new_budget)?;
 
-    let new_context = BudgeyContext::new(&init_state, &config);
-    pile_management::create_new_pile(&new_context, &Pile::default_main_pile())?;
+    let new_context = BudgeyContext::new(&init_state, config);
+    let pile_io = PileIOImpl::new(&new_context);
+    pile_io.create_new_pile(&Pile::default_main_pile())?;
 
     println!("Budgey init finished. Run `budgey` to see help.");
     Ok(())

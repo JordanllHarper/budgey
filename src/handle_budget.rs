@@ -1,63 +1,74 @@
+use std::io;
+
+use anyhow::Ok;
 use colored::Colorize;
 
 use crate::{
-    budget_management, budgey_cli, budgey_state,
+    budget_management, budgey_cli,
+    file::{budget_io::BudgetIO, pile_io::PileIO, state_io::StateIO},
     models::{self, pile::Pile},
-    pile_management, BudgeyContext,
+    BudgeyContext,
 };
 
+fn execute_if_budget_exists(
+    context: &BudgeyContext,
+    name: &str,
+    on_exists: impl Fn() -> anyhow::Result<()>,
+) -> anyhow::Result<()> {
+    let budget_exists = context.contains_budget(name);
+
+    if !budget_exists {
+        println!("Budget doesn't exist, specify another name");
+        return Ok(());
+    }
+    on_exists()
+}
 pub fn handle_budget_subcommand(
     context: &BudgeyContext,
     subcommand: budgey_cli::BudgetSubcommand,
+    state_io: &impl StateIO,
+    budget_io: &impl BudgetIO,
+    pile_io: &impl PileIO,
 ) -> anyhow::Result<()> {
     match subcommand {
         budgey_cli::BudgetSubcommand::Focus { name } => {
-            let state = &context.state;
-            let budget_exists = budget_management::does_budget_exist(context, &name)?;
-
-            if !budget_exists {
-                println!("Budget doesn't exist, specify another name");
-                return Ok(());
-            }
-
-            let new_state = state.change_focused_budget_name(&name);
-            budgey_state::write_budgey_state(&context.config, &new_state)?;
-            println!("Checked out new budget: {}", name);
-            Ok(())
+            execute_if_budget_exists(context, &name, || {
+                let new_state = context.state.change_focused_budget_name(&name);
+                state_io.write_budgey_state(&new_state)?;
+                println!("Checked out new budget: {}", name);
+                Ok(())
+            })
         }
         budgey_cli::BudgetSubcommand::New { name } => {
-            let budget_exists = budget_management::does_budget_exist(context, &name)?;
-            if budget_exists {
-                println!("Budget already exists with the same name");
-                return Ok(());
-            }
-            budget_management::create_new_budget(
-                &context.config.get_budget_path(&name),
-                models::budget::Budget::new_init(&name),
-            )?;
+            execute_if_budget_exists(context, &name, || {
+                budget_io.create_new_budget(&models::budget::Budget::new_init(&name))?;
 
-            let new_state = context
-                .state
-                .add_budget_name(&name)
-                .change_focused_budget_name(&name);
+                let new_state = context
+                    .state
+                    .add_budget_name(&name)
+                    .change_focused_budget_name(&name);
 
-            budgey_state::write_budgey_state(&context.config, &new_state)?;
+                state_io.write_budgey_state(&new_state)?;
 
-            let context = context.update_state(&new_state);
-            pile_management::create_new_pile(&context, &Pile::default_main_pile())?;
-            println!("Created and focused new budget: {}", name);
-            Ok(())
+                if let Err(e) = pile_io.create_new_pile(&Pile::default_main_pile()) {
+                    if e.kind() == io::ErrorKind::AlreadyExists {
+                        println!("Pile \"{}\" already exists, try selecting a different name or deleting the pile", name);
+                        return Ok(());
+                    } else {
+                        return Err(e.into());
+                    }
+                }
+                println!("Created and focused new budget: {}", name);
+                Ok(())
+            })
         }
-        budgey_cli::BudgetSubcommand::Delete { name } => {
-            let budget_exists = budget_management::does_budget_exist(context, &name)?;
-            if !budget_exists {
-                println!("Budget doesn't exist, specify another name");
-                return Ok(());
-            }
 
-            budget_management::delete_budget(context, &name)?;
-            println!("Deleted budget: {}", name);
-            Ok(())
+        budgey_cli::BudgetSubcommand::Delete { name } => {
+            execute_if_budget_exists(context, &name, || {
+                budget_management::delete_budget(context, &name)?;
+                println!("Deleted budget: {}", name);
+                Ok(())
+            })
         }
         budgey_cli::BudgetSubcommand::List => {
             let budget_names = &context.state.budget_names;

@@ -8,10 +8,10 @@ use budgey_cli::Commands;
 use clap::Parser;
 use colored::Colorize;
 use file::{
-    budget_io::BudgetIOImpl,
+    budget_io::{BudgetIO, BudgetIOImpl},
+    pile_io::{PileIO, PileIOImpl},
     state_io::{StateIO, StateIOImpl},
 };
-use log::{info, trace};
 use utils::{concat_paths, create_json_file_name};
 
 mod budget_management;
@@ -22,7 +22,6 @@ mod handle_budget;
 mod handle_init;
 mod handle_pile;
 mod models;
-mod pile_management;
 mod utils;
 
 #[derive(Debug, Clone)]
@@ -64,6 +63,9 @@ impl BudgeyContext {
         let budgey_path = &self.config.root_path;
         concat_paths(budgey_path, current_budget)
     }
+    pub fn get_current_budget_name(&self) -> String {
+        self.state.current_focused_budget_name.clone()
+    }
     pub fn get_current_budget_json_path(&self) -> String {
         concat_paths(
             &self.get_current_budget_path(),
@@ -74,16 +76,18 @@ impl BudgeyContext {
     pub fn update_state(&self, new_state: &BudgeyState) -> Self {
         Self::new(new_state, &self.config)
     }
+    pub fn contains_budget(&self, budget_name: &str) -> bool {
+        self.state
+            .budget_names
+            .iter()
+            .any(|name| name == budget_name)
+    }
 }
 
 fn main() -> anyhow::Result<()> {
-    // simple_logger::init().unwrap();
-
     let home = env!("HOME").to_string();
-    info!("Home environment initialised: {}", home);
 
     let root_path = format!("{}{}", home, "/.budgey");
-    info!("Budgey path: {}", root_path);
 
     let state_json_name = create_json_file_name("budgey_state");
     let config = BudgeyConfig::new(&root_path, &state_json_name);
@@ -94,38 +98,55 @@ fn main() -> anyhow::Result<()> {
 
     match args {
         budgey_cli::BudgeyCLI::Init { name } => {
-            handle_init::handle_init(&name, &config, state_io, budget_io)
+            handle_init::handle_init(&name, &config, &state_io, &budget_io)
         }
         budgey_cli::BudgeyCLI::Subcommands(c) => {
-            let context = BudgeyContext::new(&state_io.read_budgey_state()?, &config);
+            let state = state_io.read_budgey_state();
+            if let Err(ref e) = state {
+                if e.kind() == std::io::ErrorKind::NotFound {
+                    println!(
+                        "Couldn't find the state file.\n\nPlease run {}",
+                        "`budgey init`".green()
+                    );
+                }
+            }
 
-            handle_subcommands(&context, c)
+            let context = BudgeyContext::new(&state?, &config);
+            let pile_io = PileIOImpl::new(&context);
+
+            handle_subcommands(&context, c, &state_io, &budget_io, &pile_io)
         }
     }
 }
 
-fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Result<()> {
+fn handle_subcommands(
+    context: &BudgeyContext,
+    command: Commands,
+    state_io: &impl StateIO,
+    budget_io: &impl BudgetIO,
+    pile_io: &impl PileIO,
+) -> anyhow::Result<()> {
     match command {
         Commands::Budget { subcommand } => {
-            if let Some(sub) = &subcommand {
-                handle_budget::handle_budget_subcommand(&context, sub.clone())
+            if let Some(sub) = subcommand {
+                handle_budget::handle_budget_subcommand(context, sub, state_io, budget_io, pile_io)
             } else {
-                let current_budget = budget_management::get_current_budget_name(&context)?;
+                let current_budget = context.get_current_budget_name();
                 println!("Current budget: {:?}", current_budget);
                 Ok(())
             }
         }
         Commands::Pile { subcommand } => {
             if let Some(sub) = subcommand {
-                handle_pile::handle_pile_subcommand(context, sub)?;
+                handle_pile::handle_pile_subcommand(context, sub, budget_io, pile_io)?;
             } else {
-                let current_pile = pile_management::get_current_pile(&context)?;
+                let current_budget = budget_io.get_current_budget(context)?;
+                let current_pile = pile_io.get_current_pile(&current_budget)?;
                 println!("Current pile: {}", current_pile.get_name());
             }
             Ok(())
         }
         Commands::Add { amount, note } => {
-            trace!("Adding to pile: amount: {:?}", amount);
             let amount = match evalexpr::eval(&amount) {
                 Ok(v) => v.as_number()?,
                 Err(e) => {
@@ -133,13 +154,18 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
                     return Err(anyhow!("Invalid amount or expression: {:?}", e));
                 }
             };
-            let new_pile = update_pile_with_action(&context, |pile| {
-                Ok(pile.add_transaction(&Transaction::new(
-                    TransactionType::Add,
-                    round_to_two_decimals(amount as f32),
-                    note.as_deref(),
-                )))
-            })?;
+            let new_pile = update_pile_with_action(
+                context,
+                |pile| {
+                    Ok(pile.add_transaction(&Transaction::new(
+                        TransactionType::Add,
+                        round_to_two_decimals(amount as f32),
+                        note.as_deref(),
+                    )))
+                },
+                budget_io,
+                pile_io,
+            )?;
 
             println!(
                 "Staged transaction of {}. Pile now at: {}",
@@ -149,32 +175,36 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
         }
 
         Commands::Commit { message } => {
-            update_pile_with_action(&context, |current_pile| {
-                if current_pile.current_staged_transactions.is_empty() {
-                    println!("No staged transactions to commit. Add some transactions first.");
-                    return Ok(current_pile);
-                }
-                let current_time = utils::get_current_timestamp()?;
-                let balance = current_pile.current_balance;
-                trace!("Difference: {}", balance);
+            update_pile_with_action(
+                context,
+                |current_pile| {
+                    if current_pile.current_staged_transactions.is_empty() {
+                        println!("No staged transactions to commit. Add some transactions first.");
+                        return Ok(current_pile);
+                    }
+                    let current_time = utils::get_current_timestamp()?;
+                    let balance = current_pile.current_balance;
 
-                let new_record = &Record::new(
-                    &message,
-                    &current_time,
-                    balance,
-                    &current_pile.current_staged_transactions,
-                );
+                    let new_record = &Record::new(
+                        &message,
+                        &current_time,
+                        balance,
+                        &current_pile.current_staged_transactions,
+                    );
 
-                let new_pile = current_pile
-                    .add_record(new_record)
-                    .clear_staged_transactions();
+                    let new_pile = current_pile
+                        .add_record(new_record)
+                        .clear_staged_transactions();
 
-                println!(
-                    "Record {} committed. Balance: {}",
-                    new_record.id, new_record.amount_after_record
-                );
-                Ok(new_pile)
-            })?;
+                    println!(
+                        "Record {} committed. Balance: {}",
+                        new_record.id, new_record.amount_after_record
+                    );
+                    Ok(new_pile)
+                },
+                budget_io,
+                pile_io,
+            )?;
             Ok(())
         }
         Commands::Withdraw { amount, note } => {
@@ -185,16 +215,20 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
                     return Err(anyhow!("Invalid amount or expression: {:?}", e));
                 }
             };
-            trace!("Withdrawing from pile: amount: {:?}", amount);
-            let new_pile = update_pile_with_action(&context, |pile| {
-                Ok(
-                    pile.add_transaction(&models::record_transaction::Transaction::new(
-                        TransactionType::Withdraw,
-                        round_to_two_decimals(amount as f32),
-                        note.as_deref(),
-                    )),
-                )
-            })?;
+            let new_pile = update_pile_with_action(
+                context,
+                |pile| {
+                    Ok(
+                        pile.add_transaction(&models::record_transaction::Transaction::new(
+                            TransactionType::Withdraw,
+                            round_to_two_decimals(amount as f32),
+                            note.as_deref(),
+                        )),
+                    )
+                },
+                budget_io,
+                pile_io,
+            )?;
 
             println!(
                 "Staged transaction of {}. Pile now at: {}",
@@ -203,16 +237,21 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             Ok(())
         }
         Commands::Restore => {
-            let updated_pile = update_pile_with_action(&context, |pile| {
-                let new_balance = pile
-                    .records
-                    .last()
-                    .map(|record| record.amount_after_record)
-                    .unwrap_or_else(|| pile.current_balance);
-                let new_pile = pile.set_balance(new_balance);
+            let updated_pile = update_pile_with_action(
+                context,
+                |pile| {
+                    let new_balance = pile
+                        .records
+                        .last()
+                        .map(|record| record.amount_after_record)
+                        .unwrap_or_else(|| pile.current_balance);
+                    let new_pile = pile.set_balance(new_balance);
 
-                Ok(new_pile.clear_staged_transactions())
-            })?;
+                    Ok(new_pile.clear_staged_transactions())
+                },
+                budget_io,
+                pile_io,
+            )?;
 
             println!(
                 "Restored to last record. Pile now at: {}",
@@ -222,14 +261,14 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             Ok(())
         }
         Commands::Log => {
-            let current_pile = pile_management::get_current_pile(&context)?;
+            let current_pile = pile_io.get_current_pile(&budget_io.get_current_budget(context)?)?;
 
             let records = current_pile.records;
             println!(" --- Current Record ---");
             for record in records.iter().rev() {
                 let record_indicator = "*".bold();
                 let separators = "|".bold();
-                let message = format!("{}", record.message).yellow();
+                let message = record.message.to_string().yellow();
                 let amount_after_record = if record.amount_after_record > 0.0 {
                     format!("+{}", record.amount_after_record).green()
                 } else {
@@ -249,8 +288,8 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
             Ok(())
         }
         Commands::Chain => {
-            let current_pile = pile_management::get_current_pile(&context)?;
-            let _ = handle_showing_transactions(&current_pile)?;
+            let current_pile = pile_io.get_current_pile(&budget_io.get_current_budget(context)?)?;
+            handle_showing_transactions(&current_pile)?;
             Ok(())
         }
     }
@@ -259,10 +298,13 @@ fn handle_subcommands(context: &BudgeyContext, command: Commands) -> anyhow::Res
 fn update_pile_with_action(
     context: &BudgeyContext,
     action: impl Fn(models::pile::Pile) -> anyhow::Result<models::pile::Pile>,
+    budget_io: &impl BudgetIO,
+    pile_io: &impl PileIO,
 ) -> anyhow::Result<models::pile::Pile> {
-    let current_pile = pile_management::get_current_pile(context)?;
+    let current_budget = budget_io.get_current_budget(context)?;
+    let current_pile = pile_io.get_current_pile(&current_budget)?;
     let new_pile = action(current_pile)?;
-    pile_management::update_pile(context, &new_pile)?;
+    pile_io.update_pile(&new_pile)?;
     Ok(new_pile)
 }
 fn handle_showing_transactions(current_pile: &models::pile::Pile) -> anyhow::Result<()> {
@@ -286,7 +328,7 @@ fn handle_showing_transactions(current_pile: &models::pile::Pile) -> anyhow::Res
             TransactionType::Init => "~".white(),
         };
         let note = if let Some(note) = &current_transaction.note {
-            format!("{}", note)
+            note.to_string()
         } else {
             "".to_string()
         };
