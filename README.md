@@ -18,8 +18,9 @@ Run `budgey init` to initialise a `.budgey` directory, where the required inform
 Then run budgey --help to see commands. 
 
 ### Concepts 
-Budget - a central location for a budget.
 
-Piles - analogous to Git branches. Contains a history of transactions.
-
-Transaction - analogous to a commit. A state of the current finances in a budget. 
+Analogies to Git:
+Budget -> Repository
+Piles -> Branches
+Transaction -> Staged changes
+Record -> Commit
