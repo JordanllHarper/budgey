@@ -22,6 +22,7 @@ mod handle_budget;
 mod handle_init;
 mod handle_pile;
 mod models;
+mod printing;
 mod utils;
 
 #[derive(Debug, Clone)]

@@ -7,6 +7,7 @@ use crate::{
     budget_management, budgey_cli,
     file::{budget_io::BudgetIO, pile_io::PileIO, state_io::StateIO},
     models::{self, pile::Pile},
+    printing::{self, print_message},
     BudgeyContext,
 };
 
@@ -18,7 +19,10 @@ fn execute_if_budget_exists(
     let budget_exists = context.contains_budget(name);
 
     if !budget_exists {
-        println!("Budget doesn't exist, specify another name");
+        print_message(
+            "Budget doesn't exist, specify another name",
+            printing::PrintType::Error,
+        );
         return Ok(());
     }
     on_exists()
@@ -35,7 +39,10 @@ pub fn handle_budget_subcommand(
             execute_if_budget_exists(context, &name, || {
                 let new_state = context.state.change_focused_budget_name(&name);
                 state_io.write_budgey_state(&new_state)?;
-                println!("Checked out new budget: {}", name);
+                print_message(
+                    &format!("Checked out new budget: {}", name),
+                    printing::PrintType::Info,
+                );
                 Ok(())
             })
         }
